@@ -52,6 +52,7 @@ zip_file_path = find_zip_file(input_folder)
 
 # Define paths
 output_file = "output_files/processed_doc.docx"
+
 # Ensure output directory exists
 os.makedirs("output_files", exist_ok=True)
 
