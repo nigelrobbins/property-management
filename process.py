@@ -43,7 +43,7 @@ def process_zip(zip_path, output_docx):
 
     # Save the final Word document
     print(f"Saving Word document to: {os.path.abspath(output_file)}")
-    doc.save(output_path)
+    doc.save(output_file)
 
 # ✅ Automatically find the ZIP file in the "input_files" folder
 input_folder = "input_files"
