@@ -42,7 +42,7 @@ def process_zip(zip_path, output_docx):
             doc.add_page_break()  # Add a page break after each PDF
 
     # Save the final Word document
-    output_path = "output_files/processed_doc.docx"
+    output_path = "processed_doc.docx"
     print(f"Saving Word document to: {os.path.abspath(output_path)}")
     doc.save(output_path)
 
