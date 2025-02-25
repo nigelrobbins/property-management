@@ -11,6 +11,13 @@ def extract_text_from_pdf(pdf_path):
             text += page.extract_text() + "\n"
     return text
 
+def find_zip_file(directory):
+    """Find the first ZIP file in the given directory."""
+    for file in os.listdir(directory):
+        if file.endswith(".zip"):
+            return os.path.join(directory, file)
+    return None  # No ZIP file found
+
 def process_zip(zip_path, output_docx):
     """Unzip, extract text from PDFs, and save to a Word document."""
     output_folder = "unzipped_pdfs"
@@ -38,5 +45,12 @@ def process_zip(zip_path, output_docx):
     doc.save(output_docx)
     print(f"Word document saved: {output_docx}")
 
-# Example usage
-process_zip("input_files.zip", "output_document.docx")
+# ✅ Automatically find the ZIP file in the "input_files" folder
+input_folder = "input_files"
+zip_file_path = find_zip_file(input_folder)
+
+if zip_file_path:
+    print(f"Found ZIP file: {zip_file_path}")
+    process_zip(zip_file_path, "output_document.docx")
+else:
+    print("Error: No ZIP file found in 'input_files' folder.")
