@@ -42,8 +42,7 @@ def process_zip(zip_path, output_docx):
             doc.add_page_break()  # Add a page break after each PDF
 
     # Save the final Word document
-    output_path = "processed_doc.docx"
-    print(f"Saving Word document to: {os.path.abspath(output_path)}")
+    print(f"Saving Word document to: {os.path.abspath(output_file)}")
     doc.save(output_path)
 
 # ✅ Automatically find the ZIP file in the "input_files" folder
