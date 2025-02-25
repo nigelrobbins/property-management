@@ -37,6 +37,7 @@ def process_zip(zip_path, output_docx):
             extracted_text = extract_text_from_pdf(pdf_path)
 
             # Add PDF file name as a heading
+            doc.add_paragraph("xxx", style="Heading 1")
             doc.add_paragraph(f"Source: {file_name}", style="Heading 2")
             doc.add_paragraph(extracted_text)
             doc.add_page_break()  # Add a page break after each PDF
