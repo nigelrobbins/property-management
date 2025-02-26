@@ -1,41 +1,29 @@
-name: Process Uploaded ZIP and Generate Word Doc
+name: Process PDF ZIPs
 
 on:
   push:
-    paths:
-      - "input_files/*.zip"  # Trigger only when a ZIP is uploaded
-  workflow_dispatch:  # Allow manual runs from GitHub Actions UI
+    branches:
+      - main  # Runs on main branch push
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  process-zip:
+  process_zip:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set Up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: '3.9'
 
-      - name: Install Dependencies
-        run: pip install -r requirements.txt docx2txt
+      - name: Install dependencies
+        run: pip install pdfplumber python-docx
 
-      - name: Find and Unzip Latest ZIP File
-        run: |
-          ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)
-          unzip "$ZIP_FILE" -d input_files/unzipped/
-        shell: bash
-
-      - name: Process PDFs and Create Word Doc
+      - name: Run processing script
         run: python process.py
-
-      - name: Upload Processed Word Document
-        uses: actions/upload-artifact@v4
-        with:
-          name: processed_word_document
-          path: output_files/processed_doc.docx
 
       - name: Upload Processed Files
         uses: actions/upload-artifact@v4
