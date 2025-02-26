@@ -1,6 +1,6 @@
 import os
 import zipfile
-import shutil  # ✅ Used to move files
+import shutil  # ✅ Used for moving files
 import pdfplumber
 from docx import Document
 
@@ -64,12 +64,15 @@ def process_zip(zip_path, output_docx):
 
     # Save the final Word document
     doc.save(output_docx)
-    print(f"Word document saved: {os.path.abspath(output_docx)}")
+    print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
 
-    # ✅ Move the ZIP file to the processed folder
-    processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-    shutil.move(zip_path, processed_zip_path)
-    print(f"Moved ZIP file to: {processed_zip_path}")
+    # ✅ Check if the ZIP file exists before moving
+    if os.path.exists(zip_path):
+        processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
+        shutil.move(zip_path, processed_zip_path)
+        print(f"✅ Moved ZIP file to: {processed_zip_path}")
+    else:
+        print(f"⚠️ ZIP file not found at {zip_path}, could not move it!")
 
 # ✅ Automatically find the ZIP file in the "input_files" folder
 input_folder = "input_files"
@@ -79,7 +82,7 @@ zip_file_path = find_zip_file(input_folder)
 output_file = "output_files/processed_doc.docx"
 
 if zip_file_path:
-    print(f"Found ZIP file: {zip_file_path}")
+    print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
 else:
-    print("Error: No ZIP file found in 'input_files' folder.")
+    print("❌ Error: No ZIP file found in 'input_files' folder.")
