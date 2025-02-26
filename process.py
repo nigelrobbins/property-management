@@ -1,6 +1,6 @@
 import os
 import zipfile
-import shutil  # ✅ Used for moving files
+import shutil
 import pdfplumber
 from docx import Document
 
@@ -29,20 +29,22 @@ def find_zip_file(directory):
 def process_zip(zip_path, output_docx):
     """Unzip, extract text from PDFs and Word docs, save to a Word file, and move ZIP file."""
     output_folder = "unzipped_files"
-    processed_folder = "processed_files"  # ✅ Folder to move ZIP after processing
+    processed_folder = "processed_files"  # ✅ Destination for processed ZIPs
 
     os.makedirs(output_folder, exist_ok=True)
-    os.makedirs(processed_folder, exist_ok=True)  # ✅ Ensure the processed folder exists
+    os.makedirs(processed_folder, exist_ok=True)  # ✅ Ensure processed folder exists
 
-    # Unzip the files
+    if not os.path.exists(zip_path):
+        print(f"❌ ERROR: ZIP file does not exist: {zip_path}")
+        return
+
+    print(f"📂 Unzipping: {zip_path}")
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(output_folder)
 
-    # Create a new Word document
     doc = Document()
 
-    # Process each file
-    for file_name in sorted(os.listdir(output_folder)):  # Sort for consistent order
+    for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
 
         if file_name.endswith(".pdf"):
@@ -57,32 +59,31 @@ def process_zip(zip_path, output_docx):
         if extracted_text:
             doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
             doc.add_paragraph(extracted_text)
-            doc.add_page_break()  # Add a page break after each file
+            doc.add_page_break()
 
-    # Ensure the output directory exists
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
-
-    # Save the final Word document
     doc.save(output_docx)
     print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
 
-    # ✅ Check if the ZIP file exists before moving
-    if os.path.exists(zip_path):
-        processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-        shutil.move(zip_path, processed_zip_path)
-        print(f"✅ Moved ZIP file to: {processed_zip_path}")
-    else:
-        print(f"⚠️ ZIP file not found at {zip_path}, could not move it!")
+    # ✅ Move ZIP file after processing
+    processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
+    
+    print(f"🔄 Moving ZIP file to: {processed_zip_path}")
+    shutil.move(zip_path, processed_zip_path)
 
-# ✅ Automatically find the ZIP file in the "input_files" folder
+    if os.path.exists(processed_zip_path):
+        print(f"✅ Successfully moved ZIP file to: {processed_zip_path}")
+    else:
+        print(f"❌ ERROR: Failed to move ZIP file.")
+
+# ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
 zip_file_path = find_zip_file(input_folder)
 
-# Define output file path
 output_file = "output_files/processed_doc.docx"
 
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
 else:
-    print("❌ Error: No ZIP file found in 'input_files' folder.")
+    print("❌ No ZIP file found in 'input_files' folder.")
