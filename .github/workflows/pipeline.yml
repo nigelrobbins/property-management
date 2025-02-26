@@ -36,3 +36,11 @@ jobs:
         with:
           name: processed_word_document
           path: output_files/processed_doc.docx
+
+      - name: Upload Processed Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-artifacts
+          path: |
+            processed_files/
+            output_files/processed_doc.docx
