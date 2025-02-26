@@ -4,4 +4,4 @@ To generate a Property Purchase Report, click on the `input_files` folder and th
 
 The workflow will then automatically unzip the legal docs, process the pdfs to extract the required information and generate a word document report that can be downloaded.
 
-To download the report, click on `Actions` then on the top icon under `workflow runs`, scroll down and click on the link under `Artifacts`.
+To download the report, click on `Actions` then on the top icon under `workflow runs`, scroll down and click on the `processed_word_document` link under `Artifacts`.
