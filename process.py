@@ -1,8 +1,8 @@
 import os
 import zipfile
+import shutil  # ✅ Used to move files
 import pdfplumber
 from docx import Document
-from docx2txt import process as docx_extract  # Extracts text from .docx files
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF file."""
@@ -16,7 +16,8 @@ def extract_text_from_pdf(pdf_path):
 
 def extract_text_from_docx(docx_path):
     """Extract text from a Word (.docx) file."""
-    return docx_extract(docx_path).strip()
+    doc = Document(docx_path)
+    return "\n".join([para.text for para in doc.paragraphs])
 
 def find_zip_file(directory):
     """Find the first ZIP file in the given directory."""
@@ -26,9 +27,12 @@ def find_zip_file(directory):
     return None  # No ZIP file found
 
 def process_zip(zip_path, output_docx):
-    """Unzip, extract text from PDFs and Word docs, and save to a new Word document."""
+    """Unzip, extract text from PDFs and Word docs, save to a Word file, and move ZIP file."""
     output_folder = "unzipped_files"
+    processed_folder = "processed_files"  # ✅ Folder to move ZIP after processing
+
     os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(processed_folder, exist_ok=True)  # ✅ Ensure the processed folder exists
 
     # Unzip the files
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -61,6 +65,11 @@ def process_zip(zip_path, output_docx):
     # Save the final Word document
     doc.save(output_docx)
     print(f"Word document saved: {os.path.abspath(output_docx)}")
+
+    # ✅ Move the ZIP file to the processed folder
+    processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
+    shutil.move(zip_path, processed_zip_path)
+    print(f"Moved ZIP file to: {processed_zip_path}")
 
 # ✅ Automatically find the ZIP file in the "input_files" folder
 input_folder = "input_files"
