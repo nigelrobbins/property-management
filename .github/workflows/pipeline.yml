@@ -51,6 +51,7 @@ jobs:
           PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # Use stored variable
           pwd
           ls
+          ls processed_files
           git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
           git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push
