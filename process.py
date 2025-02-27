@@ -86,6 +86,8 @@ def process_zip(zip_path, output_docx):
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
     print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
+    
+    move_and_commit_zip(zip_path, processed_zip_path)
 
     # ✅ Move ZIP file after processing
     processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
@@ -97,7 +99,6 @@ def process_zip(zip_path, output_docx):
         print(f"✅ Successfully moved ZIP file to: {processed_zip_path}")
     else:
         print(f"❌ ERROR: Failed to move ZIP file.")
-    move_and_commit_zip(zip_path, processed_zip_path)
 
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
