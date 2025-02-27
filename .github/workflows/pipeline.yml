@@ -56,4 +56,4 @@ jobs:
           git status
           git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
