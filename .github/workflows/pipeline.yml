@@ -47,7 +47,6 @@ jobs:
 
       - name: Push changes back to the repo
         run: |
-          ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)  # Find the latest ZIP file
           PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # New location
 
           git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
