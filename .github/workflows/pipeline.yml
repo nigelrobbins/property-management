@@ -37,8 +37,10 @@ jobs:
         with:
           name: processed_word_document_and_zip
           path: |
-            input_files/$(basename $ZIP_FILE)
+            input_files/*.zip
             output_files/processed_doc.docx
+            input_files/$(basename $ZIP_FILE)
+            ${{ env.ZIP_FILE }}  # Ensure ZIP file is explicitly included
 
       - name: Setup Git
         run: |
