@@ -36,3 +36,19 @@ jobs:
         with:
           name: processed_word_document
           path: output_files/processed_doc.docx
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Run Processing Script
+        run: python process.py  # Your script must include the Git push command
+
+      - name: Push changes back to the repo
+        run: |
+          git add .
+          git commit -m "Moved processed ZIP to processed_files"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
