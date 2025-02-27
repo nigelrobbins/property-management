@@ -49,15 +49,11 @@ jobs:
       - name: Push changes back to the repo
         run: |
           PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # Use stored variable
-          pwd
-          echo ls
-          echo ls processed_files
           ls -l input_files
-          echo PROCESSED_ZIP=$PROCESSED_ZIP
-          echo git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
-          git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
+          mkdir -p processed_files
+          git mv input_files/$(basename $ZIP_FILE) processed_files/$(basename $ZIP_FILE)
+          git commit -m "Moved input_files/$(basename $ZIP_FILE) to processed_files/$(basename $ZIP_FILE)"
           git status
-          git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

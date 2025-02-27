@@ -89,7 +89,7 @@ def process_zip(zip_path, output_docx):
     
     # ✅ Move ZIP file after processing
     processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-    move_and_commit_zip(zip_path, processed_folder)
+    #move_and_commit_zip(zip_path, processed_folder)
 
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
