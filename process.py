@@ -89,7 +89,7 @@ def process_zip(zip_path, output_docx):
     
     # ✅ Move ZIP file after processing
     processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-    move_and_commit_zip(zip_path, processed_zip_path)
+    move_and_commit_zip(zip_path, processed_folder)
 
     print(f"🔄 Moving ZIP file to: {processed_zip_path}")
     shutil.move(zip_path, processed_zip_path)
