@@ -39,7 +39,7 @@ jobs:
           name: processed_word_document_and_zip
           path: |
             echo ZIP_FILE=$ZIP_FILE
-            input_files/$(basename $ZIP_FILE)
+            $ZIP_FILE
             output_files/processed_doc.docx
 
       - name: Setup Git
