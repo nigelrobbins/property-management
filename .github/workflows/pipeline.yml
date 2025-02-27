@@ -26,6 +26,7 @@ jobs:
         run: |
           ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)
           echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV  # Store ZIP_FILE for later steps
+          cat $GITHUB_ENV
           unzip "$ZIP_FILE" -d input_files/unzipped/
         shell: bash
 
