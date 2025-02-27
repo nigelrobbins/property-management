@@ -39,7 +39,6 @@ jobs:
           path: |
             input_files/*.zip
             output_files/processed_doc.docx
-            input_files/$(basename $ZIP_FILE)
 
       - name: Setup Git
         run: |
