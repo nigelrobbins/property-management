@@ -54,6 +54,6 @@ jobs:
           git mv input_files/$(basename $ZIP_FILE) processed_files/$(basename $ZIP_FILE)
           git commit -m "Moved input_files/$(basename $ZIP_FILE) to processed_files/$(basename $ZIP_FILE)"
           git status
-          git push
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
