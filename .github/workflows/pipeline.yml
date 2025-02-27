@@ -52,6 +52,7 @@ jobs:
           pwd
           ls
           ls processed_files
+          ls input_files
           echo PROCESSED_ZIP=$PROCESSED_ZIP
           echo git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
           git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
