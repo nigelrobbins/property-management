@@ -47,8 +47,12 @@ jobs:
 
       - name: Push changes back to the repo
         run: |
-          git add .
-          git commit -m "Moved processed ZIP to processed_files"
+          ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)  # Find the latest ZIP file
+          PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # New location
+
+          git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
+          git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
