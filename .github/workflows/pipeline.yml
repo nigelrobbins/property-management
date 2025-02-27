@@ -25,6 +25,7 @@ jobs:
       - name: Find and Unzip Latest ZIP File
         run: |
           ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)
+          echo "ZIP_FILE=$ZIP_FILE" >> $GITHUB_ENV  # Store ZIP_FILE for later steps
           unzip "$ZIP_FILE" -d input_files/unzipped/
         shell: bash
 
@@ -47,8 +48,7 @@ jobs:
 
       - name: Push changes back to the repo
         run: |
-          PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # New location
-
+          PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # Use stored variable
           git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
           git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push
