@@ -35,6 +35,7 @@ jobs:
       - name: Check if ZIP file exists before uploading
         run: |
           echo "🔍 Checking ZIP file before uploading..."
+          ls
           ls -l input_files/
           ls -l ${{ env.ZIP_FILE }} || echo "❌ ZIP file missing!"
 
