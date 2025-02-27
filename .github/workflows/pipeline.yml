@@ -40,7 +40,6 @@ jobs:
             input_files/*.zip
             output_files/processed_doc.docx
             input_files/$(basename $ZIP_FILE)
-            ${{ env.ZIP_FILE }}  # Ensure ZIP file is explicitly included
 
       - name: Setup Git
         run: |
