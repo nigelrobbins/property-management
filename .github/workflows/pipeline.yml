@@ -48,12 +48,10 @@ jobs:
 
       - name: Push changes back to the repo
         run: |
-          PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"  # Use stored variable
-          ls -l input_files
-          mkdir -p processed_files
-          git mv input_files/$(basename $ZIP_FILE) processed_files/$(basename $ZIP_FILE)
-          git commit -m "Moved input_files/$(basename $ZIP_FILE) to processed_files/$(basename $ZIP_FILE)"
-          git status
+          PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"
+          
+          git add "$PROCESSED_ZIP"  # Add only the moved ZIP file
+          git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:main
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
