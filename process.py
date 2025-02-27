@@ -91,14 +91,6 @@ def process_zip(zip_path, output_docx):
     processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
     move_and_commit_zip(zip_path, processed_folder)
 
-    print(f"🔄 Moving ZIP file to: {processed_zip_path}")
-    shutil.move(zip_path, processed_zip_path)
-
-    if os.path.exists(processed_zip_path):
-        print(f"✅ Successfully moved ZIP file to: {processed_zip_path}")
-    else:
-        print(f"❌ ERROR: Failed to move ZIP file.")
-
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
 zip_file_path = find_zip_file(input_folder)
