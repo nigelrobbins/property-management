@@ -32,15 +32,11 @@ jobs:
       - name: Process PDFs and Create Word Doc
         run: python process.py
 
-      - name: Find and Unzip Latest ZIP File
+      - name: Debug: Check if ZIP file exists before uploading
         run: |
-          ZIP_FILE=$(ls -t input_files/*.zip | head -n 1)
-          if [[ -z "$ZIP_FILE" ]]; then
-            echo "❌ No ZIP file found!"
-            exit 1
-          fi
-          echo "📂 Found ZIP: $ZIP_FILE"
-        shell: bash
+          echo "🔍 Checking ZIP file before uploading..."
+          ls -l input_files/
+          ls -l ${{ env.ZIP_FILE }} || echo "❌ ZIP file missing!"
 
       - name: Upload Processed Word Document and Original ZIP
         uses: actions/upload-artifact@v4
