@@ -32,22 +32,13 @@ jobs:
       - name: Process PDFs and Create Word Doc
         run: python process.py
 
-      - name: Check if ZIP file exists before uploading
-        run: |
-          echo "🔍 Checking ZIP file before uploading..."
-          ls
-          ls -l input_files/
-          ls -l ${{ env.ZIP_FILE }} || echo "❌ ZIP file missing!"
-
       - name: Upload Processed Word Document and Original ZIP
         uses: actions/upload-artifact@v4
         with:
           name: processed_word_document_and_zip
           path: |
-            input_files/*.zip
-            output_files/processed_doc.docx
             input_files/$(basename $ZIP_FILE)
-            ${{ env.ZIP_FILE }}  # Ensure ZIP file is explicitly included
+            output_files/processed_doc.docx
 
       - name: Setup Git
         run: |
