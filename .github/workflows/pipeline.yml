@@ -32,7 +32,7 @@ jobs:
       - name: Process PDFs and Create Word Doc
         run: python process.py
 
-      - name: Debug: Check if ZIP file exists before uploading
+      - name: Check if ZIP file exists before uploading
         run: |
           echo "🔍 Checking ZIP file before uploading..."
           ls -l input_files/
