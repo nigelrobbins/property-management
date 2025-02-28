@@ -53,7 +53,12 @@ jobs:
         run: |
           PROCESSED_ZIP="processed_files/$(basename $ZIP_FILE)"
           ls -l input_files
-          mkdir -p processed_files          
+          mkdir -p processed_files
+          # Check if the ZIP file already exists and remove it if necessary
+          if [ -f "$PROCESSED_ZIP" ]; then
+              echo "⚠️ File already exists in processed_files. Removing..."
+              git rm -f "$PROCESSED_ZIP"
+          fi
           git mv input_files/$(basename $ZIP_FILE) processed_files/$(basename $ZIP_FILE)
           git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
           git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:main
