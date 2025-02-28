@@ -43,6 +43,8 @@ def process_zip(zip_path, output_docx):
         zip_ref.extractall(output_folder)
 
     doc = Document()
+    
+    doc.add_paragraph(f"ZIP File: {zip_name}", style="Heading 1")
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
