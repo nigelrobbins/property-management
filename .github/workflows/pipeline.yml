@@ -41,13 +41,13 @@ jobs:
             input_files/*.zip
             output_files/processed_doc.docx
 
+      - name: Run Processing Script
+        run: python process.py
+
       - name: Setup Git
         run: |
           git config --global user.name "Nigel Robbins"
           git config --global user.email "nigel_robbins@hotmail.com"
-
-      - name: Run Processing Script
-        run: python process.py  # Your script must include the Git push command
 
       - name: Push changes back to the repo
         run: |
