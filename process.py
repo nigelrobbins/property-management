@@ -3,7 +3,6 @@ import zipfile
 import shutil
 import pdfplumber
 from docx import Document
-import subprocess  # ✅ Added for Git commands
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF file."""
@@ -26,27 +25,6 @@ def find_zip_file(directory):
         if file.endswith(".zip"):
             return os.path.join(directory, file)
     return None  # No ZIP file found
-
-def move_and_commit_zip(zip_path, processed_folder):
-    """Move ZIP file to processed folder and commit changes to GitHub repo."""
-    processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-
-    print(f"🔄 Moving ZIP file to: {processed_zip_path}")
-    shutil.move(zip_path, processed_zip_path)
-
-    if os.path.exists(processed_zip_path):
-        print(f"✅ Successfully moved ZIP file to: {processed_zip_path}")
-
-        # ✅ Commit and push changes to GitHub
-        print("🚀 Committing and pushing changes to GitHub...")
-        subprocess.run(["git", "config", "--global", "user.name", "github-actions"])
-        subprocess.run(["git", "config", "--global", "user.email", "github-actions@github.com"])
-        subprocess.run(["git", "add", processed_zip_path, zip_path])  # Track both old & new locations
-        subprocess.run(["git", "commit", "-m", f"Moved {os.path.basename(zip_path)} to processed_files"])
-        subprocess.run(["git", "push"])
-        print("✅ Changes pushed to GitHub.")
-    else:
-        print(f"❌ ERROR: Failed to move ZIP file.")
 
 def process_zip(zip_path, output_docx):
     """Unzip, extract text from PDFs and Word docs, save to a Word file, and move ZIP file."""
@@ -86,10 +64,6 @@ def process_zip(zip_path, output_docx):
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
     print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
-    
-    # ✅ Move ZIP file after processing
-    processed_zip_path = os.path.join(processed_folder, os.path.basename(zip_path))
-    #move_and_commit_zip(zip_path, processed_folder)
 
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
@@ -102,11 +76,3 @@ if zip_file_path:
     process_zip(zip_file_path, output_file)
 else:
     print("❌ No ZIP file found in 'input_files' folder.")
-
-
-
-
-
-
-# Example usage:
-
