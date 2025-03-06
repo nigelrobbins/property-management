@@ -3,15 +3,25 @@ import zipfile
 import shutil
 import pdfplumber
 from docx import Document
+import pytesseract
+from pdf2image import convert_from_path
+from PIL import Image
 
 def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF file."""
+    """Extract text from a PDF file, including scanned PDFs using OCR."""
     text = ""
+    
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             page_text = page.extract_text()
-            if page_text:
+            if page_text:  
                 text += page_text + "\n"
+            else:  
+                # Perform OCR if no text is detected
+                images = convert_from_path(pdf_path)  # Convert PDF pages to images
+                for img in images:
+                    text += pytesseract.image_to_string(img) + "\n"
+
     return text.strip()
 
 def extract_text_from_docx(docx_path):
