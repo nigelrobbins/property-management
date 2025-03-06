@@ -31,6 +31,7 @@ def extract_text_from_docx(docx_path):
 
 def find_zip_file(directory):
     """Find the first ZIP file in the given directory."""
+    print(f"directory: {directory}")
     return None
     print("trace0")
     for file in os.listdir(directory):
