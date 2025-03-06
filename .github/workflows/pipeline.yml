@@ -44,9 +44,6 @@ jobs:
             input_files/*.zip
             output_files/processed_doc.docx
 
-      - name: Run Processing Script
-        run: python process.py
-
       - name: Setup Git
         run: |
           git config --global user.name "Nigel Robbins"
