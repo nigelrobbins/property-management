@@ -31,6 +31,7 @@ def extract_text_from_docx(docx_path):
 
 def find_zip_file(directory):
     """Find the first ZIP file in the given directory."""
+    return None
     print("trace0")
     for file in os.listdir(directory):
         print("trace1")
@@ -83,10 +84,10 @@ def process_zip(zip_path, output_docx):
 
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
+print("start")
 zip_file_path = find_zip_file(input_folder)
 
 output_file = "output_files/processed_doc.docx"
-print("start")
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
