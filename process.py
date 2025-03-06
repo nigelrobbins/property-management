@@ -1,27 +1,35 @@
-import os
-import zipfile
-import pdfplumber
-from docx import Document
+import time
 import pytesseract
 from pdf2image import convert_from_path
-
-# Define the keyword to filter documents
-KEYWORD = "REPLIES TO STANDARD ENQUIRIES"
+import pdfplumber
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF file, including scanned PDFs using OCR."""
     text = ""
-    
+
+    print(f"📄 Processing PDF: {pdf_path}")
+
     with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
+        for i, page in enumerate(pdf.pages):
+            print(f"🔍 Extracting text from page {i+1} using pdfplumber...")
             page_text = page.extract_text()
+            
             if page_text:  
                 text += page_text + "\n"
             else:  
                 # Perform OCR if no text is detected
-                images = convert_from_path(pdf_path)
+                print(f"🖼️ No text found on page {i+1}, using OCR...")
+                images = convert_from_path(pdf_path, first_page=i+1, last_page=i+1)  # Convert only one page at a time
                 for img in images:
-                    text += pytesseract.image_to_string(img) + "\n"
+                    ocr_text = pytesseract.image_to_string(img)
+                    text += ocr_text + "\n"
+                    
+                    print(f"✅ OCR done for page {i+1}, extracted {len(ocr_text)} characters.")
+
+            # Stop processing if text contains the keyword
+            if "REPLIES TO STANDARD ENQUIRIES" in text:
+                print("🎯 Found keyword! Stopping early.")
+                break
 
     return text.strip()
 
@@ -39,21 +47,15 @@ def find_zip_file(directory):
 
 def process_zip(zip_path, output_docx):
     """Unzip, extract text from PDFs and Word docs that contain the keyword, then save to a Word file."""
-    output_folder = "unzipped_files"
-    os.makedirs(output_folder, exist_ok=True)
+    print(f"📂 Unzipping {zip_path}...")
 
-    if not os.path.exists(zip_path):
-        print(f"❌ ERROR: ZIP file does not exist: {zip_path}")
-        return
-
-    print(f"📂 Unzipping: {zip_path}")
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(output_folder)
+        zip_ref.extractall("unzipped_files")
 
-    doc = Document()
-    doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
+    print("✅ Unzipping complete. Processing files...")
 
-    found_matching_docs = False  # Track if any document contains the keyword
+    for file_name in os.listdir("unzipped_files"):
+        print(f"📄 Found file: {file_name}")
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
