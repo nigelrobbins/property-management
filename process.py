@@ -82,10 +82,11 @@ def process_zip(zip_path, output_docx):
 
 # ✅ Automatically find the ZIP file in "input_files"
 input_folder = "input_files"
+print("1")
 zip_file_path = find_zip_file(input_folder)
 
 output_file = "output_files/processed_doc.docx"
-print("start")
+print("2")
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
