@@ -85,7 +85,7 @@ input_folder = "input_files"
 zip_file_path = find_zip_file(input_folder)
 
 output_file = "output_files/processed_doc.docx"
-
+print("start")
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
