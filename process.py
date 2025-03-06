@@ -31,14 +31,27 @@ def extract_text_from_docx(docx_path):
 
 def find_zip_file(directory):
     """Find the first ZIP file in the given directory."""
-    print(f"directory: {directory}")
-    print("trace0")
-    for file in os.listdir(directory):
-        print("trace1")
-        if file.endswith(".zip"):
-            print("trace2")
-            return os.path.join(directory, file)
-    print("trace3")
+    print(f"📂 Checking directory: {directory}")
+
+    if not os.path.exists(directory):  # Ensure directory exists
+        print(f"❌ ERROR: Directory does not exist: {directory}")
+        return None
+
+    try:
+        files = os.listdir(directory)  # Get list of files
+        print(f"📄 Files in {directory}: {files}")  # Debugging output
+
+        for file in files:
+            print(f"🔍 Checking file: {file}")  # Debugging output
+            if file.endswith(".zip"):
+                print(f"✅ Found ZIP file: {file}")
+                return os.path.join(directory, file)
+
+    except Exception as e:
+        print(f"❌ ERROR while listing files: {e}")  # Catch unexpected errors
+        return None
+
+    print("❌ No ZIP file found in the directory.")
     return None  # No ZIP file found
 
 def process_zip(zip_path, output_docx):
