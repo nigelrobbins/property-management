@@ -108,7 +108,9 @@ def process_zip(zip_path, output_docx):
     message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
     with open(message_file, "r") as f:
         extra_message = f.read().strip()
-        doc.add_paragraph(extra_message, style="Italic")
+        
+        paragraph = doc.add_paragraph(extra_message)
+        paragraph.runs[0].italic = True  # Apply italic formatting
 
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
