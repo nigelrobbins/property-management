@@ -1,65 +1,75 @@
 import os
 import zipfile
-import shutil
 import pdfplumber
 from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 
-SEARCH_PHRASE = "REPLIES TO STANDARD ENQUIRIES"
+# Define directories
+CONFIG_DIR = "config"
+LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
+MESSAGE_IF_EXISTS_FILE = os.path.join(CONFIG_DIR, "message_if_exists.txt")
+MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(CONFIG_DIR, "message_if_not_exists.txt")
+
+# Ensure required directories exist
+os.makedirs(LOCAL_SEARCH_DIR, exist_ok=True)
+os.makedirs(CONFIG_DIR, exist_ok=True)
+
+# Ensure message files exist with default messages if missing
+if not os.path.exists(MESSAGE_IF_EXISTS_FILE):
+    with open(MESSAGE_IF_EXISTS_FILE, "w") as f:
+        f.write("This document contains REPLIES TO STANDARD ENQUIRIES.")
+
+if not os.path.exists(MESSAGE_IF_NOT_EXISTS_FILE):
+    with open(MESSAGE_IF_NOT_EXISTS_FILE, "w") as f:
+        f.write("No relevant replies found in this document.")
 
 def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF file, including scanned PDFs using OCR."""
+    """Extract text from a PDF, using OCR if needed."""
     text = ""
     
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             page_text = page.extract_text()
-            if page_text:  
+            if page_text:
                 text += page_text + "\n"
-            else:  
-                # Perform OCR if no text is detected
-                images = convert_from_path(pdf_path)  # Convert PDF pages to images
+            else:
+                images = convert_from_path(pdf_path)
                 for img in images:
                     text += pytesseract.image_to_string(img) + "\n"
 
     return text.strip()
 
 def extract_text_from_docx(docx_path):
-    """Extract text from a Word (.docx) file."""
+    """Extract text from a Word document."""
     doc = Document(docx_path)
     return "\n".join([para.text for para in doc.paragraphs])
 
 def find_zip_file(directory):
-    """Find the first ZIP file in the given directory."""
+    """Find the first ZIP file in the directory."""
     print(f"📂 Checking directory: {directory}")
 
-    if not os.path.exists(directory):  
+    if not os.path.exists(directory):
         print(f"❌ ERROR: Directory does not exist: {directory}")
         return None
 
     try:
-        files = os.listdir(directory)  
-        print(f"📄 Files in {directory}: {files}")
-
+        files = os.listdir(directory)
         for file in files:
-            print(f"🔍 Checking file: {file}")  
             if file.endswith(".zip"):
-                print(f"✅ Found ZIP file: {file}")
                 return os.path.join(directory, file)
-
     except Exception as e:
-        print(f"❌ ERROR while listing files: {e}")  
+        print(f"❌ ERROR while listing files: {e}")
         return None
 
-    print("❌ No ZIP file found in the directory.")
-    return None  
+    return None  # No ZIP file found
 
 def process_zip(zip_path, output_docx):
-    """Unzip, extract text from PDFs and Word docs, save to a Word file, and move ZIP file."""
+    """Extract text from PDFs and Word docs, filter by keyword, and save results."""
     output_folder = "unzipped_files"
     processed_folder = "processed_files"
+    keyword = "REPLIES TO STANDARD ENQUIRIES"
 
     os.makedirs(output_folder, exist_ok=True)
     os.makedirs(processed_folder, exist_ok=True)
@@ -74,8 +84,7 @@ def process_zip(zip_path, output_docx):
 
     doc = Document()
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
-    
-    processed_any = False  # Track if any document met the condition
+    found_relevant_doc = False
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
@@ -87,28 +96,26 @@ def process_zip(zip_path, output_docx):
             extracted_text = extract_text_from_docx(file_path)
             file_type = "Word Document"
         else:
-            continue  
+            continue
 
-        # Check if the required phrase is in the extracted text
-        if SEARCH_PHRASE in extracted_text:
-            print(f"✅ Processing {file_name} (contains required phrase)")
+        if keyword in extracted_text:
+            found_relevant_doc = True
             doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
             doc.add_paragraph(extracted_text)
             doc.add_page_break()
-            processed_any = True
-        else:
-            print(f"⏭ Skipping {file_name} (does not contain required phrase)")
 
-    if processed_any:
-        os.makedirs(os.path.dirname(output_docx), exist_ok=True)
-        doc.save(output_docx)
-        print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
-    else:
-        print("⚠️ No files contained the required phrase. No document was created.")
+    # Load appropriate message from file
+    message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
+    with open(message_file, "r") as f:
+        extra_message = f.read().strip()
+        doc.add_paragraph(extra_message, style="Italic")
 
-# ✅ Automatically find the ZIP file in "input_files"
+    os.makedirs(os.path.dirname(output_docx), exist_ok=True)
+    doc.save(output_docx)
+    print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
+
+# Automatically find ZIP file and process it
 input_folder = "input_files"
-print("start")
 zip_file_path = find_zip_file(input_folder)
 
 output_file = "output_files/processed_doc.docx"
