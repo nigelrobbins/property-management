@@ -9,8 +9,8 @@ from PIL import Image
 # Define directories
 CONFIG_DIR = "config"
 LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
-MESSAGE_IF_EXISTS_FILE = os.path.join(CONFIG_DIR, "message_if_exists.txt")
-MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(CONFIG_DIR, "message_if_not_exists.txt")
+MESSAGE_IF_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
+MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
 
 # Ensure required directories exist
 os.makedirs(LOCAL_SEARCH_DIR, exist_ok=True)
