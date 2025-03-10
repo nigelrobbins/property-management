@@ -4,4 +4,3 @@ docx2txt
 pytesseract
 pillow
 pdf2image
-

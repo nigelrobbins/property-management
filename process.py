@@ -10,7 +10,7 @@ from PIL import Image
 # Define directories
 CONFIG_DIR = "config"
 LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
-PATTERNS_FILE = os.path.join(CONFIG_DIR, "patterns.txt")
+PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns.txt")
 MESSAGE_IF_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
 MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
 
@@ -36,7 +36,7 @@ if not os.path.exists(PATTERNS_FILE):
 def load_patterns():
     """Load regex patterns from config file."""
     if os.path.exists(PATTERNS_FILE):
-        with open(PATTERNS_FILE, "r", encoding="utf-8") as f:
+        with open(PATTERNS_FILE, "r") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
@@ -60,19 +60,13 @@ def extract_text_from_docx(docx_path):
     return "\n".join([para.text for para in doc.paragraphs])
 
 def extract_matching_sections(text, patterns):
-    """Extract text sections matching given regex patterns."""
-    matched_texts = []
-    
+    """Extract relevant sections based on multiple regex patterns."""
+    matched_sections = []
     for pattern in patterns:
-        print(f"🔍 Using pattern: {repr(pattern)}")  # Print raw pattern for debugging
-        try:
-            matches = re.findall(pattern, text, re.DOTALL)
-            print(f"✅ Matches found: {len(matches)}")
-            matched_texts.extend(matches)
-        except re.error as e:
-            print(f"❌ Regex error in pattern: {repr(pattern)}\n  ➝ {e}")
+        matches = re.findall(pattern, text, re.DOTALL)  # Find all matching sections
+        matched_sections.extend(matches)
     
-    return matched_texts
+    return matched_sections
 
 def process_zip(zip_path, output_docx):
     """Extract and process only relevant sections from documents."""
@@ -107,15 +101,6 @@ def process_zip(zip_path, output_docx):
         else:
             continue
 
-        matched_sections = extract_matching_sections(extracted_text, patterns)
-
-        if matched_sections:
-            found_relevant_doc = True
-            doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-            for section in matched_sections:
-                doc.add_paragraph(section)
-                doc.add_page_break()
-
     # Load appropriate message from file
     message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
     with open(message_file, "r") as f:
@@ -123,6 +108,16 @@ def process_zip(zip_path, output_docx):
         print(f"✅ extra_message: {extra_message}")
         paragraph = doc.add_paragraph(extra_message)
         paragraph.runs[0].italic = True
+
+        matched_sections = extract_matching_sections(extracted_text, patterns)
+
+        if matched_sections:
+            found_relevant_doc = True
+            doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+            for section in matched_sections:
+                print(f"✅ section: {section}")
+                doc.add_paragraph(section)
+                doc.add_page_break()
 
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
@@ -137,24 +132,10 @@ for file in os.listdir(input_folder):
         zip_file_path = os.path.join(input_folder, file)
         break
 
-patterns = [
-    r"A Conservation Area consent.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)",
-    r"A Planning Permission.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)",
-    r"Radon Gas.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)"
-]
-
-text = "Sample text with A Conservation Area consent details...\nNEXT SECTION\nMore text."
-
-for pattern in patterns:
-    try:
-        matches = re.findall(pattern, text, re.DOTALL)
-        print(f"✅ Pattern works: {pattern}")
-    except re.error as e:
-        print(f"❌ Regex error in pattern: {pattern}\n  ➝ {e}")
-
 output_file = "output_files/processed_doc.docx"
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file)
 else:
     print("❌ No ZIP file found in 'input_files' folder.")
+    
