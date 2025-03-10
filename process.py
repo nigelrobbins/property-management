@@ -131,6 +131,21 @@ for file in os.listdir(input_folder):
         zip_file_path = os.path.join(input_folder, file)
         break
 
+patterns = [
+    r"A Conservation Area consent.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)",
+    r"A Planning Permission.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)",
+    r"Radon Gas.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)"
+]
+
+text = "Sample text with A Conservation Area consent details...\nNEXT SECTION\nMore text."
+
+for pattern in patterns:
+    try:
+        matches = re.findall(pattern, text, re.DOTALL)
+        print(f"✅ Pattern works: {pattern}")
+    except re.error as e:
+        print(f"❌ Regex error in pattern: {pattern}\n  ➝ {e}")
+
 output_file = "output_files/processed_doc.docx"
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
