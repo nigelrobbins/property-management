@@ -107,7 +107,6 @@ def process_zip(zip_path, output_docx):
             found_relevant_doc = True
             doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
             for section in matched_sections:
-                print(f"✅ section: {section}")
                 doc.add_paragraph(section)
                 doc.add_page_break()
 
