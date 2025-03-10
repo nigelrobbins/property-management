@@ -101,15 +101,6 @@ def process_zip(zip_path, output_docx):
         else:
             continue
 
-        matched_sections = extract_matching_sections(extracted_text, patterns)
-
-        if matched_sections:
-            found_relevant_doc = True
-            doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-            for section in matched_sections:
-                doc.add_paragraph(section)
-                doc.add_page_break()
-
     # Load appropriate message from file
     message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
     with open(message_file, "r") as f:
@@ -117,6 +108,16 @@ def process_zip(zip_path, output_docx):
         print(f"✅ extra_message: {extra_message}")
         paragraph = doc.add_paragraph(extra_message)
         paragraph.runs[0].italic = True
+
+        matched_sections = extract_matching_sections(extracted_text, patterns)
+
+        if matched_sections:
+            found_relevant_doc = True
+            doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+            for section in matched_sections:
+                print(f"✅ section: {section}")
+                doc.add_paragraph(section)
+                doc.add_page_break()
 
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
