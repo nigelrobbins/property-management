@@ -36,7 +36,7 @@ if not os.path.exists(PATTERNS_FILE):
 def load_patterns():
     """Load regex patterns from config file."""
     if os.path.exists(PATTERNS_FILE):
-        with open(PATTERNS_FILE, "r") as f:
+        with open(PATTERNS_FILE, "r", encoding="utf-8") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
@@ -60,13 +60,19 @@ def extract_text_from_docx(docx_path):
     return "\n".join([para.text for para in doc.paragraphs])
 
 def extract_matching_sections(text, patterns):
-    """Extract relevant sections based on multiple regex patterns."""
-    matched_sections = []
-    for pattern in patterns:
-        matches = re.findall(pattern, text, re.DOTALL)  # Find all matching sections
-        matched_sections.extend(matches)
+    """Extract text sections matching given regex patterns."""
+    matched_texts = []
     
-    return matched_sections
+    for pattern in patterns:
+        print(f"🔍 Using pattern: {repr(pattern)}")  # Print raw pattern for debugging
+        try:
+            matches = re.findall(pattern, text, re.DOTALL)
+            print(f"✅ Matches found: {len(matches)}")
+            matched_texts.extend(matches)
+        except re.error as e:
+            print(f"❌ Regex error in pattern: {repr(pattern)}\n  ➝ {e}")
+    
+    return matched_texts
 
 def process_zip(zip_path, output_docx):
     """Extract and process only relevant sections from documents."""
