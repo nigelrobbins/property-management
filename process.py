@@ -75,9 +75,8 @@ def extract_text_from_pdf(pdf_path):
             if page_text:
                 text += page_text + "\n"
             else:
-                images = convert_from_path(pdf_path)
-                for img in images:
-                    text += pytesseract.image_to_string(img) + "\n"
+                result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
+                return result.stdout
     return text.strip()
 
 @timed_function
