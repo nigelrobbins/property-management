@@ -36,7 +36,6 @@ jobs:
       - name: Process PDFs and Create Word Doc
         run: |
           echo "Processing PDFs and creating Word document..."
-          cat -A config/local-search/patterns.txt
           python process.py
 
       - name: Upload Processed Word Document and Original ZIP

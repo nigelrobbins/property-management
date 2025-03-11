@@ -31,7 +31,6 @@ if not os.path.exists(MESSAGE_IF_NOT_EXISTS_FILE):
 if not os.path.exists(PATTERNS_FILE):
     with open(PATTERNS_FILE, "w") as f:
         f.write("REPLIES TO STANDARD ENQUIRIES.*?(?=\n[A-Z ]+\n|\Z)\n")
-        f.write("ADDITIONAL INFORMATION.*?(?=\n[A-Z ]+\n|\Z)\n")
 
 def load_patterns():
     """Load regex patterns from config file."""
@@ -69,12 +68,10 @@ def extract_matching_sections(text, patterns):
     return matched_sections
 
 def process_zip(zip_path, output_docx):
-    """Extract and process only relevant sections from documents."""
+    """Extract and process only relevant sections from documents that contain 'REPLIES TO STANDARD ENQUIRIES'."""
     output_folder = "unzipped_files"
-    processed_folder = "processed_files"
 
     os.makedirs(output_folder, exist_ok=True)
-    os.makedirs(processed_folder, exist_ok=True)
 
     if not os.path.exists(zip_path):
         print(f"❌ ERROR: ZIP file does not exist: {zip_path}")
@@ -101,6 +98,17 @@ def process_zip(zip_path, output_docx):
         else:
             continue
 
+        # Check if the document contains "REPLIES TO STANDARD ENQUIRIES"
+        if "REPLIES TO STANDARD ENQUIRIES" in extracted_text:
+            matched_sections = extract_matching_sections(extracted_text, patterns)
+
+            if matched_sections:
+                found_relevant_doc = True
+                doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+                for section in matched_sections:
+                    doc.add_paragraph(section)
+                    doc.add_page_break()
+
     # Load appropriate message from file
     message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
     with open(message_file, "r") as f:
@@ -108,16 +116,6 @@ def process_zip(zip_path, output_docx):
         print(f"✅ extra_message: {extra_message}")
         paragraph = doc.add_paragraph(extra_message)
         paragraph.runs[0].italic = True
-
-        matched_sections = extract_matching_sections(extracted_text, patterns)
-
-        if matched_sections:
-            found_relevant_doc = True
-            doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-            for section in matched_sections:
-                print(f"✅ section: {section}")
-                doc.add_paragraph(section)
-                doc.add_page_break()
 
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
@@ -138,4 +136,3 @@ if zip_file_path:
     process_zip(zip_file_path, output_file)
 else:
     print("❌ No ZIP file found in 'input_files' folder.")
-    
