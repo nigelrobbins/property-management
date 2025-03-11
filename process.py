@@ -68,17 +68,40 @@ def load_filter_text():
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF, using OCR if needed."""
+@timed_function
+def extract_text_from_pdf(pdf_path):
+    """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
+
+    # Try using pdftotext first
+    result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
+    text = result.stdout.strip()
+
+    if text:
+        print(f"✅ Extracted text using pdftotext: {text[:50]}...")
+        return text  # If pdftotext works, return immediately
+
+    print("⚠️ pdftotext failed, trying pdfplumber...")
+
+    # Fallback to pdfplumber
     text = ""
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             page_text = page.extract_text()
             if page_text:
                 text += page_text + "\n"
-            else:
-                print(f"🔍 Performing OCR on page {page.page_number}...")
-                result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
-                return result.stdout
+
+    if text:
+        print(f"✅ Extracted text using pdfplumber: {text[:50]}...")
+        return text.strip()  # If pdfplumber works, return immediately
+
+    print("⚠️ pdfplumber failed, performing OCR...")
+
+    # Final fallback: Use OCR (slow)
+    images = convert_from_path(pdf_path)
+    for img in images:
+        text += pytesseract.image_to_string(img) + "\n"
+
+    print(f"✅ Extracted text using OCR: {text[:50]}...")
     return text.strip()
 
 @timed_function
