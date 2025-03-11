@@ -119,6 +119,7 @@ def process_zip(zip_path, output_docx):
 
     patterns = load_patterns()
     filter_text = load_filter_text()
+    print(f"🔍 Loaded {len(patterns)} patterns and filter text: {filter_text}")
     found_relevant_doc = False
 
     for file_name in sorted(os.listdir(output_folder)):
@@ -141,7 +142,7 @@ def process_zip(zip_path, output_docx):
 
         # Check if the document contains the filter text
         if filter_text and filter_text in extracted_text:
-            print(f"🔍 Filter text found in {file_name}")
+
             matched_sections = extract_matching_sections(extracted_text, patterns)
 
             if matched_sections:
