@@ -189,24 +189,23 @@ def process_zip(zip_path, output_docx):
                     print(f"✅ Adding section: {section[:30]}...")
                     doc.add_paragraph(section)
                     doc.add_page_break()
+            print(f"✅ SLook at mandatory_patterns: {mandatory_patterns}")
+            matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
+            if matched_sections:
+                found_relevant_doc = True
+                doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+                
+                for section in matched_sections:
+                    if found_relevant_doc and "None" in section:
+                        print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
+                        continue  # Skip adding this section if it contains 'None'
+
+                    print(f"✅ Adding section: {section[:30]}...")
+                    doc.add_paragraph(section)
+                    doc.add_page_break()
             else:
                 print("❌ No relevant sections found in this document.")
-                matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
-                if matched_sections:
-                    found_relevant_doc = True
-                    doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-                    
-                    for section in matched_sections:
-                        if found_relevant_doc and "None" in section:
-                            print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
-                            continue  # Skip adding this section if it contains 'None'
-
-                        print(f"✅ Adding section: {section[:30]}...")
-                        doc.add_paragraph(section)
-                        doc.add_page_break()
-                else:
-                    print("❌ No relevant sections found in this document.")
-                    doc.add_paragraph(f"🔹 Section missing for mandatory pattern: {pattern}")
+                doc.add_paragraph(f"🔹 Section missing for mandatory pattern: {pattern}")
 
     # Load appropriate message from file and write it first
     message_file = MESSAGE_IF_EXISTS if found_relevant_doc else MESSAGE_IF_NOT_EXISTS
