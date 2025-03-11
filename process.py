@@ -139,6 +139,7 @@ def process_zip(zip_path, output_docx):
 
         process_end = time.time()
         print(f"⏱ Processing {file_name} took {process_end - process_start:.4f} seconds")
+        print(f"🔍 Extracted text: {extracted_text[:50]}...")
 
         # Check if the document contains the filter text
         if filter_text and filter_text in extracted_text:
