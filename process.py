@@ -13,6 +13,7 @@ LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
 PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns.txt")
 MESSAGE_IF_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
 MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
+FILTER_TEXT_FILE = os.path.join(LOCAL_SEARCH_DIR, "filter_text.txt")
 
 # Ensure required directories exist
 os.makedirs(LOCAL_SEARCH_DIR, exist_ok=True)
@@ -32,12 +33,24 @@ if not os.path.exists(PATTERNS_FILE):
     with open(PATTERNS_FILE, "w") as f:
         f.write("REPLIES TO STANDARD ENQUIRIES.*?(?=\n[A-Z ]+\n|\Z)\n")
 
+# Ensure filter text file exists with the default keyword
+if not os.path.exists(FILTER_TEXT_FILE):
+    with open(FILTER_TEXT_FILE, "w") as f:
+        f.write("REPLIES TO STANDARD ENQUIRIES")
+
 def load_patterns():
     """Load regex patterns from config file."""
     if os.path.exists(PATTERNS_FILE):
         with open(PATTERNS_FILE, "r") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
+
+def load_filter_text():
+    """Load the filter text from the config file."""
+    if os.path.exists(FILTER_TEXT_FILE):
+        with open(FILTER_TEXT_FILE, "r") as f:
+            return f.read().strip()
+    return ""
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using OCR if needed."""
@@ -68,9 +81,8 @@ def extract_matching_sections(text, patterns):
     return matched_sections
 
 def process_zip(zip_path, output_docx):
-    """Extract and process only relevant sections from documents that contain 'REPLIES TO STANDARD ENQUIRIES'."""
+    """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
-
     os.makedirs(output_folder, exist_ok=True)
 
     if not os.path.exists(zip_path):
@@ -85,6 +97,7 @@ def process_zip(zip_path, output_docx):
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
     found_relevant_doc = False
     patterns = load_patterns()
+    filter_text = load_filter_text()
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
@@ -98,8 +111,8 @@ def process_zip(zip_path, output_docx):
         else:
             continue
 
-        # Check if the document contains "REPLIES TO STANDARD ENQUIRIES"
-        if "REPLIES TO STANDARD ENQUIRIES" in extracted_text:
+        # Check if the document contains the filter text
+        if filter_text and filter_text in extracted_text:
             matched_sections = extract_matching_sections(extracted_text, patterns)
 
             if matched_sections:
