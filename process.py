@@ -190,6 +190,7 @@ def process_zip(zip_path, output_docx):
                     doc.add_paragraph(section)
                     doc.add_page_break()
             else:
+                print("❌ No relevant sections found in this document.")
                 matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
                 if matched_sections:
                     found_relevant_doc = True
