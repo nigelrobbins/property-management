@@ -129,7 +129,7 @@ def extract_matching_sections(text, patterns):
 
 @timed_function
 def process_zip(zip_path, output_docx):
-    """Extract and process only relevant sections from documents."""
+    """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
 
@@ -138,18 +138,26 @@ def process_zip(zip_path, output_docx):
         return
 
     print(f"📂 Unzipping: {zip_path}")
+    unzip_start = time.time()
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(output_folder)
+    unzip_end = time.time()
+    print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
     doc = Document()
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
 
     patterns = load_patterns()
     mandatory_patterns = load_mandatory_patterns()
+    filter_text = load_filter_text()
+    print(f"🔍 Loaded {len(patterns)} patterns and filter text: {filter_text}")
     found_relevant_doc = False
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
+
+        print(f"📄 Processing {file_name}...")
+        process_start = time.time()
 
         if file_name.endswith(".pdf"):
             extracted_text = extract_text_from_pdf(file_path)
@@ -160,29 +168,58 @@ def process_zip(zip_path, output_docx):
         else:
             continue
 
-        doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+        process_end = time.time()
+        print(f"⏱ Processing {file_name} took {process_end - process_start:.4f} seconds")
+        print(f"🔍 Extracted text: {extracted_text[:50]}...")
 
-        for pattern in patterns:
-            matches = re.findall(pattern, extracted_text, re.DOTALL)
+        # Check if the document contains the filter text
+        if filter_text and filter_text in extracted_text:
 
-            if matches:
+            matched_sections = extract_matching_sections(extracted_text, patterns)
+
+            if matched_sections:
                 found_relevant_doc = True
-                for section in matches:
+                doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+                
+                for section in matched_sections:
+                    if found_relevant_doc and "None" in section:
+                        print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
+                        continue  # Skip adding this section if it contains 'None'
+
+                    print(f"✅ Adding section: {section[:30]}...")
                     doc.add_paragraph(section)
                     doc.add_page_break()
-            elif pattern in mandatory_patterns:
-                # If no match, but pattern is mandatory, add a placeholder or custom message
-                found_relevant_doc = True
-                doc.add_paragraph(f"🔹 Section missing for mandatory pattern: {pattern}")
+            else:
+                matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
+                if matched_sections:
+                    found_relevant_doc = True
+                    doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+                    
+                    for section in matched_sections:
+                        if found_relevant_doc and "None" in section:
+                            print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
+                            continue  # Skip adding this section if it contains 'None'
 
-    # Load appropriate message
+                        print(f"✅ Adding section: {section[:30]}...")
+                        doc.add_paragraph(section)
+                        doc.add_page_break()
+                else:
+                    print("❌ No relevant sections found in this document.")
+                    doc.add_paragraph(f"🔹 Section missing for mandatory pattern: {pattern}")
+
+    # Load appropriate message from file and write it first
     message_file = MESSAGE_IF_EXISTS if found_relevant_doc else MESSAGE_IF_NOT_EXISTS
     with open(message_file, "r") as f:
         extra_message = f.read().strip()
-        doc.add_paragraph(extra_message).italic = True
+        print(f"✅ extra_message: {extra_message}")
+        paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
+        paragraph.insert_paragraph_before(extra_message)
+        paragraph.runs[0].italic = True
 
+    save_start = time.time()
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
+    save_end = time.time()
     print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
     print(f"⏱ Saving document took {save_end - save_start:.4f} seconds")
 
