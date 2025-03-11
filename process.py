@@ -11,8 +11,8 @@ from PIL import Image
 CONFIG_DIR = "config"
 LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
 PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns.txt")
-MESSAGE_IF_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
-MESSAGE_IF_NOT_EXISTS_FILE = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
+MESSAGE_IF_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
+MESSAGE_IF_NOT_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
 FILTER_TEXT_FILE = os.path.join(LOCAL_SEARCH_DIR, "filter_text.txt")
 
 # Ensure required directories exist
@@ -20,12 +20,12 @@ os.makedirs(LOCAL_SEARCH_DIR, exist_ok=True)
 os.makedirs(CONFIG_DIR, exist_ok=True)
 
 # Ensure message files exist with default messages if missing
-if not os.path.exists(MESSAGE_IF_EXISTS_FILE):
-    with open(MESSAGE_IF_EXISTS_FILE, "w") as f:
+if not os.path.exists(MESSAGE_IF_EXISTS):
+    with open(MESSAGE_IF_EXISTS, "w") as f:
         f.write("This document contains relevant information.")
 
-if not os.path.exists(MESSAGE_IF_NOT_EXISTS_FILE):
-    with open(MESSAGE_IF_NOT_EXISTS_FILE, "w") as f:
+if not os.path.exists(MESSAGE_IF_NOT_EXISTS):
+    with open(MESSAGE_IF_NOT_EXISTS, "w") as f:
         f.write("No relevant information found in this document.")
 
 # Ensure patterns file exists with default patterns
@@ -124,7 +124,7 @@ def process_zip(zip_path, output_docx):
                     doc.add_page_break()
 
     # Load appropriate message from file and write it first
-    message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
+    message_file = MESSAGE_IF_EXISTS if found_relevant_doc else MESSAGE_IF_NOT_EXISTS
     with open(message_file, "r") as f:
         extra_message = f.read().strip()
         print(f"✅ extra_message: {extra_message}")
