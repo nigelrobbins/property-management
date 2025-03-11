@@ -7,6 +7,7 @@ from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
+import subprocess
 
 # Define directories
 CONFIG_DIR = "config"
