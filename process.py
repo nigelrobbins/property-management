@@ -190,7 +190,7 @@ def process_zip(zip_path, output_docx):
                     print(f"✅ Adding section: {section[:30]}...")
                     doc.add_paragraph(section)
                     doc.add_page_break()
-            print(f"✅ Check mandatory_patterns: {mandatory_patterns}")
+            print(f"✅ Look or mandatory_patterns: {mandatory_patterns}")
             matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
             if matched_sections:
                 found_relevant_doc = True
