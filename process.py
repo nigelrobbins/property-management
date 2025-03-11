@@ -154,10 +154,14 @@ def process_zip(zip_path, output_docx):
     with open(message_file, "r") as f:
         extra_message = f.read().strip()
         print(f"✅ extra_message: {extra_message}")
-        paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
-        paragraph.insert_paragraph_before(extra_message)
-        paragraph.runs[0].italic = True
-
+        # Only add the message if it's not "None" when MESSAGE_IF_EXISTS is used
+        if not (found_relevant_doc and "None" in extra_message):
+            print(f"✅ Adding extra message: {extra_message}")
+            paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
+            paragraph.insert_paragraph_before(extra_message)
+            paragraph.runs[0].italic = True
+        else:
+            print("⚠️ Skipping extra message due to 'None' content.")
     save_start = time.time()
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
