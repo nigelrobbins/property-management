@@ -141,6 +141,7 @@ def process_zip(zip_path, output_docx):
 
         # Check if the document contains the filter text
         if filter_text and filter_text in extracted_text:
+            print(f"🔍 Filter text found in {file_name}")
             matched_sections = extract_matching_sections(extracted_text, patterns)
 
             if matched_sections:
