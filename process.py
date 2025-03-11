@@ -92,7 +92,7 @@ def extract_matching_sections(text, patterns):
     """Extract relevant sections based on multiple regex patterns."""
     matched_sections = []
     for pattern in ".*":
-    for pattern in patterns:
+    #for pattern in patterns:
         matches = re.findall(pattern, text, re.DOTALL)  # Find all matching sections
         matched_sections.extend(matches)
     
