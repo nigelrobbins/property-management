@@ -76,6 +76,7 @@ def extract_text_from_pdf(pdf_path):
             if page_text:
                 text += page_text + "\n"
             else:
+                print(f"🔍 Performing OCR on page {page.page_number}...")
                 result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
                 return result.stdout
     return text.strip()
