@@ -2,6 +2,7 @@ import os
 import zipfile
 import pdfplumber
 import re
+import time
 from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
@@ -38,6 +39,17 @@ if not os.path.exists(FILTER_TEXT_FILE):
     with open(FILTER_TEXT_FILE, "w") as f:
         f.write("REPLIES TO STANDARD ENQUIRIES")
 
+def timed_function(func):
+    """Decorator to measure function execution time."""
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"⏱ {func.__name__} took {end_time - start_time:.4f} seconds")
+        return result
+    return wrapper
+
+@timed_function
 def load_patterns():
     """Load regex patterns from config file."""
     if os.path.exists(PATTERNS_FILE):
@@ -45,6 +57,7 @@ def load_patterns():
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
+@timed_function
 def load_filter_text():
     """Load the filter text from the config file."""
     if os.path.exists(FILTER_TEXT_FILE):
@@ -52,6 +65,7 @@ def load_filter_text():
             return f.read().strip()
     return ""
 
+@timed_function
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using OCR if needed."""
     text = ""
@@ -66,11 +80,13 @@ def extract_text_from_pdf(pdf_path):
                     text += pytesseract.image_to_string(img) + "\n"
     return text.strip()
 
+@timed_function
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""
     doc = Document(docx_path)
     return "\n".join([para.text for para in doc.paragraphs])
 
+@timed_function
 def extract_matching_sections(text, patterns):
     """Extract relevant sections based on multiple regex patterns."""
     matched_sections = []
@@ -80,6 +96,7 @@ def extract_matching_sections(text, patterns):
     
     return matched_sections
 
+@timed_function
 def process_zip(zip_path, output_docx):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
@@ -90,8 +107,11 @@ def process_zip(zip_path, output_docx):
         return
 
     print(f"📂 Unzipping: {zip_path}")
+    unzip_start = time.time()
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(output_folder)
+    unzip_end = time.time()
+    print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
     doc = Document()
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
@@ -103,6 +123,9 @@ def process_zip(zip_path, output_docx):
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
 
+        print(f"📄 Processing {file_name}...")
+        process_start = time.time()
+
         if file_name.endswith(".pdf"):
             extracted_text = extract_text_from_pdf(file_path)
             file_type = "PDF"
@@ -111,6 +134,9 @@ def process_zip(zip_path, output_docx):
             file_type = "Word Document"
         else:
             continue
+
+        process_end = time.time()
+        print(f"⏱ Processing {file_name} took {process_end - process_start:.4f} seconds")
 
         # Check if the document contains the filter text
         if filter_text and filter_text in extracted_text:
@@ -132,9 +158,12 @@ def process_zip(zip_path, output_docx):
         paragraph.insert_paragraph_before(extra_message)
         paragraph.runs[0].italic = True
 
+    save_start = time.time()
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
+    save_end = time.time()
     print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
+    print(f"⏱ Saving document took {save_end - save_start:.4f} seconds")
 
 # Automatically find ZIP file and process it
 input_folder = "input_files"
