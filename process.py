@@ -95,9 +95,10 @@ def process_zip(zip_path, output_docx):
 
     doc = Document()
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
-    found_relevant_doc = False
+
     patterns = load_patterns()
     filter_text = load_filter_text()
+    found_relevant_doc = False
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
@@ -122,12 +123,13 @@ def process_zip(zip_path, output_docx):
                     doc.add_paragraph(section)
                     doc.add_page_break()
 
-    # Load appropriate message from file
+    # Load appropriate message from file and write it first
     message_file = MESSAGE_IF_EXISTS_FILE if found_relevant_doc else MESSAGE_IF_NOT_EXISTS_FILE
     with open(message_file, "r") as f:
         extra_message = f.read().strip()
         print(f"✅ extra_message: {extra_message}")
-        paragraph = doc.add_paragraph(extra_message)
+        paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
+        paragraph.insert_paragraph_before(extra_message)
         paragraph.runs[0].italic = True
 
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
