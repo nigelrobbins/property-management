@@ -33,6 +33,14 @@ jobs:
           unzip "$ZIP_FILE" -d input_files/unzipped/
         shell: bash
 
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Process PDFs and Create Word Doc
         run: |
           echo "Processing PDFs and creating Word document..."
