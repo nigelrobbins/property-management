@@ -8,8 +8,11 @@ To download the report, click on `Actions` then on the top icon under `workflow 
 
 ## Local Authority Search
 
-To check if a local authority search has been conducted, the code looks for `REPLIES TO STANDARD ENQUIRIES` in the documents in the uploaded zip.
+To check if a local authority search has been conducted, the code looks for the text `REPLIES TO STANDARD ENQUIRIES` in all the documents in the uploaded zip.
+
 If it doesn't find the text it writes an appropriate message in the report and exits.
-If the text is found it creates a different message in the report and goes on to process the search document as follows.
+
+If the text is found it creates a different message in the report and processes the search document as follows.
+
 The code processes questions that just require extracting text from the document, such as `Are there any existing Planning Permissions?`, which are added to the report if they exist.
-It then processess questions that will always require text to be added to the report if the answer to the question is yes or no (such as `Are there Local Land charges? `).
+It then processess questions that will always require text to be added to the report if the answer to the question is yes or no (such as `Are there Local Land charges?`).
