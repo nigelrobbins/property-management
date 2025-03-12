@@ -13,7 +13,7 @@ import subprocess
 CONFIG_DIR = "config"
 LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
 PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns.txt")
-MANDATORY_PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "mandatory_patterns.txt")
+PATTERNS_MANDATORY_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns_mandatory.txt")
 MESSAGE_IF_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
 MESSAGE_IF_NOT_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
 FILTER_TEXT_FILE = os.path.join(LOCAL_SEARCH_DIR, "filter_text.txt")
@@ -62,8 +62,8 @@ def load_patterns():
 @timed_function
 def load_mandatory_patterns():
     """Load patterns that should always be added to the document even if no match is found."""
-    if os.path.exists(MANDATORY_PATTERNS_FILE):
-        with open(MANDATORY_PATTERNS_FILE, "r") as f:
+    if os.path.exists(PATTERNS_MANDATORY_FILE):
+        with open(PATTERNS_MANDATORY_FILE, "r") as f:
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
