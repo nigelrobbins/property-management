@@ -129,6 +129,30 @@ def extract_matching_sections(text, patterns):
     return matched_sections
 
 @timed_function
+def add_matched_sections(doc, file_type, file_name, extracted_text, patterns, label):
+    """
+    Extracts and adds matched sections from the text to the document.
+    Returns True if any sections were found.
+    """
+    matched_sections = extract_matching_sections(extracted_text, patterns)
+
+    if matched_sections:
+        doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
+
+        for section in matched_sections:
+            if "None" in section:
+                print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
+                continue  # Skip adding this section if it contains 'None'
+
+            print(f"✅ Adding section ({label}): {section[:30]}...")
+            doc.add_paragraph(section)
+            doc.add_page_break()
+
+        return True  # Sections were found
+
+    return False  # No sections matched
+
+@timed_function
 def process_zip(zip_path, output_docx):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
@@ -175,38 +199,15 @@ def process_zip(zip_path, output_docx):
 
         # Check if the document contains the filter text
         if filter_text and filter_text in extracted_text:
+            found_relevant_doc = add_matched_sections(doc, file_type, file_name, extracted_text, patterns, "General")
 
-            matched_sections = extract_matching_sections(extracted_text, patterns)
+            print(f"✅ Checking mandatory_patterns: {mandatory_patterns}")
+            mandatory_found = add_matched_sections(doc, file_type, file_name, extracted_text, mandatory_patterns, "Mandatory")
 
-            if matched_sections:
-                found_relevant_doc = True
-                doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-                
-                for section in matched_sections:
-                    if found_relevant_doc and "None" in section:
-                        print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
-                        continue  # Skip adding this section if it contains 'None'
-
-                    print(f"✅ Adding section: {section[:30]}...")
-                    doc.add_paragraph(section)
-                    doc.add_page_break()
-            print(f"✅ Look or mandatory_patterns: {mandatory_patterns}")
-            matched_sections = extract_matching_sections(extracted_text, mandatory_patterns)
-            if matched_sections:
-                found_relevant_doc = True
-                doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-                
-                for section in matched_sections:
-                    if found_relevant_doc and "None" in section:
-                        print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
-                        continue  # Skip adding this section if it contains 'None'
-
-                    print(f"✅ Adding section: {section[:30]}...")
-                    doc.add_paragraph(section)
-                    doc.add_page_break()
-            else:
-                print("❌ No relevant sections found in this document.")
-                doc.add_paragraph(f"🔹 Section missing for mandatory pattern: {mandatory_patterns}")
+            # If no mandatory patterns were found, log missing sections
+            if not mandatory_found:
+                print("❌ No relevant sections found for mandatory patterns.")
+                doc.add_paragraph(f"🔹 Section missing for mandatory pattern(s): {mandatory_patterns}")
 
     # Load appropriate message from file and write it first
     message_file = MESSAGE_IF_EXISTS if found_relevant_doc else MESSAGE_IF_NOT_EXISTS
