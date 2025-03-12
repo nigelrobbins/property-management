@@ -51,7 +51,6 @@ def timed_function(func):
         return result
     return wrapper
 
-@timed_function
 def load_patterns():
     """Load regex patterns from config file."""
     if os.path.exists(PATTERNS_FILE):
@@ -59,7 +58,6 @@ def load_patterns():
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
-@timed_function
 def load_mandatory_patterns():
     """Load patterns that should always be added to the document even if no match is found."""
     if os.path.exists(PATTERNS_MANDATORY_FILE):
@@ -67,7 +65,6 @@ def load_mandatory_patterns():
             return [line.strip() for line in f.readlines() if line.strip()]
     return []
 
-@timed_function
 def load_filter_text():
     """Load the filter text from the config file."""
     if os.path.exists(FILTER_TEXT_FILE):
@@ -111,13 +108,11 @@ def extract_text_from_pdf(pdf_path):
     print(f"✅ Extracted text using OCR: {text[:50]}...")
     return text.strip()
 
-@timed_function
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""
     doc = Document(docx_path)
     return "\n".join([para.text for para in doc.paragraphs])
 
-@timed_function
 def extract_matching_sections(text, patterns):
     """Extract relevant sections based on multiple regex patterns."""
     matched_sections = []
@@ -128,7 +123,6 @@ def extract_matching_sections(text, patterns):
     
     return matched_sections
 
-@timed_function
 def add_matched_sections(doc, file_type, file_name, extracted_text, patterns, label):
     """
     Extracts and adds matched sections from the text to the document.
@@ -152,7 +146,6 @@ def add_matched_sections(doc, file_type, file_name, extracted_text, patterns, la
 
     return False  # No sections matched
 
-@timed_function
 def process_zip(zip_path, output_docx):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
