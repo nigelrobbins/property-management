@@ -71,6 +71,6 @@ jobs:
           fi
           git mv input_files/$(basename $ZIP_FILE) processed_files/$(basename $ZIP_FILE)
           git commit -m "Moved $(basename $ZIP_FILE) to processed_files"
-          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:main
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nigelrobbins/property-purchase-report.git HEAD:${GITHUB_REF#refs/heads/}
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
