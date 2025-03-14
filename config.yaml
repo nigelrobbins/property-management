@@ -1,0 +1,34 @@
+groups:
+  - name: "Local Authority Search"
+    identifier: "FINANCIAL SUMMARY"  # Text used to classify the document
+    questions:
+      - section: "Revenue"
+        search_pattern: "Revenue Breakdown"
+        extract_text: true
+        extract_pattern: "Revenue Breakdown.*?(?=\\n[A-Z ]+\\n|\\Z)"
+        message_found: "📊 Revenue section found."
+        message_not_found: "⚠️ Revenue data missing."
+
+      - section: "Expenses"
+        search_pattern: "Expense Report"
+        extract_text: true
+        extract_pattern: "Expense Report.*?(?=\\n[A-Z ]+\\n|\\Z)"
+        message_found: "💰 Expense details detected."
+        message_not_found: "⚠️ No expense details found."
+
+  - name: "Legal Documents"
+    identifier: "CONFIDENTIAL AGREEMENT"
+    questions:
+      - section: "Terms and Conditions"
+        search_pattern: "Terms and Conditions"
+        extract_text: true
+        extract_pattern: "Terms and Conditions.*?(?=\\n[A-Z ]+\\n|\\Z)"
+        message_found: "📝 Found Terms & Conditions section."
+        message_not_found: "⚠️ No terms detected."
+
+      - section: "Signatures"
+        search_pattern: "Authorized Signatures"
+        extract_text: false
+        message_found: "✅ Signature section is present."
+        message_not_found: "❌ No signatures found."
+

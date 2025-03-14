@@ -146,10 +146,29 @@ def add_matched_sections(doc, file_type, file_name, extracted_text, patterns, la
 
     return False  # No sections matched
 
-def process_zip(zip_path, output_docx):
+# Load YAML configuration
+def load_yaml(yaml_path):
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)["groups"]
+
+# Identify question group based on document content
+def identify_group(text, groups):
+    for group in groups:
+        if group["identifier"] in text:
+            return group
+    return None  # No matching group found
+
+# Extract matching text based on regex
+def extract_matching_text(text, pattern):
+    matches = re.findall(pattern, text, re.DOTALL)
+    return "\n\n".join(matches) if matches else None
+
+def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
+    groups = load_yaml(yaml_path)
+    doc = Document()
 
     if not os.path.exists(zip_path):
         print(f"❌ ERROR: ZIP file does not exist: {zip_path}")
@@ -162,7 +181,6 @@ def process_zip(zip_path, output_docx):
     unzip_end = time.time()
     print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
-    doc = Document()
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
 
     patterns = load_patterns()
@@ -185,42 +203,44 @@ def process_zip(zip_path, output_docx):
             file_type = "Word Document"
         else:
             continue
+        group = identify_group(extracted_text, groups)
 
-        process_end = time.time()
-        print(f"⏱ Processing {file_name} took {process_end - process_start:.4f} seconds")
-        print(f"🔍 Extracted text: {extracted_text[:50]}...")
+        if not group:
+            print(f"⚠️ No matching group found for {file_name}, skipping.")
+            continue
+        
+        doc.add_paragraph(f"📂 Processing: {file_name}", style="Heading 1")
+        doc.add_paragraph(f"📄 Document identified as: {group['name']}", style="Heading 2")
 
-        # Check if the document contains the filter text
-        if filter_text and filter_text in extracted_text:
-            found_relevant_doc = add_matched_sections(doc, file_type, file_name, extracted_text, patterns, "General")
+        for question in group["questions"]:
+            doc.add_paragraph(f"🔍 Checking section: {question['section']}", style="Heading 3")
 
-            print(f"✅ Checking mandatory_patterns: {mandatory_patterns}")
-            mandatory_found = add_matched_sections(doc, file_type, file_name, extracted_text, mandatory_patterns, "Mandatory")
+            if question["search_pattern"] in extracted_text:
+                doc.add_paragraph(question["message_found"], style="Normal")
 
-            # If no mandatory patterns were found, log missing sections
-            if not mandatory_found:
-                print("❌ No relevant sections found for mandatory patterns.")
-                doc.add_paragraph(f"🔹 Section missing for mandatory pattern(s): {mandatory_patterns}")
+                if question["extract_text"]:
+                    extracted_section = extract_matching_text(extracted_text, question["extract_pattern"])
+                    if extracted_section:
+                        doc.add_paragraph("📌 Extracted Content:", style="Italic")
+                        doc.add_paragraph(extracted_section, style="Normal")
+                    else:
+                        doc.add_paragraph("⚠️ No matching content found.", style="Normal")
+            else:
+                doc.add_paragraph(question["message_not_found"], style="Normal")
 
-    # Load appropriate message from file and write it first
-    message_file = MESSAGE_IF_EXISTS if found_relevant_doc else MESSAGE_IF_NOT_EXISTS
-    with open(message_file, "r") as f:
-        extra_message = f.read().strip()
-        print(f"✅ extra_message: {extra_message}")
-        paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
-        paragraph.insert_paragraph_before(extra_message)
-        paragraph.runs[0].italic = True
+            doc.add_paragraph("")  # Spacing between questions
 
-    save_start = time.time()
+        doc.add_page_break()
+
+    # Save output Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
-    save_end = time.time()
-    print(f"✅ Word document saved: {os.path.abspath(output_docx)}")
-    print(f"⏱ Saving document took {save_end - save_start:.4f} seconds")
+
 
 # Automatically find ZIP file and process it
 input_folder = "input_files"
 zip_file_path = None
+yaml_config = "config.yaml"
 
 for file in os.listdir(input_folder):
     if file.endswith(".zip"):
@@ -230,6 +250,6 @@ for file in os.listdir(input_folder):
 output_file = "output_files/processed_doc.docx"
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
-    process_zip(zip_file_path, output_file)
+    process_zip(zip_file_path, output_file, yaml_config)
 else:
     print("❌ No ZIP file found in 'input_files' folder.")

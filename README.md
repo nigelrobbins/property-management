@@ -16,4 +16,3 @@ If the text is found it creates a different message in the report and processes 
 
 The code processes questions that just require extracting text from the document, such as `Are there any existing Planning Permissions?`, which are added to the report if they exist.
 It then processess questions that will always require text to be added to the report if the answer to the question is yes or no (such as `Are there Local Land charges?`).
-
