@@ -1,9 +1,9 @@
 groups:
   - name: "Local Authority Search"
-    identifier: "FINANCIAL SUMMARY"  # Text used to classify the document
+    identifier: "REPLIES TO STANDARD ENQUIRIES"  # Text search to see if pdf/doc exists
     questions:
-      - section: "Revenue"
-        search_pattern: "Revenue Breakdown"
+      - section: "Roads"
+        search_pattern: "ROADS.*?(?=\n[A-Z][A-Z \d\-:,]+\n|\Z)"
         extract_text: true
         extract_pattern: "Revenue Breakdown.*?(?=\\n[A-Z ]+\\n|\\Z)"
         message_found: "📊 Revenue section found."
