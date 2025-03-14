@@ -20,27 +20,6 @@ def timed_function(func):
         return result
     return wrapper
 
-def load_patterns():
-    """Load regex patterns from config file."""
-    if os.path.exists(PATTERNS_FILE):
-        with open(PATTERNS_FILE, "r") as f:
-            return [line.strip() for line in f.readlines() if line.strip()]
-    return []
-
-def load_mandatory_patterns():
-    """Load patterns that should always be added to the document even if no match is found."""
-    if os.path.exists(PATTERNS_MANDATORY_FILE):
-        with open(PATTERNS_MANDATORY_FILE, "r") as f:
-            return [line.strip() for line in f.readlines() if line.strip()]
-    return []
-
-def load_filter_text():
-    """Load the filter text from the config file."""
-    if os.path.exists(FILTER_TEXT_FILE):
-        with open(FILTER_TEXT_FILE, "r") as f:
-            return f.read().strip()
-    return ""
-
 @timed_function
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
