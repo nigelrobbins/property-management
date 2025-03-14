@@ -61,39 +61,6 @@ def extract_text_from_docx(docx_path):
     doc = Document(docx_path)
     return "\n".join([para.text for para in doc.paragraphs])
 
-def extract_matching_sections(text, patterns):
-    """Extract relevant sections based on multiple regex patterns."""
-    matched_sections = []
-    for pattern in patterns:
-        print(f"🔍 Searching for pattern: {pattern}")
-        matches = re.findall(pattern, text, re.DOTALL)  # Find all matching sections
-        matched_sections.extend(matches)
-    
-    return matched_sections
-
-def add_matched_sections(doc, file_type, file_name, extracted_text, patterns, label):
-    """
-    Extracts and adds matched sections from the text to the document.
-    Returns True if any sections were found.
-    """
-    matched_sections = extract_matching_sections(extracted_text, patterns)
-
-    if matched_sections:
-        doc.add_paragraph(f"Source ({file_type}): {file_name}", style="Heading 2")
-
-        for section in matched_sections:
-            if "None" in section:
-                print(f"⚠️ Skipping section due to 'None' content: {section[:30]}...")
-                continue  # Skip adding this section if it contains 'None'
-
-            print(f"✅ Adding section ({label}): {section[:30]}...")
-            doc.add_paragraph(section)
-            doc.add_page_break()
-
-        return True  # Sections were found
-
-    return False  # No sections matched
-
 # Load YAML configuration
 def load_yaml(yaml_path):
     with open(yaml_path, "r", encoding="utf-8") as f:
