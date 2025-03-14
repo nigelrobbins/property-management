@@ -5,7 +5,7 @@ groups:
     message_if_identifier_not_found: "❌ Document does NOT match 'Local Authority Search'. Skipping specific questions."
     questions:
       - section: "Roads"
-        search_pattern: "ROADS.*?(?=\\n[A-Z ]+\\n|\\Z)"
+        search_pattern: "ROADS"
         extract_text: true
         extract_pattern: ".*?Highways maintainable at public expense.*?(?=\\n[A-Z ]+\\n|\\Z)"
         message_found: "The main road ( or giving the road’s name) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it"
