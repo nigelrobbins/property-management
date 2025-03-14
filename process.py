@@ -10,38 +10,6 @@ from PIL import Image
 import subprocess
 import yaml
 
-# Define directories
-CONFIG_DIR = "config"
-LOCAL_SEARCH_DIR = os.path.join(CONFIG_DIR, "local-search")
-PATTERNS_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns.txt")
-PATTERNS_MANDATORY_FILE = os.path.join(LOCAL_SEARCH_DIR, "patterns_mandatory.txt")
-MESSAGE_IF_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_exists.txt")
-MESSAGE_IF_NOT_EXISTS = os.path.join(LOCAL_SEARCH_DIR, "message_if_not_exists.txt")
-FILTER_TEXT_FILE = os.path.join(LOCAL_SEARCH_DIR, "filter_text.txt")
-
-# Ensure required directories exist
-os.makedirs(LOCAL_SEARCH_DIR, exist_ok=True)
-os.makedirs(CONFIG_DIR, exist_ok=True)
-
-# Ensure message files exist with default messages if missing
-if not os.path.exists(MESSAGE_IF_EXISTS):
-    with open(MESSAGE_IF_EXISTS, "w") as f:
-        f.write("This document contains relevant information.")
-
-if not os.path.exists(MESSAGE_IF_NOT_EXISTS):
-    with open(MESSAGE_IF_NOT_EXISTS, "w") as f:
-        f.write("No relevant information found in this document.")
-
-# Ensure patterns file exists with default patterns
-if not os.path.exists(PATTERNS_FILE):
-    with open(PATTERNS_FILE, "w") as f:
-        f.write("REPLIES TO STANDARD ENQUIRIES.*?(?=\n[A-Z ]+\n|\Z)\n")
-
-# Ensure filter text file exists with the default keyword
-if not os.path.exists(FILTER_TEXT_FILE):
-    with open(FILTER_TEXT_FILE, "w") as f:
-        f.write("REPLIES TO STANDARD ENQUIRIES")
-
 def timed_function(func):
     """Decorator to measure function execution time."""
     def wrapper(*args, **kwargs):
@@ -183,12 +151,6 @@ def process_zip(zip_path, output_docx, yaml_path):
     print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
-
-    patterns = load_patterns()
-    mandatory_patterns = load_mandatory_patterns()
-    filter_text = load_filter_text()
-    print(f"🔍 Loaded {len(patterns)} patterns and filter text: {filter_text}")
-    found_relevant_doc = False
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
