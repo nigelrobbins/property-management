@@ -53,7 +53,7 @@ def extract_text_from_pdf(pdf_path):
     for img in images:
         text += pytesseract.image_to_string(img) + "\n"
 
-    print(f"✅ Extracted text using OCR: {text[:50]}...")
+    print(f"✅ Extracted text using OCR: {text[:500]}...")
     return text.strip()
 
 def extract_text_from_docx(docx_path):
