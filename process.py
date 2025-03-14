@@ -8,6 +8,7 @@ import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
 import subprocess
+import yaml
 
 # Define directories
 CONFIG_DIR = "config"
