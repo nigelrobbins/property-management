@@ -1,6 +1,6 @@
 groups:
   - name: "Local Authority Search"
-    identifier: "REPLIES TO STANDARD ENQUIRIES"  # Text search to see if pdf/doc exists
+    identifier: "REPLIES TO STANDARD ENQUIRIES"  # Text to search in each pd/doc to see if exists
     questions:
       - section: "Roads"
         search_pattern: "ROADS.*?(?=\\n[A-Z ]+\\n|\\Z)"
