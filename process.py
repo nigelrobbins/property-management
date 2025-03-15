@@ -118,7 +118,6 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(group["message_if_identifier_found"], style="Heading 2")
             print(group["message_if_identifier_found"])
         else:
-            doc.add_paragraph("⚠️ No matching group found. Skipping specific questions.", style="Heading 2")
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
         
@@ -134,6 +133,7 @@ def process_zip(zip_path, output_docx, yaml_path):
                 if question["extract_text"]:
                     extracted_section = extract_matching_text(extracted_text, question["extract_pattern"])
                     if extracted_section:
+                        print(f"✅ Extracted content: {extracted_section[:50]}...") # Log first 50 characters
                         paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
                         paragraph.insert_paragraph_before(extracted_section)
                         paragraph.runs[0].italic = True
