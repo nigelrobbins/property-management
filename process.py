@@ -134,8 +134,9 @@ def process_zip(zip_path, output_docx, yaml_path):
                 if question["extract_text"]:
                     extracted_section = extract_matching_text(extracted_text, question["extract_pattern"])
                     if extracted_section:
-                        doc.add_paragraph("📌 Extracted Content:", style="Italic")
-                        doc.add_paragraph(extracted_section, style="Normal")
+                        paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
+                        paragraph.insert_paragraph_before(extracted_section)
+                        paragraph.runs[0].italic = True
                     else:
                         doc.add_paragraph("⚠️ No matching content found.", style="Normal")
             else:
