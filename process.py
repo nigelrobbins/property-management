@@ -74,17 +74,17 @@ def identify_group(text, groups):
     return None  # No matching group found
 
 def extract_matching_text(text, pattern, message_template):
-    # Updated regex pattern to capture both the text after 2(a) and the text after (a)
+    # Find the matching text based on the pattern
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
-    
     if matches:
-        extracted_text_1, extracted_text_2 = matches[0]
+        extracted_text_1 = matches[0]  # First part of the extracted text (e.g., "Highways maintainable at public expense")
+        extracted_text_2 = matches[1] if len(matches) > 1 else ''  # Second part (e.g., "Gordon Road")
         
-        # Replace placeholders in the message template with the extracted texts
-        message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2)
-        return message
+        # Format the message with the extracted text
+        formatted_message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2)
+        return formatted_message
     else:
-        return None  # Return None if no matches are found
+        return None
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
