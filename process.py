@@ -77,7 +77,7 @@ def extract_matching_text(text, pattern, message_template):
     """Extracts matching text based on the given pattern and formats the message."""
     # Find the matching text based on the pattern
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
-    print(f"✅ text: {text}, text: {pattern}, message_template: {message_template}")
+    print(f"✅ text: {text}, pattern: {pattern}, message_template: {message_template}")
     
     if matches:
         # Log the matches for debugging
@@ -271,10 +271,9 @@ and C) are:
 """
 
 # Regex pattern from the script
-pattern = r".*^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
+pattern = r"2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 message_template = "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
 
-matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
 formatted_message = extract_matching_text(extracted_text, pattern, message_template)
 print(f"Formatted message: {formatted_message}")
