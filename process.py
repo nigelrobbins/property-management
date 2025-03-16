@@ -139,10 +139,10 @@ def process_zip(zip_path, output_docx, yaml_path):
                 doc.add_paragraph(question["message_found"], style="Normal")
 
                 if question["extract_text"]:
-                    # Pass the message template (question["message_found"]) here
+                    # Now, we pass the message template (question["message_found"]) here
                     extracted_section = extract_matching_text(extracted_text, question["extract_pattern"], question["message_found"])
                     if extracted_section:
-                        print(f"✅ Extracted content: {extracted_section[:50]}...") # Log first 50 characters
+                        print(f"✅ Extracted content: {extracted_section[:50]}...")  # Log first 50 characters
                         paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
                         paragraph.insert_paragraph_before(extracted_section)
                         paragraph.runs[0].italic = True
