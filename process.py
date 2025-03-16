@@ -189,12 +189,13 @@ else:
 
 # Example extracted text (replace this with a real sample from your document)
 extracted_text = """
+some more stuff here
 2(a) Some road description goes here
 (a) Main road with other details.
 """
 
 # Regex pattern from the script
-pattern = r"^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
+pattern = r".*^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
 print(f"Matches found: {matches}")
