@@ -54,7 +54,7 @@ def extract_text_from_pdf(pdf_path):
         text += pytesseract.image_to_string(img) + "\n"
 
     print(f"✅ Extracted text using OCR: {text}...")
-    return text.strip()
+    return text.strip()extract_matching_
 
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""
@@ -73,9 +73,18 @@ def identify_group(text, groups):
             return group
     return None  # No matching group found
 
-def extract_matching_text(text, pattern):
-    matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)  # Use MULTILINE instead of DOTALL
-    return "\n\n".join(matches) if matches else None
+def extract_matching_text(text, pattern, message_template):
+    # Updated regex pattern to capture both the text after 2(a) and the text after (a)
+    matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+    
+    if matches:
+        extracted_text_1, extracted_text_2 = matches[0]
+        
+        # Replace placeholders in the message template with the extracted texts
+        message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2)
+        return message
+    else:
+        return None  # Return None if no matches are found
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
