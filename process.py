@@ -77,6 +77,7 @@ def extract_matching_text(text, pattern, message_template):
     """Extracts matching text based on the given pattern and formats the message."""
     # Find the matching text based on the pattern
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+    print(f"✅ text: {text}, text: {pattern}, message_template: {message_template}")
     
     if matches:
         # Log the matches for debugging
