@@ -194,7 +194,7 @@ extracted_text = """
 """
 
 # Regex pattern from the script
-pattern = r"^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
+pattern = r"\^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
 print(f"Matches found: {matches}")
