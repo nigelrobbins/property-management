@@ -79,6 +79,9 @@ def extract_matching_text(text, pattern, message_template):
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
     
     if matches:
+        # Log the matches for debugging
+        print(f"✅ Matches found: {matches}")
+        
         extracted_text_1 = matches[0]  # First part of the extracted text
         extracted_text_2 = matches[1] if len(matches) > 1 else ''  # Second part of the extracted text (optional)
 
@@ -93,6 +96,7 @@ def extract_matching_text(text, pattern, message_template):
         
         return formatted_message
     else:
+        print("⚠️ No matches found for the pattern.")
         return None
 
 def process_zip(zip_path, output_docx, yaml_path):
@@ -146,9 +150,7 @@ def process_zip(zip_path, output_docx, yaml_path):
 
             if question["search_pattern"] in extracted_text:
                 doc.add_paragraph(question["message_found"], style="Normal")
-
                 if question["extract_text"]:
-                    # Now, we pass the message template (question["message_found"]) here
                     extracted_section = extract_matching_text(extracted_text, question["extract_pattern"], question["message_found"])
                     if extracted_section:
                         print(f"✅ Extracted content: {extracted_section[:50]}...")  # Log first 50 characters
