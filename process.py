@@ -282,20 +282,9 @@ print(f"Formatted message: {formatted_message}")
 
 # Example extracted text (replace this with a real sample from your document)
 extracted_text = """
-
 xxx
-
 2(a) Highways maintainable at public expense;
-
 (a) Gordon Road is publicly maintained.
-
-2(b) Subject to adoption and, supported by a bond or bond waiver;
-
-(b) Not applicable
-
-2(c) To be made up by the local authority who will reclaim the cost from the frontagers; or
-
-(c) Not applicable
 """
 
 # Simplified regex pattern
