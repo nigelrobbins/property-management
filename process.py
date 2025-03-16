@@ -211,7 +211,7 @@ else:
     print("❌ No ZIP file found in 'input_files' folder.")
 
 # Example extracted text (replace this with a real sample from your document)
-extracted_text = """
+extracted_text = """enrjes Ae
 Council
 
 REPLIES TO STANDARD ENQUIRIES
