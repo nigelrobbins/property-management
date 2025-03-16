@@ -186,3 +186,15 @@ if zip_file_path:
     process_zip(zip_file_path, output_file, yaml_config)
 else:
     print("❌ No ZIP file found in 'input_files' folder.")
+
+# Example extracted text (replace this with a real sample from your document)
+extracted_text = """
+2(a) Some road description goes here
+(a) Main road with other details.
+"""
+
+# Regex pattern from the script
+pattern = r"2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
+
+matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
+print(f"Matches found: {matches}")
