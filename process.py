@@ -282,9 +282,13 @@ print(f"Formatted message: {formatted_message}")
 
 # Example extracted text (replace this with a real sample from your document)
 extracted_text = """
+
 xxx
+
 2(a) Highways maintainable at public expense;
+
 (a) Gordon Road is publicly maintained.
+
 """
 
 # Simplified regex pattern
