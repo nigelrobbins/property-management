@@ -198,5 +198,3 @@ pattern = r"\^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
 print(f"Matches found: {matches}")
-
-tches found: [('Some road description goes here', 'Main road with other details.')]
