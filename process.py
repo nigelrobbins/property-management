@@ -29,7 +29,7 @@ def extract_text_from_pdf(pdf_path):
     text = result.stdout.strip()
 
     if text:
-        print(f"✅ Extracted text using pdftotext: {text[:50]}...")
+        print(f"✅ Extracted text using pdftotext: {text}...")
         return text  # If pdftotext works, return immediately
 
     print("⚠️ pdftotext failed, trying pdfplumber...")
@@ -43,7 +43,7 @@ def extract_text_from_pdf(pdf_path):
                 text += page_text + "\n"
 
     if text:
-        print(f"✅ Extracted text using pdfplumber: {text[:50]}...")
+        print(f"✅ Extracted text using pdfplumber: {text}...")
         return text.strip()  # If pdfplumber works, return immediately
 
     print("⚠️ pdfplumber failed, performing OCR...")
