@@ -139,7 +139,8 @@ def process_zip(zip_path, output_docx, yaml_path):
                 doc.add_paragraph(question["message_found"], style="Normal")
 
                 if question["extract_text"]:
-                    extracted_section = extract_matching_text(extracted_text, question["extract_pattern"])
+                    # Pass the message template (question["message_found"]) here
+                    extracted_section = extract_matching_text(extracted_text, question["extract_pattern"], question["message_found"])
                     if extracted_section:
                         print(f"✅ Extracted content: {extracted_section[:50]}...") # Log first 50 characters
                         paragraph = doc.paragraphs[0] if doc.paragraphs else doc.add_paragraph()
@@ -157,7 +158,6 @@ def process_zip(zip_path, output_docx, yaml_path):
     # Save output Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
-
 
 # Automatically find ZIP file and process it
 input_folder = "input_files"
