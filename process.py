@@ -216,7 +216,10 @@ Page 2 of 9
 Unless otherwise indicated, matters will be disclosed only if they apply directly to the property described in
 Box B.
 
+‘Area’ means any area in which the property is located.
 
+References to ‘the Council’ include any predecessor Council and also any Council Committee, sub-
+committee or other body or person exercising powers delegated by the Council and their ‘approval’ includes
 their decision to proceed. The replies given to certain enquiries cover knowledge and actions of both the
 District Council and the County Council.
 
@@ -274,25 +277,6 @@ and C) are:
 
 # Regex pattern from the script
 pattern = r"2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
-
-message_template = "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
-
-formatted_message = extract_matching_text(extracted_text, pattern, message_template)
-print(f"Formatted message: {formatted_message}")
-
-# Example extracted text (replace this with a real sample from your document)
-extracted_text = """
-
-xxx
-
-2(a) Highways maintainable at public expense;
-
-(a) Gordon Road is publicly maintained.
-
-"""
-
-# Simplified regex pattern
-pattern = r"^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 message_template = "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
 
