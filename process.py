@@ -74,14 +74,23 @@ def identify_group(text, groups):
     return None  # No matching group found
 
 def extract_matching_text(text, pattern, message_template):
+    """Extracts matching text based on the given pattern and formats the message."""
     # Find the matching text based on the pattern
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+    
     if matches:
-        extracted_text_1 = matches[0]  # First part of the extracted text (e.g., "Highways maintainable at public expense")
-        extracted_text_2 = matches[1] if len(matches) > 1 else ''  # Second part (e.g., "Gordon Road")
+        extracted_text_1 = matches[0]  # First part of the extracted text
+        extracted_text_2 = matches[1] if len(matches) > 1 else ''  # Second part of the extracted text (optional)
+
+        # Log the extracted content for debugging
+        print(f"✅ Extracted text: {extracted_text_1}, {extracted_text_2}")
         
         # Format the message with the extracted text
         formatted_message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2)
+        
+        # Log the formatted message for debugging
+        print(f"✅ Formatted message: {formatted_message}")
+        
         return formatted_message
     else:
         return None
