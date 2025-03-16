@@ -361,11 +361,11 @@ if you wish to obtain further details on this matter please contact the Planning
 2 ROADS
 
 Which of the roads footways and footpaths named in the application for this search via boxes B
-and C are
+and C) are
 
-2a Highways maintainable at public expense
+2(a) Highways maintainable at public expense
 
-a Gordon Road is publicly maintained
+(a) Gordon Road is publicly maintained
 
 Page 3 of 9
 2d To be adopted by a local authority without reclaiming the cost from the frontagers
