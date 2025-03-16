@@ -73,11 +73,16 @@ def identify_group(text, groups):
             return group
     return None  # No matching group found
 
+import re
+
 def extract_matching_text(text, pattern, message_template):
     """Extracts matching text based on the given pattern and formats the message."""
+    # Log the text and pattern for debugging
+    print(f"🔍 Extracting with pattern: {pattern}")
+    print(f"🔍 Text to search: {text}")
+
     # Find the matching text based on the pattern
     matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
-    print(f"✅ text: {text}, pattern: {pattern}, message_template: {message_template}")
     
     if matches:
         # Log the matches for debugging
