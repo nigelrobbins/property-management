@@ -151,7 +151,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             if question["search_pattern"] in extracted_text:
                 doc.add_paragraph(question["message_found"], style="Normal")
                 if question["extract_text"]:
-                    extracted_section = extract_matching_text(extracted_text, question["extract_pattern"], question["message_found"])
+                    extracted_section = extract_matching_text(extracted_text, question["extract_pattern"], question["message_template"])
                     if extracted_section:
                         print(f"✅ Extracted content: {extracted_section[:50]}...")  # Log first 50 characters
                         paragraph = doc.add_paragraph(extracted_section)
