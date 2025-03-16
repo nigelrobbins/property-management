@@ -82,8 +82,8 @@ def extract_matching_text(text, pattern, message_template):
         # Log the matches for debugging
         print(f"✅ Matches found: {matches}")
         
-        extracted_text_1 = matches[0]  # First part of the extracted text
-        extracted_text_2 = matches[1] if len(matches) > 1 else ''  # Second part of the extracted text (optional)
+        extracted_text_1 = matches[0][0]  # First part of the extracted text
+        extracted_text_2 = matches[0][1] if len(matches[0]) > 1 else ''  # Second part of the extracted text (optional)
 
         # Log the extracted content for debugging
         print(f"✅ Extracted text: {extracted_text_1}, {extracted_text_2}")
@@ -197,5 +197,8 @@ some more stuff here
 # Regex pattern from the script
 pattern = r".*^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
+message_template = "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
+
 matches = re.findall(pattern, extracted_text, re.IGNORECASE | re.MULTILINE)
-print(f"Matches found: {matches}")
+formatted_message = extract_matching_text(extracted_text, pattern, message_template)
+print(f"Formatted message: {formatted_message}")
