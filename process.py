@@ -74,7 +74,7 @@ def identify_group(text, groups):
     return None  # No matching group found
 
 def extract_matching_text(text, pattern):
-    matches = re.findall(pattern, text, re.IGNORECASE)  # Case-insensitive match
+    matches = re.findall(pattern, text, re.IGNORECASE | re.DOTALL)
     return "\n\n".join(matches) if matches else None
 
 def process_zip(zip_path, output_docx, yaml_path):
