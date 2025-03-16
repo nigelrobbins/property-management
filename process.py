@@ -283,10 +283,7 @@ print(f"Formatted message: {formatted_message}")
 # Example extracted text (replace this with a real sample from your document)
 extracted_text = """
 
-2. ROADS
-
-Which of the roads, footways and footpaths named in the application for this search (via boxes B
-and C) are:
+xxx
 
 2(a) Highways maintainable at public expense;
 
