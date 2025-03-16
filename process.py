@@ -82,7 +82,7 @@ def extract_matching_text(text, pattern, message_template):
     print(f"🔍 Text to search: {text}")
 
     # Find the matching text based on the pattern
-    matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+    matches = re.findall(pattern, text, re.IGNORECASE | re.DOTALL)
     
     if matches:
         # Log the matches for debugging
@@ -292,7 +292,7 @@ xxx
 """
 
 # Simplified regex pattern
-pattern = r".*2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
+pattern = r"^2\(a\)\s*(.*?)(?:\n|$).*?\(a\)\s*(.*?)\n"
 
 message_template = "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
 
