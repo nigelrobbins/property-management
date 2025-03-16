@@ -3,12 +3,13 @@ import zipfile
 import pdfplumber
 import re
 import time
-from docx import Document
-import pytesseract
-from pdf2image import convert_from_path
-from PIL import Image
 import subprocess
 import yaml
+import unicodedata
+import pytesseract
+from docx import Document
+from pdf2image import convert_from_path
+from PIL import Image
 
 def timed_function(func):
     """Decorator to measure function execution time."""
@@ -20,6 +21,17 @@ def timed_function(func):
         return result
     return wrapper
 
+def clean_text(text):
+    """Remove odd characters from OCR output."""
+    # Normalize Unicode characters
+    text = unicodedata.normalize("NFKC", text)
+    
+    # Remove non-printable characters and excessive spaces
+    text = re.sub(r'[^\x20-\x7E]', '', text)  # Keep only standard ASCII (printable)
+    text = re.sub(r'\s+', ' ', text).strip()  # Replace multiple spaces with a single space
+    
+    return text
+
 @timed_function
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
@@ -29,7 +41,7 @@ def extract_text_from_pdf(pdf_path):
     text = result.stdout.strip()
 
     if text:
-        print(f"✅ Extracted text using pdftotext: {text}...")
+        print(f"✅ Extracted text using pdftotext: {text[:100]}...")  # Show first 100 characters
         return text  # If pdftotext works, return immediately
 
     print("⚠️ pdftotext failed, trying pdfplumber...")
@@ -43,17 +55,20 @@ def extract_text_from_pdf(pdf_path):
                 text += page_text + "\n"
 
     if text:
-        print(f"✅ Extracted text using pdfplumber: {text}...")
+        print(f"✅ Extracted text using pdfplumber: {text[:100]}...")  # Show first 100 characters
         return text.strip()  # If pdfplumber works, return immediately
 
     print("⚠️ pdfplumber failed, performing OCR...")
 
     # Final fallback: Use OCR (slow)
+    text = ""
     images = convert_from_path(pdf_path)
     for img in images:
-        text += pytesseract.image_to_string(img) + "\n"
+        ocr_text = pytesseract.image_to_string(img)
+        cleaned_text = clean_text(ocr_text)  # Apply cleaning function
+        text += cleaned_text + "\n"
 
-    print(f"✅ Extracted text using OCR: {text}...")
+    print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")  # Show first 100 characters
     return text.strip()
 
 def extract_text_from_docx(docx_path):
