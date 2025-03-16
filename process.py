@@ -54,7 +54,7 @@ def extract_text_from_pdf(pdf_path):
         text += pytesseract.image_to_string(img) + "\n"
 
     print(f"✅ Extracted text using OCR: {text}...")
-    return text.strip()extract_matching_
+    return text.strip()
 
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""
