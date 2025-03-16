@@ -3,13 +3,12 @@ import zipfile
 import pdfplumber
 import re
 import time
-import subprocess
-import yaml
-import unicodedata
-import pytesseract
 from docx import Document
+import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
+import subprocess
+import yaml
 
 def timed_function(func):
     """Decorator to measure function execution time."""
@@ -22,15 +21,19 @@ def timed_function(func):
     return wrapper
 
 def clean_text(text):
-    """Remove odd characters from OCR output."""
-    # Normalize Unicode characters
-    text = unicodedata.normalize("NFKC", text)
+    """Cleans text, removes odd characters but keeps blank lines intact."""
     
-    # Remove non-printable characters and excessive spaces
-    text = re.sub(r'[^\x20-\x7E]', '', text)  # Keep only standard ASCII (printable)
-    text = re.sub(r'\s+', ' ', text).strip()  # Replace multiple spaces with a single space
-    
-    return text
+    # Split text into lines to keep blank lines intact
+    lines = text.splitlines()
+
+    cleaned_lines = []
+    for line in lines:
+        # Remove unwanted characters, but allow spaces and alphanumeric characters
+        cleaned_line = re.sub(r'[^a-zA-Z0-9\s\n]', '', line)
+        cleaned_lines.append(cleaned_line)
+
+    # Join cleaned lines back together, preserving blank lines
+    return "\n".join(cleaned_lines)
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
