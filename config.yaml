@@ -1,6 +1,6 @@
 groups:
   - name: "Local Authority Search"
-    identifier: "REPLIES TO STANDARD ENQUIRIES"  # Text to search in each pdf/doc to see if exists
+    identifier: "REPLIES TO STANDARD ENQUIRIES"
     message_if_identifier_found: "✅ Document matches 'Local Authority Search'. Proceeding with extraction."
     message_if_identifier_not_found: "❌ Document does NOT match 'Local Authority Search'. Skipping specific questions."
     questions:
