@@ -126,6 +126,8 @@ def extract_matching_text(text, pattern, message_template):
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "unzipped_files"
+    output_folder = "output_files/unzipped_files"
+
     os.makedirs(output_folder, exist_ok=True)
     groups = load_yaml(yaml_path)
     doc = Document()
@@ -197,6 +199,10 @@ def process_zip(zip_path, output_docx, yaml_path):
 
         doc.add_page_break()
 
+
+    text_file_path = os.path.join(output_folder, f"{file_name}.txt")
+    with open(text_file_path, "w", encoding="utf-8") as text_file:
+        text_file.write(extracted_text)
     # Save output Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
@@ -222,7 +228,7 @@ for file in os.listdir(input_folder):
         break
 
 output_file = "output_files/processed_doc.docx"
-output_file = "output_files/unzipped_files/Lot_15_Local Search.pdf.txt"
+
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file, yaml_config)
