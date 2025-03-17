@@ -142,6 +142,7 @@ def process_zip(zip_path, output_docx, yaml_path):
     print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
     doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
+    extracted_text_files = []  # Store paths to extracted text files
 
     for file_name in sorted(os.listdir(output_folder)):
         file_path = os.path.join(output_folder, file_name)
@@ -157,6 +158,13 @@ def process_zip(zip_path, output_docx, yaml_path):
             file_type = "Word Document"
         else:
             continue
+
+        # Save extracted text to a .txt file
+        extracted_text_file = f"{file_path}.txt"
+        with open(extracted_text_file, "w", encoding="utf-8") as f:
+            f.write(extracted_text)
+        extracted_text_files.append(extracted_text_file)
+
         group = identify_group(extracted_text, groups)
 
         if group:
@@ -192,6 +200,15 @@ def process_zip(zip_path, output_docx, yaml_path):
     # Save output Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
+
+    # Create ZIP file including extracted text files
+    final_zip_path = "output_files/processed_files.zip"
+    with zipfile.ZipFile(final_zip_path, 'w') as zipf:
+        zipf.write(output_docx, os.path.basename(output_docx))  # Add processed docx
+        for txt_file in extracted_text_files:
+            zipf.write(txt_file, os.path.basename(txt_file))  # Add extracted text files
+
+    print(f"✅ Final ZIP created: {final_zip_path}")
 
 # Automatically find ZIP file and process it
 input_folder = "input_files"
