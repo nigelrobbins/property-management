@@ -67,7 +67,8 @@ def extract_text_from_pdf(pdf_path):
     text = ""
     images = convert_from_path(pdf_path)
     for img in images:
-        ocr_text = pytesseract.image_to_string(img)
+        ocr_text = pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6')
+        ocr_text = ocr_text.encode("utf-8").decode("utf-8")  # Ensure UTF-8 encoding
         cleaned_text = clean_text(ocr_text)  # Apply cleaning function
         text += cleaned_text + "\n"
 
