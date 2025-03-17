@@ -52,7 +52,7 @@ jobs:
           name: processed_word_document_and_zip
           path: |
             input_files/*.zip
-            output_files/processed_doc.docx
+            output_files/unzipped_files/Lot_15_Local Search.pdf.txt
 
       - name: Setup Git
         run: |
