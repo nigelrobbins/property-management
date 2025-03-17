@@ -161,7 +161,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             file_type = "Word Document"
         else:
             continue
-        print("extracted_text:)
+        print("extracted_text:")
         print(repr(extracted_text))
         # Save extracted text to a .txt file
         extracted_text_file = f"{file_path}.txt"
