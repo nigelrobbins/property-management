@@ -204,7 +204,7 @@ def process_zip(zip_path, output_docx, yaml_path):
     # Create ZIP file including extracted text files
     final_zip_path = "output_files/processed_files.zip"
     with zipfile.ZipFile(final_zip_path, 'w') as zipf:
-        zipf.write(output_docx, os.path.basename(output_docx))  # Add processed docx
+        #zipf.write(output_docx, os.path.basename(output_docx))  # Add processed docx
         for txt_file in extracted_text_files:
             print(f"📄 Adding extracted text file: {txt_file}")
             zipf.write(txt_file, os.path.basename(txt_file))  # Add extracted text files
