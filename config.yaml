@@ -7,7 +7,7 @@ groups:
       - section: "Roads"
         search_pattern: "ROADS"
         extract_text: true
-        extract_pattern: "^2\\(a\\)\\s*(.*?)\\s*\\n\s*\\(a\\)\\s*(.*?)\\s*\\n"
+        extract_pattern: "^2\\(a\\)\\s*(.*?)\\s*\\n\\s*\\(a\\)\\s*(.*?)\\s*\\n"
         message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
         message_found: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
         message_not_found: "The road is not a highway maintainable at public expense but a road maintained privately. A private highway is a road or way that is maintained by a private owner, rather than the local authority or government. The highway is owned and maintained by a private individual, company, or organisation. Access to it may be restricted or limited to certain individuals or groups. The private owner is responsible for maintaining the highway, including repairs, upkeep, and snow removal. As access to a private owned road is not automatic it is essential that you confirm the owner of the road and ensure that you have access to it."
