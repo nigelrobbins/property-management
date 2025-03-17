@@ -29,7 +29,7 @@ def clean_text(text):
     cleaned_lines = []
     for line in lines:
         # Remove unwanted characters, but allow spaces and alphanumeric characters
-        cleaned_line = re.sub(r'[^a-zA-Z0-9\s\n]', '', line)
+        cleaned_line = re.sub(r'[^a-zA-Z0-9\s\n*()\-,.:;?!\'"]', '', line)
         cleaned_lines.append(cleaned_line)
 
     # Join cleaned lines back together, preserving blank lines
@@ -70,7 +70,6 @@ def extract_text_from_pdf(pdf_path):
         ocr_text = pytesseract.image_to_string(img)
         cleaned_text = clean_text(ocr_text)  # Apply cleaning function
         text += cleaned_text + "\n"
-        text = ocr_text
 
     print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")  # Show first 100 characters
     return text.strip()
