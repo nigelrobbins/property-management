@@ -222,6 +222,7 @@ for file in os.listdir(input_folder):
         break
 
 output_file = "output_files/processed_doc.docx"
+output_file = "output_files/unzipped_files/Lot_15_Local Search.pdf.txt"
 if zip_file_path:
     print(f"📂 Found ZIP file: {zip_file_path}")
     process_zip(zip_file_path, output_file, yaml_config)
