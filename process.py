@@ -20,6 +20,20 @@ def timed_function(func):
         return result
     return wrapper
 
+def clean_text(text):
+    """Cleans text, removes odd characters but keeps blank lines intact."""
+    
+    # Split text into lines to keep blank lines intact
+    lines = text.splitlines()
+
+    cleaned_lines = []
+    for line in lines:
+        # Remove unwanted characters, but allow spaces and alphanumeric characters
+        cleaned_line = re.sub(r'[^a-zA-Z0-9\s\n*()\-,.:;?!\'"]', '', line)
+        cleaned_lines.append(cleaned_line)
+
+    # Join cleaned lines back together, preserving blank lines
+    return "\n".join(cleaned_lines)
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
@@ -54,7 +68,9 @@ def extract_text_from_pdf(pdf_path):
     images = convert_from_path(pdf_path)
     for img in images:
         ocr_text = pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6')
-        text = ocr_text.encode("utf-8").decode("utf-8")  # Ensure UTF-8 encoding
+        ocr_text = ocr_text.encode("utf-8").decode("utf-8")  # Ensure UTF-8 encoding
+        cleaned_text = clean_text(ocr_text)  # Apply cleaning function
+        text += cleaned_text + "\n"
 
     print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")  # Show first 100 characters
     return text.strip()
@@ -114,7 +130,6 @@ def process_questions(doc, extracted_text, questions):
         doc.add_paragraph(f"🔍 Checking section: {question['section']}", style="Heading 3")
 
         if question["search_pattern"] in extracted_text:
-            doc.add_paragraph(question["message_found"], style="Normal")
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
