@@ -9,10 +9,10 @@ groups:
         extract_text: true
         extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
         message_template: "{extracted_text_1}. Details: {extracted_text_2}."
-        message_found: ""
+        message_found: "Planning and Building Regulations" 
         message_not_found: "No Conservation Area information found."
         subsections:
-          - section: "Planning development restrictions"
+          - section: "Planning Development Restrictions"
             search_pattern: "PLANNING AND BUILDING REGULATIONS"
             extract_text: true
             extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*([^:\\n]+):?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
@@ -20,13 +20,13 @@ groups:
             message_found: ""
             message_not_found: "No direction restricting permitted information found"
             subsections:
-              - section: "Listed Buildings"
-                search_pattern: "11\\(c\\)"
+              - section: "Tree Preservation"
+                search_pattern: "PLANNING AND BUILDING REGULATIONS"
                 extract_text: true
-                extract_pattern: "11\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
+                extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*([^:\\n]+):?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
                 message_template: "{extracted_text_1}. Details: {extracted_text_2}."
-                message_found: "Listed building information found."
-                message_not_found: "No listed building information available."
+                message_found: ""
+                message_not_found: "No Tree Preservation information found."
       - section: "Roads"
         search_pattern: "ROADS"
         extract_text: true
