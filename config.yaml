@@ -1,8 +1,8 @@
 groups:
-  - name: "Local Authority Search"
+  - name: "Local_Authority_Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
-    message_if_identifier_found: "✅ Document matches 'Local Authority Search'. Proceeding with extraction."
-    message_if_identifier_not_found: "❌ Document does NOT match 'Local Authority Search'. Skipping specific questions."
+    message_if_identifier_found: "Local Authority Search"
+    message_if_identifier_not_found: ""
     questions:
       - section: "Roads"
         search_pattern: "ROADS"

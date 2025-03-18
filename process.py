@@ -195,7 +195,8 @@ def process_zip(zip_path, output_docx, yaml_path):
         else:
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
-
+        
+        doc.add_paragraph(question["message_found"], style="Normal")
         doc.add_paragraph(f"{group['name']}", style="Heading 2")
 
         # 🔹 **Use the recursive function here**
