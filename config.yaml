@@ -4,6 +4,29 @@ groups:
     message_if_identifier_found: "Local Authority Search"
     message_if_identifier_not_found: ""
     questions:
+      - section: "Planning and Development"
+        search_pattern: "PLANNING"
+        extract_text: true
+        extract_pattern: "11\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"
+        message_template: "Planning permission status: {extracted_text_1}. Details: {extracted_text_2}."
+        message_found: "Planning permission has been checked."
+        message_not_found: "No planning permission information found."
+        subsections:
+          - section: "Building Regulations"
+            search_pattern: "11\\(b\\)"
+            extract_text: true
+            extract_pattern: "11\\(b\\)\\s*([^:\\n]+):?\\s*\\n\\(b\\)\\s*([^\\n]+)"
+            message_template: "Building regulation approval: {extracted_text_1}. Details: {extracted_text_2}."
+            message_found: "Building regulation details found."
+            message_not_found: "No building regulation details available."
+            subsections:
+              - section: "Listed Buildings"
+                search_pattern: "11\\(c\\)"
+                extract_text: true
+                extract_pattern: "11\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
+                message_template: "Listed building status: {extracted_text_1}. Details: {extracted_text_2}."
+                message_found: "Listed building information found."
+                message_not_found: "No listed building information available."
       - section: "Roads"
         search_pattern: "ROADS"
         extract_text: true

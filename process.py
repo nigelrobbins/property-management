@@ -127,9 +127,10 @@ def extract_matching_text(text, pattern, message_template):
 def process_questions(doc, extracted_text, questions):
     """Recursively process questions and their subsections."""
     for question in questions:
+        doc.add_paragraph(f"🔍 Checking section: {question['section']}", style="Heading 3")
 
         if question["search_pattern"] in extracted_text:
-            doc.add_paragraph(f"{question['section']}", style="Heading 3")
+            doc.add_paragraph(question["message_found"], style="Normal")
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
@@ -143,11 +144,11 @@ def process_questions(doc, extracted_text, questions):
         else:
             doc.add_paragraph(question["message_not_found"], style="Normal")
 
-        # Recursively process subsections if they exist
-        if "subsections" in question:
+        # 🔹 **Recursively process subsections if they exist**
+        if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"])
 
-        doc.add_paragraph("")  # Spacing between sections
+        doc.add_paragraph("")  # Add spacing between sections
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
