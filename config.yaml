@@ -9,7 +9,7 @@ groups:
         extract_text: true
         extract_pattern: "11\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"
         message_template: "Planning permission status: {extracted_text_1}. Details: {extracted_text_2}."
-        message_found: "Planning permission has been checked."
+        message_found: ""
         message_not_found: "No planning permission information found."
         subsections:
           - section: "Building Regulations"
