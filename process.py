@@ -127,7 +127,7 @@ def extract_matching_text(text, pattern, message_template):
 def process_questions(doc, extracted_text, questions):
     """Recursively process questions and their subsections."""
     for question in questions:
-        doc.add_paragraph(f"{question['section']}", style="Heading 3")
+        doc.add_paragraph(f"{question['section']}", style="Heading 2")
 
         if question["search_pattern"] in extracted_text:
             #doc.add_paragraph(question["message_found"], style="Normal")
@@ -198,7 +198,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             continue  # Skip this file if no match
 
         for question in group["questions"]:
-            doc.add_paragraph(question["message_found"], style="Heading 2")
+            doc.add_paragraph(question["message_found"], style="Normal")
 
         # 🔹 **Use the recursive function here**
         process_questions(doc, extracted_text, group["questions"])
