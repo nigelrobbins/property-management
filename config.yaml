@@ -7,11 +7,11 @@ groups:
       - section: "Planning and Building Regulations"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: true
-        extract_pattern: "(?<!\\d)A Conservation Area consent\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
+        extract_pattern: "\\d+\\.\\d+\\(c\\)\\s*A Conservation Area consent[;\\s]*\\n\\(c\\)\\s*([^\\n]+)"
         message_template: "Planning permission status: {extracted_text_1}. Details: {extracted_text_2}."
-        message_found: ""
-        message_not_found: "No planning permission information found."
-        subsections:
+        message_found: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
+        message_not_found: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
+         subsections:
           - section: "Building Regulations"
             search_pattern: "11\\(b\\)"
             extract_text: true
