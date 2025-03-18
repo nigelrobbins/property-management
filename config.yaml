@@ -8,7 +8,7 @@ groups:
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: true
         extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
-        message_template: "Planning permission status: {extracted_text_1}. Details: {extracted_text_2}."
+        message_template: "{extracted_text_1}. Details: {extracted_text_2}."
         message_found: ""
         message_not_found: "No planning permission information found."
         subsections:
@@ -24,7 +24,7 @@ groups:
                 search_pattern: "11\\(c\\)"
                 extract_text: true
                 extract_pattern: "11\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
-                message_template: "Listed building status: {extracted_text_1}. Details: {extracted_text_2}."
+                message_template: "{extracted_text_1}. Details: {extracted_text_2}."
                 message_found: "Listed building information found."
                 message_not_found: "No listed building information available."
       - section: "Roads"
