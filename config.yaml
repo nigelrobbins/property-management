@@ -7,7 +7,7 @@ groups:
       - section: "Planning and Building Regulations"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: true
-        extract_pattern: "(?<!\\d)2\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"
+        extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)"
         message_template: "Planning permission status: {extracted_text_1}. Details: {extracted_text_2}."
         message_found: ""
         message_not_found: "No planning permission information found."
