@@ -1,7 +1,7 @@
 groups:
   - name: "Local_Authority_Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
-    message_if_identifier_found: "Local Authority Search..."
+    message_if_identifier_found: "Local Authority Search"
     message_if_identifier_not_found: ""
     questions:
       - section: "Roads"
