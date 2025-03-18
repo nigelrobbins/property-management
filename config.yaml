@@ -4,7 +4,7 @@ groups:
     message_if_identifier_found: "Local Authority Search"
     message_if_identifier_not_found: ""
     questions:
-      - section: "Planning and Building Regulations"
+      - section: "Conversation Area"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: true
         extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
@@ -12,7 +12,7 @@ groups:
         message_found: ""
         message_not_found: "No Conservation Area information found."
         subsections:
-          - section: "Building Regulations"
+          - section: "Planning development restrictions"
             search_pattern: "PLANNING AND BUILDING REGULATIONS"
             extract_text: true
             extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*([^:\\n]+):?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
