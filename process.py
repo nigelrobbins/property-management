@@ -167,7 +167,6 @@ def process_zip(zip_path, output_docx, yaml_path):
     unzip_end = time.time()
     print(f"⏱ Unzipping took {unzip_end - unzip_start:.4f} seconds")
 
-    doc.add_paragraph(f"ZIP File: {os.path.basename(zip_path)}", style="Heading 1")
     extracted_text_files = []
 
     for file_name in sorted(os.listdir(output_folder)):
@@ -197,8 +196,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
 
-        doc.add_paragraph(f"📂 Processing: {file_name}", style="Heading 1")
-        doc.add_paragraph(f"📄 Document identified as: {group['name']}", style="Heading 2")
+        doc.add_paragraph(f"{group['name']}", style="Heading 2")
 
         # 🔹 **Use the recursive function here**
         process_questions(doc, extracted_text, group["questions"])
