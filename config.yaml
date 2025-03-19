@@ -9,7 +9,7 @@ groups:
         extract_text: true
         extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
         message_template: "{extracted_text_1}. Details: {extracted_text_2}."
-        message_found: "Planning and Building Regulations" 
+        message_found: "" 
         message_not_found: "No Conservation Area information found."
         subsections:
           - section: "Planning Development Restrictions"
