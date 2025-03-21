@@ -12,7 +12,6 @@ groups:
           - section: "Conversation Area"
             search_pattern: "PLANNING AND BUILDING REGULATIONS"
             extract_text: true
-            #extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
             extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
             message_template: "{extracted_text_1} {extracted_text_2}."
             message_found: "" 
@@ -39,7 +38,8 @@ groups:
           - section: "Highways"
             search_pattern: "Highways maintainable"
             extract_text: true
-            extract_pattern: "(?<!\\d)2\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Highways maintainable section number; 2(a) then (a)
+            #extract_pattern: "(?<!\\d)2\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Highways maintainable section number; 2(a) then (a)
+            extract_pattern: "(?<!\\d)2\\(a\\)\\s*(Highways.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Highways maintainable section number; 2(a) then (a)
             message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
             message_found: ""
             message_not_found: ""
