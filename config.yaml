@@ -51,7 +51,7 @@ groups:
                 extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
                 message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Radon Gas"
-            search_pattern: "Radon Affected Area"
+            search_pattern: "Protection Agency?"
             extract_text: true
-            extract_pattern: "(?<!\\d).*\\s*(.*Radon Affected Area.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
+            extract_pattern: "(?<!\\d).*\\s*(.*Protection Agency?.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
