@@ -207,6 +207,10 @@ def process_zip(zip_path, output_docx, yaml_path):
         extracted_text_files.append(extracted_text_file)
 
         group = identify_group(extracted_text, groups)
+        if group is None:
+            print("⚠️ No matching group found. Skipping this document.")
+            continue  # Skip processing this file
+
         doc.add_paragraph(group["heading"], style="Heading 1")
         if group:
             doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
