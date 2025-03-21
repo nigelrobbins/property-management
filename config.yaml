@@ -9,14 +9,14 @@ groups:
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: false
         subsections:
-          - section: "Conversation Area"
+          - subsection: "Conversation Area"
             search_pattern: "PLANNING AND BUILDING REGULATIONS"
             extract_text: true
             extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
             message_template: "{extracted_text_1} {extracted_text_2}."
             message_found: "" 
             message_not_found: "No Conservation Area information found."
-          - section: "Planning Development Restrictions"
+          - subsection: "Planning Development Restrictions"
             search_pattern: "OTHER MATTERS"
             extract_text: true
             extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*([^:\\n]+):?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
@@ -24,7 +24,7 @@ groups:
             message_found: ""
             message_not_found: "No direction restricting permitted information found"
             subsections:
-              - section: "Tree Preservation"
+              - subsection: "Tree Preservation"
                 search_pattern: "OTHER MATTERS"
                 extract_text: true
                 extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*([^:\\n]+):?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
@@ -35,7 +35,7 @@ groups:
         search_pattern: "ROADS"
         extract_text: false
         subsections:
-          - section: "Highways"
+          - subsection: "Highways"
             search_pattern: "Highways maintainable"
             extract_text: true
             #extract_pattern: "(?<!\\d)2\\(a\\)\\s*([^:\\n]+):?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Highways maintainable section number; 2(a) then (a)

@@ -144,8 +144,7 @@ def extract_matching_text(text, pattern, message_template):
 def process_questions(doc, extracted_text, questions):
     """Recursively process questions and their subsections."""
     for question in questions:
-        doc.add_paragraph(f"{question['section']}", style="Heading 2")
-
+        doc.add_paragraph(question.get("section", ""), style="Heading 2")
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
@@ -162,6 +161,7 @@ def process_questions(doc, extracted_text, questions):
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
+            doc.add_paragraph(question.get("subsection", ""), style="Heading 2")
             process_questions(doc, extracted_text, question["subsections"])
 
         doc.add_paragraph("")  # Add spacing between sections
