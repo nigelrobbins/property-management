@@ -36,15 +36,30 @@ def clean_text(text):
     return "\n".join(cleaned_lines)
 
 @timed_function
+import os
+import subprocess
+import pdfplumber
+import pytesseract
+from pdf2image import convert_from_path
+
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
+    
+    # Ensure the work_files directory exists
+    output_dir = "work_files"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Construct the output file path
+    output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
 
     # Try using pdftotext first
     result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
     text = result.stdout.strip()
 
     if text:
-        print(f"✅ Extracted text using pdftotext: {text[:100]}...")  # Show first 100 characters
+        print(f"✅ Extracted text using pdftotext: {text[:100]}...")
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(text)
         return text  # If pdftotext works, return immediately
 
     print("⚠️ pdftotext failed, trying pdfplumber...")
@@ -58,8 +73,11 @@ def extract_text_from_pdf(pdf_path):
                 text += page_text + "\n"
 
     if text:
-        print(f"✅ Extracted text using pdfplumber: {text[:100]}...")  # Show first 100 characters
-        return text.strip()  # If pdfplumber works, return immediately
+        print(f"✅ Extracted text using pdfplumber: {text[:100]}...")
+        text = text.strip()
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return text  # If pdfplumber works, return immediately
 
     print("⚠️ pdfplumber failed, performing OCR...")
 
@@ -68,12 +86,17 @@ def extract_text_from_pdf(pdf_path):
     images = convert_from_path(pdf_path)
     for img in images:
         ocr_text = pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6')
-        ocr_text = ocr_text.encode("utf-8").decode("utf-8")  # Ensure UTF-8 encoding
-        cleaned_text = clean_text(ocr_text)  # Apply cleaning function
+        cleaned_text = ocr_text.strip()
         text += cleaned_text + "\n"
 
-    print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")  # Show first 100 characters
-    return text.strip()
+    text = text.strip()
+    print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")
+
+    # Write the final extracted text to the file
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        f.write(text)
+
+    return text
 
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""

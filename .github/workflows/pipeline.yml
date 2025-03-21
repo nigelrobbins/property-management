@@ -52,6 +52,7 @@ jobs:
           name: processed_word_document_and_zip
           path: |
             input_files/*.zip
+            work_files/*.txt
             output_files/processed_doc.docx
 
       - name: Setup Git
