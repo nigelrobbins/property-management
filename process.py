@@ -151,6 +151,8 @@ def process_questions(doc, extracted_text, questions):
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
+                    #doc.add_paragraph(question.get("subsection", ""), style="Heading 3")
+                    doc.add_paragraph(question["subsection"], style="Heading 3")
                     print(f"✅ Extracted content: {extracted_section[:50]}...")
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
@@ -161,7 +163,6 @@ def process_questions(doc, extracted_text, questions):
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
-            doc.add_paragraph(question.get("subsection", ""), style="Heading 2")
             process_questions(doc, extracted_text, question["subsections"])
 
         doc.add_paragraph("")  # Add spacing between sections
