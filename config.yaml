@@ -12,7 +12,7 @@ groups:
           - subsection: "Planning Permission"
             search_pattern: "A Planning Permission"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(a\\)\\s*(A Planning Permission.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Planning Permission section number; 1.1(a) then <next line>
+            extract_pattern: "(?<!\\d)1.1\\(a\\)\\s*(A Planning Permission.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"  # Planning Permission section number; 1.1(a) then <next line>
             message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Conversation Area"
             search_pattern: "A Conservation Area consent"
@@ -50,3 +50,8 @@ groups:
                 extract_text: true
                 extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
                 message_template: "{extracted_text_1} {extracted_text_2}."
+          - subsection: "Radon Gas"
+            search_pattern: "Do records indicate that the property is in a ‘Radon Affected Area’"
+            extract_text: true
+            extract_pattern: "(?<!\\d)3.13.\\s*(Do records indicate that the property is in a ‘Radon Affected Area’.*?)(?:[:\\n])?\\s*\\nProtection Agency?\\s*([^\\n]+)"
+            message_template: "{extracted_text_1} {extracted_text_2}."
