@@ -5,15 +5,18 @@ groups:
     message_if_identifier_found: "A search against the property in the local Land Charges Registers, maintained by the Local Authority was carried out. In the search, the Local Authority were asked numerous questions of a kind normally asked in relation to property transactions.  The purpose was to establish whether there is anything registered against the Property that would adversely affect the Property’s value; or if any information held by Local Authority might limit the use to which you intend to put the property."
     message_if_identifier_not_found: "The road is not a highway maintainable at public expense but a road maintained privately. A private highway is a road or way that is maintained by a private owner, rather than the local authority or government. The highway is owned and maintained by a private individual, company, or organisation. Access to it may be restricted or limited to certain individuals or groups. The private owner is responsible for maintaining the highway, including repairs, upkeep, and snow removal. As access to a private owned road is not automatic it is essential that you confirm the owner of the road and ensure that you have access to it."
     questions:
-      - section: "Conversation Area"
+      - section: "Planning and Building Regulations"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
-        extract_text: true
-        #extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
-        extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
-        message_template: "{extracted_text_1} {extracted_text_2}."
-        message_found: "" 
-        message_not_found: "No Conservation Area information found."
+        extract_text: false
         subsections:
+          - section: "Conversation Area"
+            search_pattern: "PLANNING AND BUILDING REGULATIONS"
+            extract_text: true
+            #extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
+            extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
+            message_template: "{extracted_text_1} {extracted_text_2}."
+            message_found: "" 
+            message_not_found: "No Conservation Area information found."
           - section: "Planning Development Restrictions"
             search_pattern: "OTHER MATTERS"
             extract_text: true
