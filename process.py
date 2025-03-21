@@ -9,6 +9,7 @@ from pdf2image import convert_from_path
 from PIL import Image
 import subprocess
 import yaml
+from datetime import datetime  # Import datetime module
 
 def timed_function(func):
     """Decorator to measure function execution time."""
@@ -211,6 +212,9 @@ def process_zip(zip_path, output_docx, yaml_path):
             continue  # Skip processing this file
 
         doc.add_paragraph(group["heading"], style="Heading 1")
+        # Add today's date in a readable format
+        today_date = datetime.today().strftime("%d %B %Y")  # Example: "18 March 2025"
+        doc.add_paragraph(f"Date: {today_date}", style="Normal")
         if group:
             doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
             print(group["message_if_identifier_found"])
