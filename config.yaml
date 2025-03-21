@@ -7,7 +7,7 @@ groups:
       - section: "Conversation Area"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
         extract_text: true
-        extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
+        extract_pattern: "(?<!\\d)1.1\\(c\\).*?A Conservation Area consent.*?\\s*([^:\\n]+):?\\s*\\n\\(c\\)\\s*([^\\n]+)" # Conservation Area section number; 1.1(a) then <next line>
         message_template: "{extracted_text_1}. Details: {extracted_text_2}."
         message_found: "" 
         message_not_found: "No Conservation Area information found."
