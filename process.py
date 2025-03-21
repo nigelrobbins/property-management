@@ -142,6 +142,14 @@ def extract_matching_text(text, pattern, message_template):
         print("⚠️ No matches found for the pattern.")
         return None
 
+def find_subsection_message_not_found(question):
+    """Find the 'message_not_found' from a relevant subsection if it exists."""
+    if "subsections" in question:
+        for subsection in question["subsections"]:
+            if "message_not_found" in subsection:
+                return subsection["message_not_found"]
+    return "No relevant information found."  # Default fallback message
+
 def process_questions(doc, extracted_text, questions):
     """Recursively process questions and their subsections."""
     for question in questions:
@@ -159,7 +167,7 @@ def process_questions(doc, extracted_text, questions):
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
-            doc.add_paragraph(question["message_not_found"], style="Normal")
+            doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
