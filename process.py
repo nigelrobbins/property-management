@@ -36,12 +36,6 @@ def clean_text(text):
     return "\n".join(cleaned_lines)
 
 @timed_function
-import os
-import subprocess
-import pdfplumber
-import pytesseract
-from pdf2image import convert_from_path
-
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
     
