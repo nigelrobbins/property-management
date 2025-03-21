@@ -216,7 +216,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
             print(group["message_if_identifier_found"])
         else:
-            #doc.add_paragraph(group["message_if_identifier_not_found"], style="Normal")
+            doc.add_paragraph(group["message_if_identifier_not_found"], style="Normal")
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
 
