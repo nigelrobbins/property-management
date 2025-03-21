@@ -53,5 +53,5 @@ groups:
           - subsection: "Radon Gas"
             search_pattern: "Do records indicate that the property is in a ‘Radon Affected Area’"
             extract_text: true
-            extract_pattern: "(?<!\\d)3.13.\\s*(Do records indicate that the property is in a ‘Radon Affected Area’.*?)(?:[:\\n])?\\s*\\nProtection Agency?\\s*([^\\n]+)"
+            extract_pattern: "(?<!\\d)3.13.\\s*(Do records indicate that the property is in a ‘Radon Affected Area’.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
