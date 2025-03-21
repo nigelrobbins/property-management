@@ -53,5 +53,5 @@ groups:
           - subsection: "Radon Gas"
             search_pattern: "Radon Affected Area"
             extract_text: true
-            extract_pattern: "(?<!\\d).*\\s*(.*Radon Affected Area.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
+            extract_pattern: "(?<!\\d).*\\s*(.*Radon Affected Area.*Protection Agency?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
