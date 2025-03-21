@@ -16,23 +16,6 @@ groups:
             message_template: "{extracted_text_1} {extracted_text_2}."
             message_found: "" 
             message_not_found: "No Conservation Area information found."
-          - subsection: "Planning Development Restrictions"
-            search_pattern: "OTHER MATTERS"
-            extract_text: true
-            #extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*([^:\\n]+):?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
-            extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*(A direction restricting.*?)(?:[:\\n])?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
-            message_template: "{extracted_text_1} {extracted_text_2}."
-            message_found: ""
-            message_not_found: "No direction restricting permitted information found"
-            subsections:
-              - subsection: "Tree Preservation"
-                search_pattern: "OTHER MATTERS"
-                extract_text: true
-                #extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*([^:\\n]+):?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
-                extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
-                message_template: "{extracted_text_1} {extracted_text_2}."
-                message_found: ""
-                message_not_found: "No Tree Preservation information found."
       - section: "Roads"
         search_pattern: "ROADS"
         extract_text: false
@@ -44,3 +27,25 @@ groups:
             message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
             message_found: ""
             message_not_found: ""
+      - section: "Other Matters"
+        search_pattern: "OTHER MATTERS"
+        extract_text: false
+        subsections:
+          - subsection: "Planning Development Restrictions"
+            search_pattern: "OTHER MATTERS"
+            extract_text: true
+            extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*(A direction restricting.*?)(?:[:\\n])?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
+            message_template: "{extracted_text_1} {extracted_text_2}."
+            message_found: ""
+            message_not_found: "No direction restricting permitted information found"
+            subsections:
+              # This is only an example of a subsection within a subsection
+              # This is really just a subsection
+              - subsection: "Tree Preservation"
+                search_pattern: "OTHER MATTERS"
+                extract_text: true
+                #extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*([^:\\n]+):?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
+                extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
+                message_template: "{extracted_text_1} {extracted_text_2}."
+                message_found: ""
+                message_not_found: "No Tree Preservation information found."
