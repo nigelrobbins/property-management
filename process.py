@@ -170,9 +170,15 @@ def find_subsection_message_not_found(question):
 def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    section_logged = False  # Ensure "Other Matters" is added only once
+    section_logged = False  # Ensure "Other Matters" is added only once before logging `all_none_message`
 
+    # Timing the iteration over questions
+    start_time = time.time()
     for question in questions:
+        # Inside loop to process each question
+        question_start = time.time()
+        
+        # Processing each question logic
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name) 
             doc.add_paragraph(section_name, style="Heading 2")
@@ -184,7 +190,6 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
                 )
                 if extracted_section:
                     doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
 
@@ -198,22 +203,23 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
         
-        doc.add_paragraph(f"section_name {section_name}", style="Normal")
-        doc.add_paragraph(f"log_message_section {log_message_section}", style="Normal")
-        doc.add_paragraph(f"section_logged {section_logged}", style="Normal")
+        # Time each question processing
+        question_end = time.time()
+        print(f"Question '{question['subsection']}' took {question_end - question_start:.4f} seconds.")
         
-        # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
+        # Ensure "Other Matters" is only added once before logging `all_none_message`
         if section_name == log_message_section and not section_logged:
             section_logged = True
             doc.add_paragraph(section_name, style="Heading 2")  # Only once
-            # ✅ Dynamically check if we are in the correct section from YAML before logging the message
-            doc.add_paragraph("here", style="Normal")
             if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
-                doc.add_paragraph("here2", style="Normal")
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name="")
+
+    # Measure total time for processing questions
+    end_time = time.time()
+    print(f"Processing all questions took {end_time - start_time:.4f} seconds.")
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
