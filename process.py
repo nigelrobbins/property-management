@@ -139,6 +139,9 @@ def extract_matching_text(text, pattern, message_template):
     if matches:
         # Log the matches for debugging
         print(f"✅ Matches found: {matches}")
+        print("Full match:", matches.group(0))  # Debugging
+        print("First group:", matches.group(1))
+        print("Second group:", matches.group(2))  # This should be "Wanted"    
         
         extracted_text_1 = matches[0][0]  # First part of the extracted text
         extracted_text_2 = matches[0][1] if len(matches[0]) > 1 else ''  # Second part of the extracted text (optional)
