@@ -134,7 +134,7 @@ def extract_matching_text(text, pattern, message_template):
     print(f"🔍 Text to search: {text}")
 
     # Find the matching text based on the pattern
-    matches = re.findall(pattern, text, re.IGNORECASE | re.DOTALL)
+    matches = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
     
     if matches:
         # Log the matches for debugging
@@ -190,7 +190,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
                     # Check if the subsection is listed in the YAML
                     if question["subsection"] in check_none_subsections:
-                        matches = re.findall(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
+                        matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                         extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
                         extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
