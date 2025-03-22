@@ -161,19 +161,21 @@ def find_subsection_message_not_found(question):
 def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
+    section_logged = False  # Ensure "Other Matters" is added only once
 
     for question in questions:
-        section_name = question.get("section", section_name) 
- 
+        if section_name != question.get("section", section_name):
+            section_name = question.get("section", section_name) 
+            doc.add_paragraph(section_name, style="Heading 2")
+
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
-                doc.add_paragraph(section_name, style="Heading 2")
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
                     doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")
+                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
 
@@ -184,23 +186,20 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
                         extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
-
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-        # 🔹 **Recursively process subsections if they exist**
+        # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
+        if section_name == log_message_section and not section_logged:
+            section_logged = True
+            doc.add_paragraph(section_name, style="Heading 2")  # Only once
+
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
 
-        doc.add_paragraph("")  # Add spacing between sections
-
-    # ✅ Dynamically check if we are in the section from the YAML before logging
+    # ✅ Dynamically check if we are in the correct section from YAML before logging the message
     if section_name == log_message_section:
-        doc.add_paragraph("here")
-
-        # Check if all extracted_text_2 values are None for the specified subsections
         if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
-            doc.add_paragraph("here2")
             doc.add_paragraph(all_none_message, style="Normal")
 
 def process_zip(zip_path, output_docx, yaml_path):
