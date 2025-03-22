@@ -204,7 +204,7 @@ def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    groups, check_none_subsections, all_none_message = load_yaml(yaml_path)  # Load YAML data
+    groups, check_none_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
     doc = Document()
 
     if not os.path.exists(zip_path):
