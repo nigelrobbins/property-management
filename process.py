@@ -100,13 +100,16 @@ def extract_text_from_docx(docx_path):
 
 # Load YAML configuration
 def load_yaml(yaml_path):
-    with open(yaml_path, "r", encoding="utf-8") as f:
-        yaml_data = yaml.safe_load(f)
-    return (
-        yaml_data["groups"], 
-        yaml_data.get("config", {}).get("check_none_subsections", []),
-        yaml_data.get("config", {}).get("all_none_message", "all None")  # Default message if missing
-    )
+    """Load questions and settings from a YAML file."""
+    with open(yaml_path, "r", encoding="utf-8") as file:
+        yaml_data = yaml.safe_load(file)
+
+    groups = yaml_data.get("groups", [])
+    check_none_subsections = yaml_data.get("check_none_subsections", [])
+    all_none_message = yaml_data.get("all_none_message", "No relevant information found.")
+    log_message_section = yaml_data.get("log_message_section", None)  # Load from YAML
+
+    return groups, check_none_subsections, all_none_message, log_message_section
 
 # Identify question group based on document content
 def identify_group(text, groups):
@@ -155,7 +158,7 @@ def find_subsection_message_not_found(question):
                 return subsection["message_not_found"]
     return "No relevant information found."  # Default fallback message
 
-def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message):
+def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
 
@@ -186,13 +189,16 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message)
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section)
 
         doc.add_paragraph("")  # Add spacing between sections
 
-    # Check if all extracted_text_2 values are None for the specified subsections
-    if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
-        doc.add_paragraph(all_none_message, style="Normal")
+    # ✅ Dynamically check if we are in the section from the YAML before logging
+    if section_name == log_message_section:
+
+        # Check if all extracted_text_2 values are None for the specified subsections
+        if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+            doc.add_paragraph(all_none_message, style="Normal")
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
@@ -254,7 +260,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message)
+        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section)
         doc.add_page_break()
 
     # Save Word document
