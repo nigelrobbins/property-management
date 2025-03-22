@@ -10,6 +10,7 @@ from PIL import Image
 import subprocess
 import yaml
 from datetime import datetime  # Import datetime module
+import cProfile
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -201,13 +202,12 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
         # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
         if section_name == log_message_section and not section_logged:
             section_logged = True
-            doc.add_paragraph(section_name, style="Heading 2")  # Only once
             # ✅ Dynamically check if we are in the correct section from YAML before logging the message
             if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
+            cProfile.run('process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)')
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -270,7 +270,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
+        cProfile.run('process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")')
         doc.add_page_break()
 
     # Save Word document
