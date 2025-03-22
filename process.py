@@ -12,15 +12,20 @@ import yaml
 from datetime import datetime  # Import datetime module
 
 def timed_function(func):
-    """Decorator to measure function execution time."""
+    """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"⏱ {func.__name__} took {end_time - start_time:.4f} seconds")
+        elapsed_time = end_time - start_time
+
+        if elapsed_time > 2:  # Log only if execution time exceeds 2 seconds
+            print(f"⏱ {func.__name__} took {elapsed_time:.4f} seconds")
+
         return result
     return wrapper
 
+@timed_function
 def clean_text(text):
     """Cleans text, removes odd characters but keeps blank lines intact."""
     
@@ -93,12 +98,14 @@ def extract_text_from_pdf(pdf_path):
 
     return text
 
+@timed_function
 def extract_text_from_docx(docx_path):
     """Extract text from a Word document."""
     doc = Document(docx_path)
     return "\n".join([para.text for para in doc.paragraphs])
 
 # Load YAML configuration
+@timed_function
 def load_yaml(yaml_path):
     """Load questions and settings from a YAML file."""
     with open(yaml_path, "r", encoding="utf-8") as file:
@@ -112,14 +119,14 @@ def load_yaml(yaml_path):
     return groups, check_none_subsections, all_none_message, log_message_section
 
 # Identify question group based on document content
+@timed_function
 def identify_group(text, groups):
     for group in groups:
         if group["identifier"] in text:
             return group
     return None  # No matching group found
 
-import re
-
+@timed_function
 def extract_matching_text(text, pattern, message_template):
     """Extracts matching text based on the given pattern and formats the message."""
     # Log the text and pattern for debugging
@@ -150,6 +157,7 @@ def extract_matching_text(text, pattern, message_template):
         print("⚠️ No matches found for the pattern.")
         return None
 
+@timed_function
 def find_subsection_message_not_found(question):
     """Find the 'message_not_found' from a relevant subsection if it exists."""
     if "subsections" in question:
@@ -158,6 +166,7 @@ def find_subsection_message_not_found(question):
                 return subsection["message_not_found"]
     return "No relevant information found."  # Default fallback message
 
+@timed_function
 def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
@@ -202,6 +211,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
 
+@timed_function
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
