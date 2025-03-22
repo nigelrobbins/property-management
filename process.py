@@ -163,7 +163,8 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
 
     for question in questions:
-        doc.add_paragraph(question.get("section", ""), style="Heading 2")
+        section_name = question.get("section", section_name) 
+        doc.add_paragraph(section_name, style="Heading 2")
 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
@@ -189,7 +190,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section)
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
 
         doc.add_paragraph("")  # Add spacing between sections
 
@@ -260,7 +261,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section)
+        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
         doc.add_page_break()
 
     # Save Word document
