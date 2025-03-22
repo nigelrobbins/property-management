@@ -270,17 +270,12 @@ def process_zip(zip_path, output_docx, yaml_path):
 
         # 🔹 **Use the recursive function here**
         process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
-        if doc.paragraphs:
-            doc.add_page_break()
+        doc.add_page_break()
 
     # Save Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
     doc.save(output_docx)
 
-    # After saving the document, check if the last page is blank and remove it
-    if len(doc.paragraphs) > 0 and doc.paragraphs[-1].text == "":
-        doc.paragraphs[-1].clear()  # Clear the last empty paragraph (page)
-        
     # Create ZIP file including extracted text files
     final_zip_path = "output_files/processed_files.zip"
     with zipfile.ZipFile(final_zip_path, 'w') as zipf:
