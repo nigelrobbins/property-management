@@ -101,7 +101,8 @@ def extract_text_from_docx(docx_path):
 # Load YAML configuration
 def load_yaml(yaml_path):
     with open(yaml_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)["groups"]
+        yaml_data = yaml.safe_load(f)
+    return yaml_data["groups"], yaml_data.get("config", {}).get("check_none_subsections", [])
 
 # Identify question group based on document content
 def identify_group(text, groups):
@@ -150,10 +151,13 @@ def find_subsection_message_not_found(question):
                 return subsection["message_not_found"]
     return "No relevant information found."  # Default fallback message
 
-def process_questions(doc, extracted_text, questions):
+def process_questions(doc, extracted_text, questions, check_none_subsections):
     """Recursively process questions and their subsections."""
+    extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
+
     for question in questions:
         doc.add_paragraph(question.get("section", ""), style="Heading 2")
+
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
@@ -164,22 +168,33 @@ def process_questions(doc, extracted_text, questions):
                     print(f"✅ Extracted content: {extracted_section[:50]}...")
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
+
+                    # Check if the subsection is listed in the YAML
+                    if question["subsection"] in check_none_subsections:
+                        matches = re.findall(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
+                        extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
+                        extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
+
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
         # 🔹 **Recursively process subsections if they exist**
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"])
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections)
 
         doc.add_paragraph("")  # Add spacing between sections
+
+    # Check if all extracted_text_2 values are None for the specified subsections
+    if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+        doc.add_paragraph("all None", style="Normal")
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    groups = load_yaml(yaml_path)
+    groups, check_none_subsections = load_yaml(yaml_path)  # Load groups and YAML list
     doc = Document()
 
     if not os.path.exists(zip_path):
@@ -235,8 +250,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"])
-
+        process_questions(doc, extracted_text, group["questions"], check_none_subsections)
         doc.add_page_break()
 
     # Save Word document
