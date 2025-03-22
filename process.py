@@ -158,7 +158,7 @@ def find_subsection_message_not_found(question):
                 return subsection["message_not_found"]
     return "No relevant information found."  # Default fallback message
 
-def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section):
+def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
 
