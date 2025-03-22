@@ -164,7 +164,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
     for question in questions:
         section_name = question.get("section", section_name) 
-        doc.add_paragraph(section_name, style="Heading 2")
+        #doc.add_paragraph(section_name, style="Heading 2")
 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
