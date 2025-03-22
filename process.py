@@ -270,7 +270,8 @@ def process_zip(zip_path, output_docx, yaml_path):
 
         # 🔹 **Use the recursive function here**
         process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
-        doc.add_page_break()
+        if doc.paragraphs:
+            doc.add_page_break()
 
     # Save Word document
     os.makedirs(os.path.dirname(output_docx), exist_ok=True)
