@@ -164,10 +164,10 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
     for question in questions:
         section_name = question.get("section", section_name) 
-        #doc.add_paragraph(section_name, style="Heading 2")
-
+ 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
+                doc.add_paragraph(section_name, style="Heading 2")
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
@@ -196,9 +196,11 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
     # ✅ Dynamically check if we are in the section from the YAML before logging
     if section_name == log_message_section:
+        doc.add_paragraph("here")
 
         # Check if all extracted_text_2 values are None for the specified subsections
         if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+            doc.add_paragraph("here2")
             doc.add_paragraph(all_none_message, style="Normal")
 
 def process_zip(zip_path, output_docx, yaml_path):
