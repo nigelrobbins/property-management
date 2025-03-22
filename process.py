@@ -10,7 +10,6 @@ from PIL import Image
 import subprocess
 import yaml
 from datetime import datetime  # Import datetime module
-import cProfile
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -207,7 +206,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
-            cProfile.run('process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)')
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -270,7 +269,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        cProfile.run('process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")')
+        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
         doc.add_page_break()
 
     # Save Word document
