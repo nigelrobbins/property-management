@@ -196,14 +196,13 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
 
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
-    print("🔍 extracted_text_2_values:", extracted_text_2_values)
-    print("🔍 check_none_subsections:", check_none_subsections)
-    print("🔍 Condition check:", [extracted_text_2_values.get(sub) is None for sub in check_none_subsections])
 
-    # ✅ Dynamically check if we are in the correct section from YAML before logging the message
-    if section_name == log_message_section:
-        if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
-            doc.add_paragraph(all_none_message, style="Normal")
+        # ✅ Dynamically check if we are in the correct section from YAML before logging the message
+        if section_name == log_message_section and not section_logged:
+            doc.add_paragraph("here", style="Normal")
+            if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+                doc.add_paragraph("here2", style="Normal")
+                doc.add_paragraph(all_none_message, style="Normal")
 
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
