@@ -112,9 +112,9 @@ def load_yaml(yaml_path):
         yaml_data = yaml.safe_load(file)
 
     groups = yaml_data.get("groups", [])
-    check_none_subsections = yaml_data.get("check_none_subsections", [])
-    all_none_message = yaml_data.get("all_none_message", "No relevant information found.")
-    log_message_section = yaml_data.get("log_message_section", None)  # Load from YAML
+    check_none_subsections = yaml_data.get("config", {}).get("check_none_subsections", [])  # Correct path
+    all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
+    log_message_section = yaml_data.get("config", {}).get("log_message_section", None)  # Correct path
 
     return groups, check_none_subsections, all_none_message, log_message_section
 
