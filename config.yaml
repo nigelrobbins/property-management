@@ -20,7 +20,7 @@ groups:
           - subsection: "Planning Permission"
             search_pattern: "A Planning Permission"
             extract_text: true
-            extract_pattern: "(?<!\\d)1\\.1\\(a\\)\\s*(A Planning Permission.*?)[;:\\n]\\s*([^\\n]+)"
+            extract_pattern: "(?<!\\d)1\\.1\\(a\\)\\s*(A Planning Permission.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Conversation Area"
             search_pattern: "A Conservation Area consent"
