@@ -143,7 +143,7 @@ def extract_matching_text(text, pattern, message_template):
         print("First group:", matches.group(1))
         print("Second group:", matches.group(2))  # This should be "Wanted"    
         
-        extracted_text_1 = matches.group(1))  # First part of the extracted text
+        extracted_text_1 = matches.group(1)  # First part of the extracted text
         extracted_text_2 = matches.group(2) if len(matches[0]) > 1 else ''  # Second part of the extracted text (optional)
 
         # Log the extracted content for debugging
