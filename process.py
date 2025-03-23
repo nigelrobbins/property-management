@@ -172,7 +172,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
-            logged_section = False
+            #logged_section = False
         doc.add_paragraph(f"Current section: {section_name}", style="Heading 4")
         doc.add_paragraph(f"logged_section: {logged_section}", style="Heading 4")
         doc.add_paragraph("here0", style="Heading 4")
@@ -215,6 +215,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
+        logged_section = False
 
     # Recursive processing for subsections
     for question in questions:
