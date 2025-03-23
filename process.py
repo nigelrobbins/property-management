@@ -198,7 +198,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-
+    doc.add_paragraph("here0", style="Normal")
     # ✅ Ensure each log message section is added only once
     for land_charge in land_charges_configs:
         doc.add_paragraph("here1", style="Normal")
@@ -214,7 +214,6 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name)
 
-@timed_function
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process relevant sections from documents."""
