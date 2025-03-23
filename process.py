@@ -174,11 +174,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             section_name = question.get("section", section_name)
         added_section = False
         if question["search_pattern"] in extracted_text:
+            doc.add_paragraph(section_name, style="Normal")
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
-                doc.add_paragraph(section_name, style="Normal")
                 if extracted_section:
                     if not added_section:
                         doc.add_paragraph(section_name, style="Heading 2")
