@@ -196,7 +196,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                                 all_subsections_not_found = False
                 if extracted_section:
-                    logged_section = alse
+                    logged_section = False
                     doc.add_paragraph("here5", style="Heading 4")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
                     paragraph = doc.add_paragraph(extracted_section)
