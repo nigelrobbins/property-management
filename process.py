@@ -112,11 +112,11 @@ def load_yaml(yaml_path):
         yaml_data = yaml.safe_load(file)
 
     groups = yaml_data.get("groups", [])
-    check_none_subsections = yaml_data.get("config", {}).get("check_none_subsections", [])  # Correct path
+    land_charges_subsections = yaml_data.get("config", {}).get("land_charges_subsections", [])  # Correct path
     all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
     log_message_section = yaml_data.get("config", {}).get("log_message_section", None)  # Correct path
 
-    return groups, check_none_subsections, all_none_message, log_message_section
+    return groups, land_charges_subsections, all_none_message, log_message_section
 
 # Identify question group based on document content
 @timed_function
@@ -170,7 +170,7 @@ def find_subsection_message_not_found(question):
     return "No relevant information found."  # Default fallback message
 
 @timed_function
-def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
+def process_questions(doc, extracted_text, questions, land_charges_subsections, all_none_message, log_message_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     section_logged = False  # Ensure "Other Matters" is added only once
@@ -192,7 +192,7 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
                     paragraph.runs[0].italic = True
 
                     # Check if the subsection is listed in the YAML
-                    if question["subsection"] in check_none_subsections:
+                    if question["subsection"] in land_charges_subsections:
                         matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                         extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
                         extracted_text_2_values[question["subsection"]] = extracted_text_2
@@ -205,18 +205,18 @@ def process_questions(doc, extracted_text, questions, check_none_subsections, al
         if section_name == log_message_section and not section_logged:
             section_logged = True
             # ✅ Dynamically check if we are in the correct section from YAML before logging the message
-            if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+            if all(extracted_text_2_values.get(sub) is None for sub in land_charges_subsections):
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
+            process_questions(doc, extracted_text, question["subsections"], land_charges_subsections, all_none_message, log_message_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    groups, check_none_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
+    groups, land_charges_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
     doc = Document()
 
     if not os.path.exists(zip_path):
@@ -272,7 +272,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
+        process_questions(doc, extracted_text, group["questions"], land_charges_subsections, all_none_message, log_message_section, section_name="")
         doc.add_page_break()
 
     # Save Word document
