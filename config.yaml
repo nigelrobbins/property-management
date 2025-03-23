@@ -25,12 +25,12 @@ groups:
           - subsection: "Conversation Area"
             search_pattern: "A Conservation Area consent"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
+            extract_pattern: "(?<!\\d)1\\.1\\(c\\)\\s*(A Conservation Area consent.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Building Regulations"
             search_pattern: "Building Regulation Approval"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(f\\)\\s*(Building Regulation Approval.*?)(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"  # Building Regulation Approval section number; 1.1(f) then <next line>
+            extract_pattern: "(?<!\\d)1\\.1\\(f\\)\\s*(Building Regulation Approval.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
       - section: "Roads"
         search_pattern: "ROADS"
@@ -39,7 +39,7 @@ groups:
           - subsection: "Highways"
             search_pattern: "Highways maintainable"
             extract_text: true
-            extract_pattern: "(?<!\\d)2\\(a\\)\\s*(Highways maintainable.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"  # Highways maintainable section number; 2(a) then (a)
+            extract_pattern: "(?<!\\d)2\\(a\\)\\s*(Highways maintainable.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
       - section: "Other Matters"
         search_pattern: "OTHER MATTERS"
@@ -48,7 +48,7 @@ groups:
           - subsection: "Direction restricting"
             search_pattern: "A direction restricting"
             extract_text: true
-            extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*(A direction restricting.*?)(?:[:\\n])?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
+            extract_pattern: "(?<!\\d)3\\.9\\(j\\)\\s*(A direction restricting.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1} {extracted_text_2}."
             subsections:
               # This is only an example of a subsection within a subsection
@@ -56,10 +56,10 @@ groups:
               - subsection: "Tree Preservation"
                 search_pattern: "A tree preservation order"
                 extract_text: true
-                extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
+                extract_pattern: "(?<!\\d)3\\.9\\(m\\)\\s*(A tree preservation order.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
                 message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Radon Gas"
             search_pattern: "Protection Agency?"
             extract_text: true
-            extract_pattern: "(?<!\\d).*\\s*(.*Protection Agency?.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
+            extract_pattern: "(?<!\\d).*\\s*(Protection Agency?.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_2}."
