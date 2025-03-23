@@ -165,16 +165,6 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def find_subsection_message_not_found(question):
-    """Find the 'message_not_found' from a relevant subsection if it exists."""
-    if "subsections" in question:
-        for subsection in question["subsections"]:
-            if "message_not_found" in subsection:
-                return subsection["message_not_found"]
-    return "No relevant information found."  # Default fallback message
-
-@timed_function
-@timed_function
 def process_questions(doc, extracted_text, questions, land_charges_configs, section_name=""):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
