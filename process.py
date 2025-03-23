@@ -168,7 +168,7 @@ def extract_matching_text(text, pattern, message_template):
 def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", logged_section=False):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    logged_section = False
+    #logged_section = False
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
