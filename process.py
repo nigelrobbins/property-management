@@ -10,6 +10,7 @@ from PIL import Image
 import subprocess
 import yaml
 from datetime import datetime  # Import datetime module
+import json
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -112,7 +113,12 @@ def load_yaml(yaml_path):
         yaml_data = yaml.safe_load(file)
 
     groups = yaml_data.get("groups", [])
-    land_charges_configs = yaml_data.get("config", {}).get("land_charges", [])  # Now supports multiple sets
+    # Extract land charges configs correctly
+    land_charges_configs = list(yaml_data.get("config", {}).get("land_charges_groups", {}).values())
+
+    # Debugging to check if values are loaded
+    print("📜 Loaded Land Charges Configs:")
+    print(json.dumps(land_charges_configs, indent=2))  # Pretty-print for readability
 
     return groups, land_charges_configs
 
