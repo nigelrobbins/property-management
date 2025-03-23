@@ -270,7 +270,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Call the updated recursive function**
-        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", added_section)
+        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", added_section=False)
 
         doc.add_page_break()
 
