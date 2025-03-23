@@ -174,6 +174,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             section_name = question.get("section", section_name)
         if not logged_section:
             doc.add_paragraph(section_name, style="Heading 2")
+            logged_section = True
         added_section = False
         if question["search_pattern"] in extracted_text:
             if not added_section:
