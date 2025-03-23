@@ -21,17 +21,17 @@ groups:
             search_pattern: "A Planning Permission"
             extract_text: true
             extract_pattern: "(?<!\\d)1\\.1\\(a\\)\\s*(A Planning Permission.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
-            message_template: "{extracted_text_1}"
+            message_template: "{extracted_text_2}"
           - subsection: "Conversation Area"
             search_pattern: "A Conservation Area consent"
             extract_text: true
             extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
-            message_template: "{extracted_text_1}"
+            message_template: "{extracted_text_2}"
           - subsection: "Building Regulations"
             search_pattern: "Building Regulation Approval"
             extract_text: true
             extract_pattern: "(?<!\\d)1.1\\(f\\)\\s*(Building Regulation Approval.*?)(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"  # Building Regulation Approval section number; 1.1(f) then <next line>
-            message_template: "{extracted_text_1}"
+            message_template: "{extracted_text_2}"
       - section: "Roads"
         search_pattern: "ROADS"
         extract_text: false
@@ -49,7 +49,7 @@ groups:
             search_pattern: "A direction restricting"
             extract_text: true
             extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*(A direction restricting.*?)(?:[:\\n])?\\s*\\n\\(j\\)\\s*([^\\n]+)"  # A direction restricting permitted development section number; 3.9(j) then (j)
-            message_template: "{extracted_text_1}"
+            message_template: "{extracted_text_2}"
             subsections:
               # This is only an example of a subsection within a subsection
               # This is really just a subsection
@@ -57,7 +57,7 @@ groups:
                 search_pattern: "A tree preservation order"
                 extract_text: true
                 extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(A tree preservation order.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"  # A tree preservation order section number; 3.9(m) then (m)
-                message_template: "{extracted_text_1}"
+                message_template: "{extracted_text_2}"
           - subsection: "Radon Gas"
             search_pattern: "Protection Agency?"
             extract_text: true
