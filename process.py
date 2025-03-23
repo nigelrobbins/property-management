@@ -219,6 +219,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
 
     # Recursive processing for subsections
     for question in questions:
+        logged_section = False
         doc.add_paragraph("Recursive", style="Normal")
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, logged_section)
