@@ -166,23 +166,39 @@ def extract_matching_text(text, pattern, message_template):
 
 @timed_function
 def process_questions(doc, extracted_text, questions, land_charges_configs, section_name=""):
-    """Recursively process questions and their subsections for multiple land charge configurations."""
-    extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    section_logged = set()  # Track logged sections to avoid duplicates
+    extracted_text_2_values = {}
+    section_logged = set()
 
     for question in questions:
+        # Check if the current question has a section and match it with the extracted text
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
             doc.add_paragraph(section_name, style="Heading 2")
 
-            # Log all None message
-            all_subsections_not_found = True
-            for land_charge in land_charges_configs:
-                if all_subsections_not_found:
-                    if section_name == land_charge["log_message_section"]:
-                        doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                        all_subsections_not_found = False
+        # Handle "Roads" and its subsections (including "Highways")
+        if question["section"] == "Roads":
+            # Add the "Roads" heading
+            doc.add_paragraph("Roads", style="Heading 2")
 
+            # Check and process subsections under "Roads"
+            if "subsections" in question:
+                for subsection in question["subsections"]:
+                    doc.add_paragraph(subsection["subsection"], style="Heading 3")
+                    # If the subsection is "Highways", handle it
+                    if subsection["subsection"] == "Highways":
+                        if "Highways" in extracted_text:
+                            # Assuming there's logic to extract the highway information
+                            extracted_section = extract_matching_text(extracted_text, "Highways", "Highways information")
+                            if extracted_section:
+                                paragraph = doc.add_paragraph(extracted_section)
+                                paragraph.runs[0].italic = True
+
+            # Log message if no content is found for "Roads"
+            for land_charge in land_charges_configs:
+                if "Roads" == land_charge["log_message_section"]:
+                    doc.add_paragraph(land_charge["all_none_message"], style="Normal")
+
+        # Process extracted text for matching content (normal questions)
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
@@ -190,23 +206,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                 )
                 if extracted_section:
                     doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
-                    print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
-                    for land_charge in land_charges_configs:
-                        if question["subsection"] in land_charge["land_charges_subsections"]:
-                            matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                            extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
-                            extracted_text_2_values[question["subsection"]] = extracted_text_2
-                else:
-                    doc.add_paragraph("⚠️ No matching content found.", style="Normal")
-        else:
-            doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-    # Recursive processing for subsections
-    for question in questions:
-        if "subsections" in question and question["subsections"]:
+        # Recursive call for subsections (if any)
+        if "subsections" in question:
             process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name)
 
 @timed_function
