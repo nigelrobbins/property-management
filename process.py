@@ -179,6 +179,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             doc.add_paragraph("here2", style="Heading 4")
             if not logged_section:
                 doc.add_paragraph(section_name, style="Heading 2")
+                logged_section = True
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
@@ -195,7 +196,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                                 all_subsections_not_found = False
                 if extracted_section:
-                    logged_section = True
+                    logged_section = alse
                     doc.add_paragraph("here5", style="Heading 4")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
                     paragraph = doc.add_paragraph(extracted_section)
