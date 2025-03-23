@@ -224,7 +224,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
 
             # Append message only if not already added
-            if question['subsection'] == land_charge["log_message_section"]:
+            if question['search_pattern'] == land_charge["log_message_section"]:
                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
                 all_subsections_not_found = False
