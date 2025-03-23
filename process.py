@@ -178,6 +178,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         doc.add_paragraph("here0", style="Heading 4")
         
         if question["search_pattern"] in extracted_text:
+            doc.add_paragraph(f"logged_section2: {logged_section}", style="Heading 4")
             doc.add_paragraph("here1", style="Heading 4")
             if not logged_section:
                 doc.add_paragraph(section_name, style="Heading 2")
