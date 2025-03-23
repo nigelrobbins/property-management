@@ -173,12 +173,12 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
         if not logged_section:
-            doc.add_paragraph(section_name, style="Heading 2")
+            #doc.add_paragraph(section_name, style="Heading 2")
             logged_section = True
         added_section = False
         if question["search_pattern"] in extracted_text:
             if not added_section and not logged_section:
-                #doc.add_paragraph(section_name, style="Heading 2")
+                doc.add_paragraph(section_name, style="Heading 2")
                 added_section = True
                 # Log all None message
                 all_subsections_not_found = True
