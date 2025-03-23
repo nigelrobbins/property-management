@@ -206,13 +206,14 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
     print(f"📜 Full land_charges_configs 1: {land_charges_configs}")  # Debugging
-    # ✅ Ensure each log message section is added only once
+    # Track which all_none_messages have already been added
+    all_none_message_added = set()  
+
     for land_charge in land_charges_configs:
-        log_message_section = land_charge["log_message_section"]
-        if log_message_section not in section_logged:
-            if all(extracted_text_2_values.get(sub) is None for sub in land_charge["land_charges_subsections"]):
-                doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                section_logged.add(log_message_section)  # Mark as logged
+        if all(sub not in extracted_text for sub in land_charge["land_charges_subsections"]):
+            if land_charge["all_none_message"] not in all_none_message_added:
+                doc.append(land_charge["all_none_message"])  # Append message only if not added
+                all_none_message_added.add(land_charge["all_none_message"])  # Mark as added
 
     # Recursive processing for subsections
     for question in questions:
