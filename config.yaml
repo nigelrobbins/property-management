@@ -62,4 +62,4 @@ groups:
             search_pattern: "Protection Agency?"
             extract_text: true
             extract_pattern: "(?<!\\d).*\\s*(.*Protection Agency?.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
-            message_template: "{extracted_text_2}."
+            message_template: "{extracted_text_2}"
