@@ -170,8 +170,8 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     logged_section = False
     for question in questions:
-        if section_name != question.get("section", section_name):
-            section_name = question.get("section", section_name)
+        #if section_name != question.get("section", section_name):
+            #section_name = question.get("section", section_name)
         doc.add_paragraph("here1", style="Heading 2")
         #if not logged_section:
             #doc.add_paragraph(section_name, style="Heading 2")
