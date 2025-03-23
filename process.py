@@ -169,11 +169,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     section_logged = set()  # Track logged sections to avoid duplicates
+    added_section = False
 
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
-            added_section = False
 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
