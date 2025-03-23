@@ -201,8 +201,10 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
 
     # ✅ Ensure each log message section is added only once
     for land_charge in land_charges_configs:
+        doc.add_paragraph("here1", style="Normal")
         log_message_section = land_charge["log_message_section"]
         if log_message_section not in section_logged:
+            doc.add_paragraph("here2", style="Normal")
             if all(extracted_text_2_values.get(sub) is None for sub in land_charge["subsections"]):
                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 section_logged.add(log_message_section)  # Mark as logged
