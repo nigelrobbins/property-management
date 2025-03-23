@@ -195,7 +195,9 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
+                doc.add_paragraph("here4", style="Heading 2")
                 if extracted_section:
+                    doc.add_paragraph("here5", style="Heading 2")
                     #doc.add_paragraph(section_name, style="Heading 2")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
                     paragraph = doc.add_paragraph(extracted_section)
