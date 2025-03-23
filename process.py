@@ -165,18 +165,16 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", added_section=False, logged_section=False):
+def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", logged_section=False):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     logged_section = False
     for question in questions:
-        #if section_name != question.get("section", section_name):
-            #section_name = question.get("section", section_name)
+        if section_name != question.get("section", section_name):
+            section_name = question.get("section", section_name)
         doc.add_paragraph("here1", style="Heading 2")
-        #if not logged_section:
-            #doc.add_paragraph(section_name, style="Heading 2")
         logged_section = False
-        added_section = False
+
         if question["search_pattern"] in extracted_text:
             doc.add_paragraph("here2", style="Heading 2")
             if question["extract_text"]:
@@ -184,11 +182,10 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 doc.add_paragraph("here4", style="Heading 2")
-                if not added_section and not logged_section:
+                if not logged_section:
                     doc.add_paragraph("here3", style="Heading 2")
                     doc.add_paragraph(section_name, style="Heading 2")
-                    logged_section = True
-                    added_section = True
+                    
                     # Log all None message
                     all_subsections_not_found = True
                     for land_charge in land_charges_configs:
@@ -197,6 +194,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                                 all_subsections_not_found = False
                 if extracted_section:
+                    logged_section = True
                     doc.add_paragraph("here5", style="Heading 2")
                     #doc.add_paragraph(section_name, style="Heading 2")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
@@ -216,7 +214,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     # Recursive processing for subsections
     for question in questions:
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, added_section, logged_section)
+            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, logged_section)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -279,7 +277,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Call the updated recursive function**
-        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", added_section=False, logged_section=False)
+        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", logged_section=False)
 
         doc.add_page_break()
 
