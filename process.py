@@ -173,7 +173,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
         added_section = False
-
+        doc.add_paragraph(section_name, style="Normal")
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
