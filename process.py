@@ -205,12 +205,6 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-    # Track which all_none_messages have already been added
-    all_none_message_added = set()
-
-    # Print the start of checking land charges
-    print("Checking land charges conditions...")
-
     for land_charge in land_charges_configs:
         print(f"Checking land_charge: {land_charge}")  # Print the full land charge config
         print(f"Subsections: {land_charge['land_charges_subsections']}")  # Print subsections list
@@ -220,14 +214,20 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
 
         # Check if any subsection is in extracted_text (print for each check)
         all_subsections_not_found = True
+        for sub in land_charge["land_charges_subsections"]:
+            if sub in extracted_text:
+                print(f"Found subsection '{sub}' in extracted_text")
+                all_subsections_not_found = False
+                break  # Exit the loop as soon as we find a match, no need to check further
+
+        # Only add the message if none of the subsections were found
         if all_subsections_not_found:
             print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
 
             # Append message only if not already added
             if land_charge["all_none_message"] not in all_none_message_added:
-                doc.add_paragraph(land_charge["all_none_message"], style="Heading 1")
+                doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
-                all_subsections_not_found = False
                 print(f"Added message: {land_charge['all_none_message']}")  # Confirm addition
             else:
                 print(f"Skipped duplicate message: {land_charge['all_none_message']}")

@@ -5,7 +5,7 @@ config:
         - "Conversation Area"
         - "Direction restricting"
         - "Tree Preservation"
-      all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property..."
+      all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property"
       log_message_section: "Other Matters"
 
 groups:
