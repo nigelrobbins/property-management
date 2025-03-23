@@ -198,7 +198,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
                     for land_charge in land_charges_configs:
                         doc.add_paragraph("here4", style="Normal")
-                        if question["subsection"] in land_charge["subsections"]:
+                        if question["subsection"] in land_charge["land_charges_subsections"]:
                             doc.add_paragraph("here5", style="Normal")
                             matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                             extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
