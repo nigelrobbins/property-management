@@ -174,41 +174,6 @@ def find_subsection_message_not_found(question):
     return "No relevant information found."  # Default fallback message
 
 @timed_function
-def process_land_charges(land_charges_configs, extracted_text, doc, question, all_none_message_added):
-    """
-    Process land charges configurations and add messages to the doc based on extracted text and conditions.
-
-    Parameters:
-        land_charges_configs (list): List of land charge configurations.
-        extracted_text (str): The extracted text to search for subsections.
-        doc (Document): The document object where the message will be added.
-        question (dict): A dictionary containing the search pattern for matching.
-        all_none_message_added (set): A set of messages that have already been added to avoid duplicates.
-    """
-    for land_charge in land_charges_configs:
-        print(f"Checking land_charge: {land_charge}")  # Print the full land charge config
-        print(f"Subsections: {land_charge['land_charges_subsections']}")  # Print subsections list
-
-        # Print extracted text to understand what's being compared
-        print(f"Extracted text snippet (first 500 chars): {extracted_text[:500]}...")  # Print first 500 chars of text
-
-        # Check if any subsection is in extracted_text (print for each check)
-        all_subsections_not_found = True  # You may want to reset this for each land charge
-        if all_subsections_not_found:
-            print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
-
-            # Append message only if not already added
-            if question.get('search_pattern') == land_charge.get("log_message_section"):
-                doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
-                all_subsections_not_found = False
-                print(f"Added message: {land_charge['all_none_message']}")  # Confirm addition
-            else:
-                print(f"Skipped duplicate message: {land_charge['all_none_message']}")
-        else:
-            print(f"Some subsections found in the text, skipping message for this land charge.")
-
-@timed_function
 def process_questions(doc, extracted_text, questions, land_charges_configs, section_name=""):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
@@ -218,7 +183,6 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
             doc.add_paragraph(section_name, style="Heading 2")
-            process_land_charges(land_charges_configs, extracted_text, doc, question, all_none_message_added)
 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
@@ -260,7 +224,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
 
             # Append message only if not already added
-            if question['search_pattern'] == land_charge["log_message_section"]:
+            if section_name == land_charge["log_message_section"]:
                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
                 all_subsections_not_found = False
