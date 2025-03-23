@@ -170,13 +170,16 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     section_logged = set()
 
     for question in questions:
-        # Check if the current question has a section and match it with the extracted text
-        if section_name != question.get("section", section_name):
-            section_name = question.get("section", section_name)
+        # Check if the current question has a 'section' key and match it with the extracted text
+        section = question.get("section", "")  # Default to empty string if "section" is not found
+        
+        # Proceed only if the section name has changed
+        if section_name != section:
+            section_name = section
             doc.add_paragraph(section_name, style="Heading 2")
 
         # Handle "Roads" and its subsections (including "Highways")
-        if question["section"] == "Roads":
+        if section == "Roads":
             # Add the "Roads" heading
             doc.add_paragraph("Roads", style="Heading 2")
 
@@ -195,12 +198,12 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
 
             # Log message if no content is found for "Roads"
             for land_charge in land_charges_configs:
-                if "Roads" == land_charge["log_message_section"]:
-                    doc.add_paragraph(land_charge["all_none_message"], style="Normal")
+                if "Roads" == land_charge.get("log_message_section", ""):
+                    doc.add_paragraph(land_charge.get("all_none_message", ""), style="Normal")
 
         # Process extracted text for matching content (normal questions)
-        if question["search_pattern"] in extracted_text:
-            if question["extract_text"]:
+        if question.get("search_pattern", "") in extracted_text:
+            if question.get("extract_text", False):
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
