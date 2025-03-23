@@ -165,7 +165,7 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", logged_section):
+def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", logged_section=False):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     logged_section = False
