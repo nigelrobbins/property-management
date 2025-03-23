@@ -216,21 +216,27 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         print(f"Subsections: {land_charge['land_charges_subsections']}")  # Print subsections list
 
         # Print extracted text to understand what's being compared
-        print(f"Extracted text snippet: {extracted_text[:500]}...")  # Print the first 500 characters of the text
+        print(f"Extracted text snippet (first 500 chars): {extracted_text[:500]}...")  # Print first 500 chars of text
 
-        # Check if all subsections are missing from extracted_text
-        if all(sub not in extracted_text for sub in land_charge["land_charges_subsections"]):
+        # Check if any subsection is in extracted_text (print for each check)
+        all_subsections_not_found = True
+        for sub in land_charge["land_charges_subsections"]:
+            if sub in extracted_text:
+                print(f"Found subsection '{sub}' in extracted_text")
+                all_subsections_not_found = False
+
+        if all_subsections_not_found:
             print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
 
+            # Append message only if not already added
             if land_charge["all_none_message"] not in all_none_message_added:
-                doc.append(land_charge["all_none_message"])  # Append message only if not added
-                all_none_message_added.add(land_charge["all_none_message"])  # Mark as added
+                doc.append(land_charge["all_none_message"])  # Append message
+                all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
                 print(f"Added message: {land_charge['all_none_message']}")  # Confirm addition
             else:
                 print(f"Skipped duplicate message: {land_charge['all_none_message']}")
-
         else:
-            print(f"Some subsections from {land_charge['land_charges_subsections']} found in the text.")
+            print(f"Some subsections found in the text, skipping message for this land charge.")
 
     # Recursive processing for subsections
     for question in questions:
