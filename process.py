@@ -174,6 +174,7 @@ def find_subsection_message_not_found(question):
     return "No relevant information found."  # Default fallback message
 
 @timed_function
+@timed_function
 def process_questions(doc, extracted_text, questions, land_charges_configs, section_name=""):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
@@ -183,14 +184,13 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
             doc.add_paragraph(section_name, style="Heading 2")
-            
+
             # Log all None message
             all_subsections_not_found = True
             for land_charge in land_charges_configs:
                 if all_subsections_not_found:
                     if section_name == land_charge["log_message_section"]:
                         doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                        doc.add_paragraph(question["subsection"], style="Normal")
                         all_subsections_not_found = False
 
         if question["search_pattern"] in extracted_text:
