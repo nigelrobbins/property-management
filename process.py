@@ -172,13 +172,14 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
-        doc.add_paragraph("here1", style="Heading 4")
+        doc.add_paragraph("here0", style="Heading 4")
         logged_section = False
 
         if question["search_pattern"] in extracted_text:
-            doc.add_paragraph("here2", style="Heading 4")
+            doc.add_paragraph("here1", style="Heading 4")
             if not logged_section:
                 doc.add_paragraph(section_name, style="Heading 2")
+                doc.add_paragraph("here2", style="Heading 4")
                 logged_section = True
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
