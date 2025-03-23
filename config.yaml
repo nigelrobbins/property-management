@@ -8,14 +8,6 @@ config:
       all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property..."
       log_message_section: "Other Matters"
 
-    group2:
-      land_charges_subsections:
-        - "Flood Risk"
-        - "Coastal Erosion"
-        - "Contaminated Land"
-      all_none_message: "No environmental risks were identified in the Local Authority search. However, buyers should still conduct independent surveys for flood risk, soil contamination, and erosion concerns."
-      log_message_section: "Environmental Matters"
-
 groups:
   - name: "Local_Authority_Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
