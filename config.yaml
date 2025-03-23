@@ -1,10 +1,20 @@
 config:
-  land_charges_subsections:
-    - "Conversation Area"
-    - "Direction restricting"
-    - "Tree Preservation"
-  all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
-  log_message_section: "Other Matters"  # Section where all_none_message should be logged
+  land_charges_groups:
+    group1:
+      land_charges_subsections:
+        - "Conversation Area"
+        - "Direction restricting"
+        - "Tree Preservation"
+      all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property..."
+      log_message_section: "Other Matters"
+
+    group2:
+      land_charges_subsections:
+        - "Flood Risk"
+        - "Coastal Erosion"
+        - "Contaminated Land"
+      all_none_message: "No environmental risks were identified in the Local Authority search. However, buyers should still conduct independent surveys for flood risk, soil contamination, and erosion concerns."
+      log_message_section: "Environmental Matters"
 
 groups:
   - name: "Local_Authority_Search"

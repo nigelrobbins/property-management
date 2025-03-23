@@ -112,11 +112,9 @@ def load_yaml(yaml_path):
         yaml_data = yaml.safe_load(file)
 
     groups = yaml_data.get("groups", [])
-    land_charges_subsections = yaml_data.get("config", {}).get("land_charges_subsections", [])  # Correct path
-    all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
-    log_message_section = yaml_data.get("config", {}).get("log_message_section", None)  # Correct path
+    land_charges_groups = yaml_data.get("config", {}).get("land_charges_groups", {})
 
-    return groups, land_charges_subsections, all_none_message, log_message_section
+    return groups, land_charges_groups
 
 # Identify question group based on document content
 @timed_function
@@ -170,16 +168,19 @@ def find_subsection_message_not_found(question):
     return "No relevant information found."  # Default fallback message
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_subsections, all_none_message, log_message_section, section_name=""):
-    """Recursively process questions and their subsections."""
-    extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    section_logged = False  # Ensure "Other Matters" is added only once
+def process_questions(doc, extracted_text, questions, land_charges_groups):
+    """Recursively process questions for multiple land charges groups."""
+    extracted_text_2_values = {}  # Store extracted_text_2 for each group
+    section_logged = {group: False for group in land_charges_groups}  # Track logging for each group
 
     for question in questions:
-        if section_name != question.get("section", section_name):
-            section_name = question.get("section", section_name) 
+        section_name = question.get("section", "")
+
+        # Add section header if not already added
+        if section_name:
             doc.add_paragraph(section_name, style="Heading 2")
 
+        # Process the question's subsection
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
@@ -187,29 +188,32 @@ def process_questions(doc, extracted_text, questions, land_charges_subsections, 
                 )
                 if extracted_section:
                     doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
 
-                    # Check if the subsection is listed in the YAML
-                    if question["subsection"] in land_charges_subsections:
-                        matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                        extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
-                        extracted_text_2_values[question["subsection"]] = extracted_text_2
+                    # Check for land charge subsections in **all groups**
+                    for group_name, group_data in land_charges_groups.items():
+                        if question["subsection"] in group_data["land_charges_subsections"]:
+                            matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
+                            extracted_text_2 = matches[1] if matches and len(matches.groups()) > 1 else None
+                            extracted_text_2_values.setdefault(group_name, {})[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-        
-        # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
-        if section_name == log_message_section and not section_logged:
-            section_logged = True
-            # ✅ Dynamically check if we are in the correct section from YAML before logging the message
-            if all(extracted_text_2_values.get(sub) is None for sub in land_charges_subsections):
-                doc.add_paragraph(all_none_message, style="Normal")
 
+        # ✅ Log `all_none_message` for **each group separately**
+        for group_name, group_data in land_charges_groups.items():
+            if not section_logged[group_name] and question.get("section") == group_data["log_message_section"]:
+                section_logged[group_name] = True
+
+                # Log only if **all relevant subsections** in this group are None
+                if all(extracted_text_2_values.get(group_name, {}).get(sub) is None for sub in group_data["land_charges_subsections"]):
+                    doc.add_paragraph(group_data["all_none_message"], style="Normal")
+
+        # 🔄 Recursively process subsections
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], land_charges_subsections, all_none_message, log_message_section, section_name)
+            process_questions(doc, extracted_text, question["subsections"], land_charges_groups)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -272,7 +276,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], land_charges_subsections, all_none_message, log_message_section, section_name="")
+        process_questions(doc, extracted_text, group["questions"], land_charges_groups)
         doc.add_page_break()
 
     # Save Word document
