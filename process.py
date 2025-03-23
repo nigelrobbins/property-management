@@ -165,7 +165,7 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", logged_section=True):
+def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", log_section=True):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     #logged_section = False
@@ -174,22 +174,22 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             section_name = question.get("section", section_name)
             #logged_section = False
         doc.add_paragraph(f"Current section: {section_name}", style="Heading 4")
-        doc.add_paragraph(f"logged_section: {logged_section}", style="Heading 4")
+        doc.add_paragraph(f"logged_section: {log_section}", style="Heading 4")
         doc.add_paragraph("here0", style="Heading 4")
         
         if question["search_pattern"] in extracted_text:
-            doc.add_paragraph(f"logged_section2: {logged_section}", style="Heading 4")
+            doc.add_paragraph(f"logged_section2: {log_section}", style="Heading 4")
             doc.add_paragraph("here1", style="Heading 4")
-            if not logged_section:
+            if log_section:
                 doc.add_paragraph(section_name, style="Heading 2")
                 doc.add_paragraph("here2", style="Heading 4")
-                logged_section = False
+                log_section = False
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 doc.add_paragraph("here3", style="Heading 4")
-                if not logged_section:
+                if not log_section:
                     doc.add_paragraph("here4", style="Heading 4")
                     
                     # Log all None message
@@ -215,14 +215,14 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-        logged_section = True
+        log_section = True
 
     # Recursive processing for subsections
     for question in questions:
-        logged_section = True
+        log_section = True
         doc.add_paragraph("Recursive", style="Normal")
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, logged_section)
+            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, log_section)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -285,7 +285,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Call the updated recursive function**
-        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", logged_section=True)
+        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", log_section=True)
 
         doc.add_page_break()
 
