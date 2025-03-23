@@ -179,23 +179,23 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         added_section = False
         if question["search_pattern"] in extracted_text:
             doc.add_paragraph("here2", style="Heading 2")
-            if not added_section and not logged_section:
-                doc.add_paragraph("here3", style="Heading 2")
-                doc.add_paragraph(section_name, style="Heading 2")
-                logged_section = True
-                added_section = True
-                # Log all None message
-                all_subsections_not_found = True
-                for land_charge in land_charges_configs:
-                    if all_subsections_not_found:
-                        if section_name == land_charge["log_message_section"]:
-                            doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                            all_subsections_not_found = False
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 doc.add_paragraph("here4", style="Heading 2")
+                if not added_section and not logged_section:
+                    doc.add_paragraph("here3", style="Heading 2")
+                    doc.add_paragraph(section_name, style="Heading 2")
+                    logged_section = True
+                    added_section = True
+                    # Log all None message
+                    all_subsections_not_found = True
+                    for land_charge in land_charges_configs:
+                        if all_subsections_not_found:
+                            if section_name == land_charge["log_message_section"]:
+                                doc.add_paragraph(land_charge["all_none_message"], style="Normal")
+                                all_subsections_not_found = False
                 if extracted_section:
                     doc.add_paragraph("here5", style="Heading 2")
                     #doc.add_paragraph(section_name, style="Heading 2")
