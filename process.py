@@ -189,6 +189,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
                     doc.add_paragraph("here3 {land_charges_configs}", style="Normal")
+                    print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
                     for land_charge in land_charges_configs:
                         doc.add_paragraph("here4", style="Normal")
                         if question["subsection"] in land_charge["subsections"]:
@@ -202,6 +203,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
     doc.add_paragraph("here0 {land_charges_configs}", style="Normal")
+    print(f"📜 Full land_charges_configs 1: {land_charges_configs}")  # Debugging
     # ✅ Ensure each log message section is added only once
     for land_charge in land_charges_configs:
         doc.add_paragraph("here1", style="Normal")
