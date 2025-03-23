@@ -173,15 +173,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
-            doc.add_paragraph(section_name, style="Heading 2")
-
-            # Log all None message
-            all_subsections_not_found = True
-            for land_charge in land_charges_configs:
-                if all_subsections_not_found:
-                    if section_name == land_charge["log_message_section"]:
-                        doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                        all_subsections_not_found = False
+            added_section = False
 
         if question["search_pattern"] in extracted_text:
             if question["extract_text"]:
@@ -189,8 +181,17 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
+                    if not added_section:
+                        doc.add_paragraph(section_name, style="Heading 2")
+                        added_section = True
+                        # Log all None message
+                        all_subsections_not_found = True
+                        for land_charge in land_charges_configs:
+                            if all_subsections_not_found:
+                                if section_name == land_charge["log_message_section"]:
+                                    doc.add_paragraph(land_charge["all_none_message"], style="Normal")
+                                    all_subsections_not_found = False
                     doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
                     print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
