@@ -170,8 +170,10 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     
     for question in questions:
+        doc.add_paragraph(section_name, style="Heading 2")
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
+        doc.add_paragraph(section_name, style="Heading 2")
         added_section = False
         if question["search_pattern"] in extracted_text:
             if not added_section:
@@ -189,7 +191,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
-                    doc.add_paragraph(section_name, style="Heading 2")
+                    #doc.add_paragraph(section_name, style="Heading 2")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
