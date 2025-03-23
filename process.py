@@ -194,12 +194,9 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
-                    doc.add_paragraph("here3 {land_charges_configs}", style="Normal")
                     print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
                     for land_charge in land_charges_configs:
-                        doc.add_paragraph("here4", style="Normal")
                         if question["subsection"] in land_charge["land_charges_subsections"]:
-                            doc.add_paragraph("here5", style="Normal")
                             matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                             extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
                             extracted_text_2_values[question["subsection"]] = extracted_text_2
@@ -208,14 +205,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-    doc.add_paragraph("here0 {land_charges_configs}", style="Normal")
     print(f"📜 Full land_charges_configs 1: {land_charges_configs}")  # Debugging
     # ✅ Ensure each log message section is added only once
     for land_charge in land_charges_configs:
-        doc.add_paragraph("here1", style="Normal")
         log_message_section = land_charge["log_message_section"]
         if log_message_section not in section_logged:
-            doc.add_paragraph("here2", style="Normal")
             if all(extracted_text_2_values.get(sub) is None for sub in land_charge["land_charges_subsections"]):
                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 section_logged.add(log_message_section)  # Mark as logged
