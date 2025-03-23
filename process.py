@@ -205,15 +205,24 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-    print(f"📜 Full land_charges_configs 1: {land_charges_configs}")  # Debugging
     # Track which all_none_messages have already been added
     all_none_message_added = set()  
 
+    print("Checking land charges conditions...")  # Debugging print
+
     for land_charge in land_charges_configs:
+        print(f"Checking land_charge: {land_charge}")  # Print full land charge config
+
+        # Check if all subsections are missing from extracted_text
         if all(sub not in extracted_text for sub in land_charge["land_charges_subsections"]):
+            print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
+
             if land_charge["all_none_message"] not in all_none_message_added:
                 doc.append(land_charge["all_none_message"])  # Append message only if not added
                 all_none_message_added.add(land_charge["all_none_message"])  # Mark as added
+                print(f"Added message: {land_charge['all_none_message']}")  # Confirm addition
+            else:
+                print(f"Skipped duplicate message: {land_charge['all_none_message']}")
 
     # Recursive processing for subsections
     for question in questions:
