@@ -188,9 +188,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
-
+                    doc.add_paragraph("here3 {land_charges_configs}", style="Normal")
                     for land_charge in land_charges_configs:
+                        doc.add_paragraph("here4", style="Normal")
                         if question["subsection"] in land_charge["subsections"]:
+                            doc.add_paragraph("here5", style="Normal")
                             matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                             extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
                             extracted_text_2_values[question["subsection"]] = extracted_text_2
@@ -198,7 +200,8 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-    doc.add_paragraph("here0", style="Normal")
+
+    doc.add_paragraph("here0 {land_charges_configs}", style="Normal")
     # ✅ Ensure each log message section is added only once
     for land_charge in land_charges_configs:
         doc.add_paragraph("here1", style="Normal")
