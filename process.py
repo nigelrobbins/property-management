@@ -216,7 +216,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
         log_message_section = land_charge["log_message_section"]
         if log_message_section not in section_logged:
             doc.add_paragraph("here2", style="Normal")
-            if all(extracted_text_2_values.get(sub) is None for sub in land_charge["subsections"]):
+            if all(extracted_text_2_values.get(sub) is None for sub in land_charge["land_charges_subsections"]):
                 doc.add_paragraph(land_charge["all_none_message"], style="Normal")
                 section_logged.add(log_message_section)  # Mark as logged
 
