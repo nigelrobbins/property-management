@@ -220,11 +220,6 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
 
         # Check if any subsection is in extracted_text (print for each check)
         all_subsections_not_found = True
-        for sub in land_charge["land_charges_subsections"]:
-            if sub in extracted_text:
-                print(f"Found subsection '{sub}' in extracted_text")
-                all_subsections_not_found = False
-
         if all_subsections_not_found:
             print(f"None of {land_charge['land_charges_subsections']} found in extracted_text!")
 
@@ -232,6 +227,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             if land_charge["all_none_message"] not in all_none_message_added:
                 doc.append(land_charge["all_none_message"])  # Append message
                 all_none_message_added.add(land_charge["all_none_message"])  # Mark message as added
+                all_subsections_not_found = False
                 print(f"Added message: {land_charge['all_none_message']}")  # Confirm addition
             else:
                 print(f"Skipped duplicate message: {land_charge['all_none_message']}")
