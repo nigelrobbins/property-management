@@ -165,7 +165,7 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", added_section=False):
+def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", added_section=False, logged_section=False):
     """Recursively process questions and their subsections for multiple land charge configurations."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     logged_section = False
@@ -210,7 +210,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     # Recursive processing for subsections
     for question in questions:
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, added_section)
+            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, added_section, logged_section)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -273,7 +273,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
         # 🔹 **Call the updated recursive function**
-        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", added_section=False)
+        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", added_section=False, logged_section=False)
 
         doc.add_page_break()
 
