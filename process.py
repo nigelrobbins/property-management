@@ -112,9 +112,9 @@ def load_yaml(yaml_path):
         yaml_data = yaml.safe_load(file)
 
     docs = yaml_data.get("docs", [])
-    none_subsections = yaml_data.get("config", {}).get("none_subsections", [])  # Correct path
-    all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
-    all_none_section = yaml_data.get("config", {}).get("all_none_section", None)  # Correct path
+    none_subsections = yaml_data.get("none", {}).get("none_subsections", [])  # Correct path
+    all_none_message = yaml_data.get("none", {}).get("all_none_message", None)  # Correct path
+    all_none_section = yaml_data.get("none", {}).get("all_none_section", None)  # Correct path
 
     return docs, none_subsections, all_none_message, all_none_section
 
