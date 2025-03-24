@@ -1,6 +1,5 @@
 pdfplumber
 python-docx
-docx2txt
 pytesseract
 pillow
 pdf2image
