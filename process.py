@@ -213,10 +213,11 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                             extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
+                log_section = True
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
         doc.add_paragraph("Loop end", style="Normal")
-        log_section = True
+        #log_section = True
 
     # Recursive processing for subsections
     for question in questions:
