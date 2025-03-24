@@ -183,7 +183,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
             if log_section:
                 doc.add_paragraph(section_name, style="Heading 2")
                 doc.add_paragraph("here2", style="Heading 4")
-                log_section = False
+                #log_section = False
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
