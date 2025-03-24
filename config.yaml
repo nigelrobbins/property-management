@@ -56,7 +56,7 @@ groups:
               - subsection: "Tree Preservation"
                 search_pattern: "A tree preservation order"
                 extract_text: true
-                extract_pattern: "(?<!\\d)3\\.9\\(m\\)\\s*(A tree preservation order.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
+                extract_pattern: "(?<!\\d).*\\s*(A tree preservation order.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
                 message_template: "{extracted_text_2}"
           - subsection: "Radon Gas"
             search_pattern: "Protection Agency?"
