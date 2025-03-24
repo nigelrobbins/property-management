@@ -23,8 +23,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install poppler-utils tesseract-ocr
-          pip install --upgrade pip setuptools wheel
-          pip install --no-build-isolation docx2txt==0.6
           pip install -r requirements.txt
 
       - name: Find and Unzip Latest ZIP File
