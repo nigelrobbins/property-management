@@ -111,17 +111,17 @@ def load_yaml(yaml_path):
     with open(yaml_path, "r", encoding="utf-8") as file:
         yaml_data = yaml.safe_load(file)
 
-    groups = yaml_data.get("groups", [])
+    docs = yaml_data.get("docs", [])
     check_none_subsections = yaml_data.get("config", {}).get("check_none_subsections", [])  # Correct path
     all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
     log_message_section = yaml_data.get("config", {}).get("log_message_section", None)  # Correct path
 
-    return groups, check_none_subsections, all_none_message, log_message_section
+    return docs, check_none_subsections, all_none_message, log_message_section
 
 # Identify question group based on document content
 @timed_function
-def identify_group(text, groups):
-    for group in groups:
+def identify_group(text, docs):
+    for group in docs:
         if group["identifier"] in text:
             return group
     return None  # No matching group found
@@ -216,7 +216,7 @@ def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    groups, check_none_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
+    docs, check_none_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
     doc = Document()
 
     if not os.path.exists(zip_path):
@@ -251,7 +251,7 @@ def process_zip(zip_path, output_docx, yaml_path):
             f.write(extracted_text)
         extracted_text_files.append(extracted_text_file)
 
-        group = identify_group(extracted_text, groups)
+        group = identify_group(extracted_text, docs)
         if group is None:
             print("⚠️ No matching group found. Skipping this document.")
             continue  # Skip processing this file

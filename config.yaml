@@ -6,7 +6,7 @@ config:
   all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
   log_message_section: "Other Matters"  # Section where all_none_message should be logged
 
-groups:
+docs:
   - name: "Local_Authority_Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
     heading: "Local Authority Search"
