@@ -25,7 +25,7 @@ groups:
           - subsection: "Conversation Area"
             search_pattern: "A Conservation Area consent"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
+            extract_pattern: "(?<!\\d)1\\.1\\(c\\)\\s*(A Conservation Area consent.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"  # Conservation Area section number; 1.1(a) then <next line>
             message_template: "{extracted_text_1} {extracted_text_2}."
           - subsection: "Building Regulations"
             search_pattern: "Building Regulation Approval"
