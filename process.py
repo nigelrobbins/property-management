@@ -111,10 +111,10 @@ def load_yaml(yaml_path):
     with open(yaml_path, "r", encoding="utf-8") as file:
         yaml_data = yaml.safe_load(file)
 
-    docs = yaml_data.get("docs", [])  # Extract "docs" section from YAML
-    none_subsections = yaml_data.get("none", {}).get("none_subsections", [])  # Extract subsections under "none"
-    all_none_message = yaml_data.get("none", {}).get("all_none_message", None)  # Extract general message under "none"
-    all_none_section = yaml_data.get("none", {}).get("all_none_section", None)  # Extract section name under "none"
+    docs = yaml_data.get("docs", [])
+    none_subsections = yaml_data.get("none", {}).get("none_subsections", [])  # Correct path
+    all_none_message = yaml_data.get("none", {}).get("all_none_message", None)  # Correct path
+    all_none_section = yaml_data.get("none", {}).get("all_none_section", None)  # Correct path
 
     return docs, none_subsections, all_none_message, all_none_section
 
