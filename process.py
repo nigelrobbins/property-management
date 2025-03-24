@@ -130,6 +130,7 @@ def identify_group(text, groups):
             return group
     return None  # No matching group found
 
+
 @timed_function
 def extract_matching_text(text, pattern, message_template):
     """Extracts matching text based on the given pattern and formats the message."""
