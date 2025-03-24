@@ -1,5 +1,5 @@
 config:
-  check_none_subsections:
+  none_subsections:
     - "Conversation Area"
     - "Direction restricting"
     - "Tree Preservation"
