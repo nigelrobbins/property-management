@@ -215,6 +215,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
+        doc.add_paragraph("Loop end", style="Normal")
         log_section = True
 
     # Recursive processing for subsections
