@@ -10,7 +10,6 @@ from PIL import Image
 import subprocess
 import yaml
 from datetime import datetime  # Import datetime module
-import json
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -108,19 +107,16 @@ def extract_text_from_docx(docx_path):
 # Load YAML configuration
 @timed_function
 def load_yaml(yaml_path):
-    """Load questions and settings from a YAML file with support for multiple land charge subsections."""
+    """Load questions and settings from a YAML file."""
     with open(yaml_path, "r", encoding="utf-8") as file:
         yaml_data = yaml.safe_load(file)
 
     groups = yaml_data.get("groups", [])
-    # Extract land charges configs correctly
-    land_charges_configs = list(yaml_data.get("config", {}).get("land_charges_groups", {}).values())
+    check_none_subsections = yaml_data.get("config", {}).get("check_none_subsections", [])  # Correct path
+    all_none_message = yaml_data.get("config", {}).get("all_none_message", None)  # Correct path
+    log_message_section = yaml_data.get("config", {}).get("log_message_section", None)  # Correct path
 
-    # Debugging to check if values are loaded
-    print("📜 Loaded Land Charges Configs:")
-    print(json.dumps(land_charges_configs, indent=2))  # Pretty-print for readability
-
-    return groups, land_charges_configs
+    return groups, check_none_subsections, all_none_message, log_message_section
 
 # Identify question group based on document content
 @timed_function
@@ -165,74 +161,62 @@ def extract_matching_text(text, pattern, message_template):
         return None
 
 @timed_function
-def process_questions(doc, extracted_text, questions, land_charges_configs, section_name="", log_section=True):
-    """Recursively process questions and their subsections for multiple land charge configurations."""
+def find_subsection_message_not_found(question):
+    """Find the 'message_not_found' from a relevant subsection if it exists."""
+    if "subsections" in question:
+        for subsection in question["subsections"]:
+            if "message_not_found" in subsection:
+                return subsection["message_not_found"]
+    return "No relevant information found."  # Default fallback message
+
+@timed_function
+def process_questions(doc, extracted_text, questions, check_none_subsections, all_none_message, log_message_section, section_name=""):
+    """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    #log_section = False
+    section_logged = False  # Ensure "Other Matters" is added only once
+
     for question in questions:
         if section_name != question.get("section", section_name):
-            section_name = question.get("section", section_name)
-            #log_section = True
-        doc.add_paragraph(f"Current section: {section_name}", style="Heading 4")
-        doc.add_paragraph(f"log_section: {log_section}", style="Heading 4")
-        doc.add_paragraph("here0", style="Heading 4")
-        
+            section_name = question.get("section", section_name) 
+            doc.add_paragraph(section_name, style="Heading 2")
+
         if question["search_pattern"] in extracted_text:
-            doc.add_paragraph(f"log_section2: {log_section}", style="Heading 4")
-            doc.add_paragraph("here1", style="Heading 4")
-            if log_section:
-                doc.add_paragraph(section_name, style="Heading 2")
-                doc.add_paragraph("here2", style="Heading 4")
-                #log_section = False
             if question["extract_text"]:
                 extracted_section = extract_matching_text(
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
-                doc.add_paragraph("here3", style="Heading 4")
-                if not log_section:
-                    doc.add_paragraph("here4", style="Heading 4")
-                    
-                    # Log all None message
-                    all_subsections_not_found = True
-                    for land_charge in land_charges_configs:
-                        if all_subsections_not_found:
-                            if section_name == land_charge["log_message_section"]:
-                                doc.add_paragraph(land_charge["all_none_message"], style="Normal")
-                                all_subsections_not_found = False
                 if extracted_section:
-                    #log_section = False
-                    doc.add_paragraph("here5", style="Heading 4")
                     doc.add_paragraph(question["subsection"], style="Heading 3")
+                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
-                    print(f"📜 Full land_charges_configs 2: {land_charges_configs}")  # Debugging
-                    for land_charge in land_charges_configs:
-                        if question["subsection"] in land_charge["land_charges_subsections"]:
-                            matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                            extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
-                            extracted_text_2_values[question["subsection"]] = extracted_text_2
+
+                    # Check if the subsection is listed in the YAML
+                    if question["subsection"] in check_none_subsections:
+                        matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
+                        extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
+                        extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
-                log_section = True
         else:
             doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-        doc.add_paragraph("Loop end", style="Normal")
-        #log_section = True
+        
+        # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
+        if section_name == log_message_section and not section_logged:
+            section_logged = True
+            # ✅ Dynamically check if we are in the correct section from YAML before logging the message
+            if all(extracted_text_2_values.get(sub) is None for sub in check_none_subsections):
+                doc.add_paragraph(all_none_message, style="Normal")
 
-    # Recursive processing for subsections
-    for question in questions:
-        #log_section = True
-        doc.add_paragraph("Recursive", style="Normal")
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], land_charges_configs, section_name, log_section)
+            process_questions(doc, extracted_text, question["subsections"], check_none_subsections, all_none_message, log_message_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
-    """Extract and process relevant sections from documents."""
+    """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    
-    groups, land_charges_configs = load_yaml(yaml_path)  # Load YAML data
+    groups, check_none_subsections, all_none_message, log_message_section = load_yaml(yaml_path)  # Load YAML data
     doc = Document()
 
     if not os.path.exists(zip_path):
@@ -273,22 +257,22 @@ def process_zip(zip_path, output_docx, yaml_path):
             continue  # Skip processing this file
 
         doc.add_paragraph(group["heading"], style="Heading 1")
-
+        # Add today's date in a readable format
         today_date = datetime.today().strftime("%d %B %Y")  # Example: "18 March 2025"
         doc.add_paragraph(f"Date: {today_date}", style="Normal")
-
         if group:
             doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
+            print(group["message_if_identifier_found"])
         else:
             doc.add_paragraph(group["message_if_identifier_not_found"], style="Normal")
+            print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
 
         for question in group["questions"]:
             doc.add_paragraph(question.get("message_found", ""), style="Normal")
 
-        # 🔹 **Call the updated recursive function**
-        process_questions(doc, extracted_text, group["questions"], land_charges_configs, section_name="", log_section=True)
-
+        # 🔹 **Use the recursive function here**
+        process_questions(doc, extracted_text, group["questions"], check_none_subsections, all_none_message, log_message_section, section_name="")
         doc.add_page_break()
 
     # Save Word document
