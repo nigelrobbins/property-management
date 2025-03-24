@@ -172,7 +172,7 @@ def process_questions(doc, extracted_text, questions, land_charges_configs, sect
     for question in questions:
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name)
-            #log_section = False
+            log_section = True
         doc.add_paragraph(f"Current section: {section_name}", style="Heading 4")
         doc.add_paragraph(f"log_section: {log_section}", style="Heading 4")
         doc.add_paragraph("here0", style="Heading 4")
