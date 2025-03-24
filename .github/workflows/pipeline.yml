@@ -23,6 +23,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install poppler-utils tesseract-ocr
+          pip install --upgrade pip setuptools wheel
           pip install --no-build-isolation docx2txt
           pip install -r requirements.txt
 
