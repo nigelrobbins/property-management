@@ -118,6 +118,7 @@ def load_yaml(yaml_path):
 
     return docs, none_subsections, all_none_message, all_none_section
 
+
 # Identify question group based on document content
 @timed_function
 def identify_group(text, docs):
