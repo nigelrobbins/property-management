@@ -1,11 +1,3 @@
-none:
-  none_subsections:
-    - "Conversation Area"
-    - "Direction restricting"
-    - "Tree Preservation"
-  all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
-  all_none_section: "Other Matters"
-
 docs:
   - name: "Local_Authority_Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
@@ -63,3 +55,11 @@ docs:
             extract_text: true
             extract_pattern: "(?<!\\d).*\\s*(.*Protection Agency?.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
+
+none:
+  none_subsections:
+    - "Conversation Area"
+    - "Direction restricting"
+    - "Tree Preservation"
+  all_none_message: "If a Local Authority search does not reveal any land charges, it means that, there are no registered local land charges against the property and there are no planning restrictions or enforcement notices registered against the property. However, it is essential to note that not all charges are registered. Some charges, like unregistered restrictive covenants, may not be revealed in a Local Authority search. Secondly, search results only cover the specific property and do not provide information about neighboring properties or wider area."
+  all_none_section: "Other Matters"
