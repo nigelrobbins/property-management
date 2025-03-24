@@ -1,6 +1,6 @@
 pdfplumber
 python-docx
-docx2txt
+docx2txt==0.7
 pytesseract
 pillow
 pdf2image
