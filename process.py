@@ -186,16 +186,18 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
-                    doc.add_paragraph(question["subsection"], style="Heading 3")
+                    if "subsection" in question:
+                        doc.add_paragraph(question["subsection"], style="Heading 3")
                     print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
 
                     # Check if the subsection is listed in the YAML
-                    if question["subsection"] in none_subsections:
-                        matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                        extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
-                        extracted_text_2_values[question["subsection"]] = extracted_text_2
+                    if "subsection" in question:
+                        if question["subsection"] in none_subsections:
+                            matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
+                            extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
+                            extracted_text_2_values[question["subsection"]] = extracted_text_2
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
