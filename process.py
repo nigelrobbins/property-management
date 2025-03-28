@@ -199,7 +199,8 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
-            doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
+            if "subsection" not in question:
+                doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
         
         # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
         if section_name == all_none_section and not section_logged:
