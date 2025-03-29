@@ -158,11 +158,12 @@ def find_subsection_message_not_found(question):
     return "No relevant information found."  # Default fallback message
 
 @timed_function
-def process_questions(doc, extracted_text, questions, none_subsections, all_none_message, all_none_section, section_name=""):
+def process_questions(doc, extracted_text, questions, message_if_identifier_found, none_subsections, all_none_message, all_none_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     extracted_text_3_values = {}  # Store extracted_text_3 for specified subsections
     section_logged = False  # Ensure "Other Matters" is added only once
+    message_if_identifier_found_logged = False  # Ensure message_if_identifier_found is added only once
 
     for question in questions:
         if section_name != question.get("section", section_name):
@@ -180,6 +181,9 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                     print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
+                    if not message_if_identifier_found_logged:
+                        doc.add_paragraph(message_if_identifier_found, style="Normal")
+                        message_if_identifier_found_logged = True
 
                     # Check if the subsection is listed in the YAML
                     if "subsection" in question:
@@ -203,7 +207,7 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
+            process_questions(doc, extracted_text, question["subsections"], message_if_identifier_found, none_subsections, all_none_message, all_none_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -251,16 +255,12 @@ def process_zip(zip_path, output_docx, yaml_path):
             continue  # Skip processing this file
 
         doc.add_paragraph(group["heading"], style="Heading 1")
-        if group:
-            doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
-            print(group["message_if_identifier_found"])
-        else:
-            doc.add_paragraph(group["message_if_identifier_not_found"], style="Normal")
+        if not group:
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
 
         # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], none_subsections, all_none_message, all_none_section, section_name="")
+        process_questions(doc, extracted_text, group["questions"], group["message_if_identifier_found"], none_subsections, all_none_message, all_none_section, section_name="")
         doc.add_page_break()
 
     # Save Word document
