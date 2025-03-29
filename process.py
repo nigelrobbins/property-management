@@ -140,7 +140,9 @@ def extract_matching_text(text, pattern, message_template):
         print(f"✅ Extracted text values: {extracted_texts}")
 
         # Dynamically format message template with extracted values
-        formatted_message = message_template.format(**{f"extracted_text_{i+1}": extracted_texts[i] for i in range(len(extracted_texts))})
+        formatted_message = message_template.format(
+            **{f"extracted_text_{i+1}": extracted_texts[i] for i in range(len(extracted_texts))}
+        )
 
         print(f"✅ Formatted message: {formatted_message}")
         return formatted_message
@@ -161,45 +163,27 @@ def find_subsection_message_not_found(question):
 def process_questions(doc, extracted_text, questions, none_subsections, all_none_message, all_none_section, section_name=""):
     """Recursively process questions and their subsections."""
 
-    extracted_property_info = None  # Store extracted property info
+    extracted_property_info = None  # Store extracted property info dynamically
 
     for question in questions:
-        # Check if this is the "Property:" search
-        if question["search_pattern"] == "Property:" and question["extract_text"]:
-            extracted_property_info = extract_matching_text(
-                extracted_text, question["extract_pattern"], question["message_template"]
-            )
-            if extracted_property_info:
-                print(f"🏠 Property Information Extracted: {extracted_property_info}")  # Log property details
-                doc.add_paragraph(f"Property Information: {extracted_property_info}", style="Normal")
+        search_pattern = question.get("search_pattern")
+        extract_pattern = question.get("extract_pattern")
+        message_template = question.get("message_template")
 
-    # Log the main message_if_identifier_found AFTER extracting property info
-    if extracted_property_info:
-        print("ℹ️ Logging message_if_identifier_found after extracting property info.")
-
-    for question in questions:
-        if question["search_pattern"] == "Property:":
-            continue  # Already processed "Property:", skip it in further loops
-
-        if section_name != question.get("section", section_name):
-            section_name = question.get("section", section_name) 
-            doc.add_paragraph(section_name, style="Heading 2")
-
-        if question["search_pattern"] in extracted_text:
-            if question["extract_text"]:
-                extracted_section = extract_matching_text(
-                    extracted_text, question["extract_pattern"], question["message_template"]
+        # If extraction is required, dynamically apply regex
+        if search_pattern and search_pattern in extracted_text:
+            if extract_pattern and message_template:
+                extracted_info = extract_matching_text(
+                    extracted_text, extract_pattern, message_template
                 )
-                if extracted_section:
-                    doc.add_paragraph(extracted_section, style="Normal")
+                if extracted_info:
+                    doc.add_paragraph(extracted_info, style="Normal")
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
-        else:
-            if "subsection" in question:
-                doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
 
-    if "subsections" in question and question["subsections"]:
-        process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
+        # Recursively process subsections if they exist
+        if "subsections" in question:
+            process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
