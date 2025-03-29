@@ -201,8 +201,6 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
             # ✅ Dynamically check if we are in the correct section from YAML before logging the message
             if all(extracted_text_2_values.get(sub) is None for sub in none_subsections):
                 doc.add_paragraph(all_none_message, style="Normal")
-            if all(extracted_text_3_values.get(sub) is None for sub in none_subsections):
-                doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
             process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
