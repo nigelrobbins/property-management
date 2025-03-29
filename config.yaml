@@ -8,7 +8,7 @@ docs:
       - section: "Address of the property"
         search_pattern: "Property:"
         extract_text: true
-        extract_pattern: "\\s*([\\d,]+ [^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([A-Z\\d ]+)"
+        extract_pattern: "Property:\\s*([\\d,]+ [^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([A-Z\\d ]+)"
         message_template: "{extracted_text_1} {extracted_text_2}"
       - section: "Planning and Building Regulations"
         search_pattern: "PLANNING AND BUILDING REGULATIONS"
