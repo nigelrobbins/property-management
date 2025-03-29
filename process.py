@@ -9,7 +9,6 @@ from pdf2image import convert_from_path
 from PIL import Image
 import subprocess
 import yaml
-from datetime import datetime  # Import datetime module
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -161,11 +160,27 @@ def find_subsection_message_not_found(question):
 @timed_function
 def process_questions(doc, extracted_text, questions, none_subsections, all_none_message, all_none_section, section_name=""):
     """Recursively process questions and their subsections."""
-    extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
-    extracted_text_3_values = {}  # Store extracted_text_3 for specified subsections
-    section_logged = False  # Ensure "Other Matters" is added only once
+
+    extracted_property_info = None  # Store extracted property info
 
     for question in questions:
+        # Check if this is the "Property:" search
+        if question["search_pattern"] == "Property:" and question["extract_text"]:
+            extracted_property_info = extract_matching_text(
+                extracted_text, question["extract_pattern"], question["message_template"]
+            )
+            if extracted_property_info:
+                print(f"🏠 Property Information Extracted: {extracted_property_info}")  # Log property details
+                doc.add_paragraph(f"Property Information: {extracted_property_info}", style="Normal")
+
+    # Log the main message_if_identifier_found AFTER extracting property info
+    if extracted_property_info:
+        print("ℹ️ Logging message_if_identifier_found after extracting property info.")
+
+    for question in questions:
+        if question["search_pattern"] == "Property:":
+            continue  # Already processed "Property:", skip it in further loops
+
         if section_name != question.get("section", section_name):
             section_name = question.get("section", section_name) 
             doc.add_paragraph(section_name, style="Heading 2")
@@ -176,37 +191,15 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                     extracted_text, question["extract_pattern"], question["message_template"]
                 )
                 if extracted_section:
-                    if "subsection" in question:
-                        doc.add_paragraph(question["subsection"], style="Heading 3")
-                    print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
-                    paragraph = doc.add_paragraph(extracted_section)
-                    paragraph.runs[0].italic = True
-
-                    # Check if the subsection is listed in the YAML
-                    if "subsection" in question:
-                        if question["subsection"] in none_subsections:
-                            matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                            extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
-                            extracted_text_2_values[question["subsection"]] = extracted_text_2
-                            extracted_text_3 = matches[0][2] if matches and len(matches[0]) > 1 else None
-                            extracted_text_3_values[question["subsection"]] = extracted_text_3
+                    doc.add_paragraph(extracted_section, style="Normal")
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
             if "subsection" in question:
                 doc.add_paragraph(f"No {question['subsection']} information found.", style="Normal")
-        
-        # ✅ Ensure "Other Matters" is only added once before logging `all_none_message`
-        if section_name == all_none_section and not section_logged:
-            section_logged = True
-            # ✅ Dynamically check if we are in the correct section from YAML before logging the message
-            if all(extracted_text_2_values.get(sub) is None for sub in none_subsections):
-                doc.add_paragraph(all_none_message, style="Normal")
-            if all(extracted_text_3_values.get(sub) is None for sub in none_subsections):
-                doc.add_paragraph(all_none_message, style="Normal")
 
-        if "subsections" in question and question["subsections"]:
-            process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
+    if "subsections" in question and question["subsections"]:
+        process_questions(doc, extracted_text, question["subsections"], none_subsections, all_none_message, all_none_section, section_name)
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -254,9 +247,6 @@ def process_zip(zip_path, output_docx, yaml_path):
             continue  # Skip processing this file
 
         doc.add_paragraph(group["heading"], style="Heading 1")
-        # Add today's date in a readable format
-        today_date = datetime.today().strftime("%d %B %Y")  # Example: "18 March 2025"
-        doc.add_paragraph(f"Date: {today_date}", style="Normal")
         if group:
             doc.add_paragraph(group["message_if_identifier_found"], style="Normal")
             print(group["message_if_identifier_found"])
