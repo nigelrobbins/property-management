@@ -261,11 +261,6 @@ def process_zip(zip_path, output_docx, yaml_path):
             print("⚠️ No matching group found. Skipping.")
             continue  # Skip this file if no match
 
-        for question in group["questions"]:
-            message_found = question.get("message_found", "").strip()
-            if message_found:  # Only invoke if message_found is not empty
-                doc.add_paragraph(message_found, style="Normal")
-
         # 🔹 **Use the recursive function here**
         process_questions(doc, extracted_text, group["questions"], none_subsections, all_none_message, all_none_section, section_name="")
         doc.add_page_break()
