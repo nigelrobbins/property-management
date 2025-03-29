@@ -145,12 +145,13 @@ def extract_matching_text(text, pattern, message_template):
         
         extracted_text_1 = matches.group(1)  # First part of the extracted text
         extracted_text_2 = matches.group(2) if len(matches[0]) > 1 else ''  # Second part of the extracted text (optional)
+        extracted_text_3 = matches.group(3) if len(matches[0]) > 1 else ''  # Third part of the extracted text (optional)
 
         # Log the extracted content for debugging
-        print(f"✅ Extracted text: {extracted_text_1}, {extracted_text_2}")
+        print(f"✅ Extracted text: {extracted_text_1}, {extracted_text_2}, {extracted_text_3}")
         
         # Format the message with the extracted text
-        formatted_message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2)
+        formatted_message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2, extracted_text_3=extracted_text_3)
         
         # Log the formatted message for debugging
         print(f"✅ Formatted message: {formatted_message}")
@@ -173,6 +174,7 @@ def find_subsection_message_not_found(question):
 def process_questions(doc, extracted_text, questions, none_subsections, all_none_message, all_none_section, section_name=""):
     """Recursively process questions and their subsections."""
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
+    extracted_text_3_values = {}  # Store extracted_text_3 for specified subsections
     section_logged = False  # Ensure "Other Matters" is added only once
 
     for question in questions:
@@ -198,6 +200,8 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
                             matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
                             extracted_text_2 = matches[0][1] if matches and len(matches[0]) > 1 else None
                             extracted_text_2_values[question["subsection"]] = extracted_text_2
+                            extracted_text_3 = matches[0][2] if matches and len(matches[0]) > 1 else None
+                            extracted_text_3_values[question["subsection"]] = extracted_text_3
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
         else:
@@ -209,6 +213,8 @@ def process_questions(doc, extracted_text, questions, none_subsections, all_none
             section_logged = True
             # ✅ Dynamically check if we are in the correct section from YAML before logging the message
             if all(extracted_text_2_values.get(sub) is None for sub in none_subsections):
+                doc.add_paragraph(all_none_message, style="Normal")
+            if all(extracted_text_3_values.get(sub) is None for sub in none_subsections):
                 doc.add_paragraph(all_none_message, style="Normal")
 
         if "subsections" in question and question["subsections"]:
