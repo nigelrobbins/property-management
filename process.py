@@ -182,7 +182,7 @@ def process_questions(doc, extracted_text, questions, message_if_identifier_foun
                     paragraph.runs[0].italic = True
                     if message_if_identifier_found not in ["", None]:
                         doc.add_paragraph(message_if_identifier_found, style="Normal")
-                        message_if_identifier_found_logged = ""
+                        message_if_identifier_found = ""
 
                     # Check if the subsection is listed in the YAML
                     if "subsection" in question:
