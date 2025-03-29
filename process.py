@@ -128,37 +128,25 @@ def identify_group(text, docs):
 
 @timed_function
 def extract_matching_text(text, pattern, message_template):
-    """Extracts matching text based on the given pattern and formats the message."""
-    # Log the text and pattern for debugging
+    """Extracts matching text dynamically based on the given pattern and formats the message."""
+
     print(f"🔍 Extracting with pattern: {pattern}")
-    print(f"🔍 Text to search: {text}")
 
-    # Find the matching text based on the pattern
     matches = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
-    
-    if matches:
-        # Log the matches for debugging
-        print(f"✅ Matches found: {matches}")
-        print("Full match:", matches.group(0))  # Debugging
-        print("First group:", matches.group(1))
-        print("Second group:", matches.group(2))  # This should be "Wanted"    
-        
-        extracted_text_1 = matches.group(1)  # First part of the extracted text
-        extracted_text_2 = matches.group(2) if matches.lastindex and matches.lastindex >= 2 else ''
-        extracted_text_3 = matches.group(3) if matches.lastindex and matches.lastindex >= 3 else ''
 
-        # Log the extracted content for debugging
-        print(f"✅ Extracted text: {extracted_text_1}, {extracted_text_2}, {extracted_text_3}")
+    if matches:
+        extracted_texts = [matches.group(i) for i in range(1, matches.lastindex + 1)]
         
-        # Format the message with the extracted text
-        formatted_message = message_template.format(extracted_text_1=extracted_text_1, extracted_text_2=extracted_text_2, extracted_text_3=extracted_text_3)
-        
-        # Log the formatted message for debugging
+        # Log extracted values
+        print(f"✅ Extracted text values: {extracted_texts}")
+
+        # Dynamically format message template with extracted values
+        formatted_message = message_template.format(**{f"extracted_text_{i+1}": extracted_texts[i] for i in range(len(extracted_texts))})
+
         print(f"✅ Formatted message: {formatted_message}")
-        
         return formatted_message
     else:
-        print("⚠️ No matches found for the pattern.")
+        print("⚠️ No matches found.")
         return None
 
 @timed_function
