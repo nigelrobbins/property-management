@@ -163,7 +163,6 @@ def process_questions(doc, extracted_text, questions, message_if_identifier_foun
     extracted_text_2_values = {}  # Store extracted_text_2 for specified subsections
     extracted_text_3_values = {}  # Store extracted_text_3 for specified subsections
     section_logged = False  # Ensure "Other Matters" is added only once
-    message_if_identifier_found_logged = False  # Ensure message_if_identifier_found is added only once
 
     for question in questions:
         if section_name != question.get("section", section_name):
@@ -181,9 +180,9 @@ def process_questions(doc, extracted_text, questions, message_if_identifier_foun
                     print(f"✅ Extracted content: {extracted_section[:50]}...")  # Debugging
                     paragraph = doc.add_paragraph(extracted_section)
                     paragraph.runs[0].italic = True
-                    if not message_if_identifier_found_logged:
+                    if message_if_identifier_found not in ["", None]:
                         doc.add_paragraph(message_if_identifier_found, style="Normal")
-                        message_if_identifier_found_logged = True
+                        message_if_identifier_found_logged = ""
 
                     # Check if the subsection is listed in the YAML
                     if "subsection" in question:
