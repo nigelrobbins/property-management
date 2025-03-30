@@ -187,7 +187,7 @@ def process_questions(doc, extracted_text, questions, message_if_identifier_foun
                     if "subsection" in question:
                         if question["subsection"] in none_subsections:
                             matches = re.search(question["extract_pattern"], extracted_text, re.IGNORECASE | re.DOTALL)
-                            extracted_text = matches[0][1] if matches and len(matches[0]) > 1 else None
+                            extracted_text = matches.group(1) if matches else None  # Use .group(1) instead of indexing
                             extracted_text_values[question["subsection"]] = extracted_text
                 else:
                     doc.add_paragraph("⚠️ No matching content found.", style="Normal")
