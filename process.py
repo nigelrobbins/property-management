@@ -160,7 +160,7 @@ def find_subsection_message_not_found(question):
 @timed_function
 def process_questions(doc, extracted_text, questions, message_if_identifier_found, none_subsections, all_none_message, all_none_section, section_name=""):
     """Recursively process questions and their subsections."""
-    extracted_values  = {}
+    extracted_text_values  = {}
     section_logged = False  # Ensure "Other Matters" is added only once
 
     for question in questions:
