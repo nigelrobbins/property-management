@@ -1,3 +1,14 @@
+general:
+  title: "PROPERTY REPORT"
+  scope:
+    - heading: "SCOPE OF THIS REPORT"
+      body: |
+        This report has been prepared for your sole benefit. The contents are private and confidential. It must not be relied on by or made available to any other party without our written consent.
+        The report is based on our review of the Local Authority search provided.
+        We have not inspected the property and are unable to advise on its physical condition.
+        We are unable to advise on the value of the property. If you have any doubts, we recommend that you have the property professionally valued. You should ensure that the valuer is aware of the matters mentioned in this report, as they may affect the value.
+        You should not bid for the property at Auction until you are fully satisfied with the condition of the property and will have the requisite finances in place to enable you to pay for the property.
+
 docs:
   - name: "Local_Authority_Search"
     heading: "Local Authority Search"
