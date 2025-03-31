@@ -110,12 +110,23 @@ def load_yaml(yaml_path):
     with open(yaml_path, "r", encoding="utf-8") as file:
         yaml_data = yaml.safe_load(file)
 
-    docs = yaml_data.get("docs", [])
-    none_subsections = yaml_data.get("none", {}).get("none_subsections", [])  # Correct path
-    all_none_message = yaml_data.get("none", {}).get("all_none_message", None)  # Correct path
-    all_none_section = yaml_data.get("none", {}).get("all_none_section", None)  # Correct path
+    general = yaml_data.get("general", {})
+    title = general.get("title", "")
+    scope = general.get("scope", [])
 
-    return docs, none_subsections, all_none_message, all_none_section
+    # Extract first scope item (if available)
+    heading, body = None, None
+    if scope and isinstance(scope, list):
+        first_scope = scope[0]  # Assuming you need only the first scope entry
+        heading = first_scope.get("heading", "")
+        body = first_scope.get("body", "")
+
+    docs = yaml_data.get("docs", [])
+    none_subsections = yaml_data.get("none", {}).get("none_subsections", [])
+    all_none_message = yaml_data.get("none", {}).get("all_none_message", None)
+    all_none_section = yaml_data.get("none", {}).get("all_none_section", None)
+
+    return title, heading, body, docs, none_subsections, all_none_message, all_none_section
 
 # Identify question group based on document content
 @timed_function
@@ -210,7 +221,7 @@ def process_zip(zip_path, output_docx, yaml_path):
     """Extract and process only relevant sections from documents that contain filter text."""
     output_folder = "output_files/unzipped_files"
     os.makedirs(output_folder, exist_ok=True)
-    docs, none_subsections, all_none_message, all_none_section = load_yaml(yaml_path)  # Load YAML data
+    title, heading, body, docs, none_subsections, all_none_message, all_none_section = load_yaml(yaml_path)
     doc = Document()
 
     if not os.path.exists(zip_path):
@@ -250,6 +261,9 @@ def process_zip(zip_path, output_docx, yaml_path):
             print("⚠️ No matching group found. Skipping this document.")
             continue  # Skip processing this file
 
+        doc.add_paragraph(title, style="Heading 1")
+        doc.add_paragraph(heading, style="Heading 2")
+        doc.add_paragraph(body, style="Normal")
         doc.add_paragraph(group["heading"], style="Heading 1")
         if not group:
             print("⚠️ No matching group found. Skipping.")
