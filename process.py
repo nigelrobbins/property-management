@@ -9,6 +9,85 @@ from pdf2image import convert_from_path
 from PIL import Image
 import subprocess
 import yaml
+from docx.shared import Pt
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
+def load_yaml(yaml_path):
+    with open(yaml_path, 'r') as file:
+        return yaml.safe_load(file)
+
+def add_formatted_paragraph(doc, text, style=None, bold=False, italic=False):
+    p = doc.add_paragraph(style=style)
+    run = p.add_run(text)
+    run.bold = bold
+    run.italic = italic
+    return p
+
+def process_sections(doc, sections, level=2):
+    for section in sections:
+        # Add section heading
+        add_formatted_paragraph(doc, section['section'], style=f'Heading {level}', bold=True)
+        
+        # Process extracted content if available
+        if 'extracted_text' in section and section['extracted_text']:
+            # Apply message template if available
+            if 'message_template' in section:
+                try:
+                    message = section['message_template'].format(**section['extracted_text'])
+                    add_formatted_paragraph(doc, message, italic=True)
+                except KeyError as e:
+                    add_formatted_paragraph(doc, f"Error in message template: missing key {e}", style='Intense Quote')
+            else:
+                add_formatted_paragraph(doc, section['extracted_text'], style='Intense Quote')
+        else:
+            add_formatted_paragraph(doc, "No information found for this section.", style='Intense Quote')
+        
+        # Process nested sections if they exist
+        if 'sections' in section:
+            process_sections(doc, section['sections'], level=level+1)
+
+def generate_document(yaml_data, output_path):
+    doc = Document()
+    
+    # Add title
+    doc.add_heading(yaml_data['general']['title'], level=0)
+    
+    # Add scope section
+    scope = yaml_data['general']['scope'][0]
+    doc.add_heading(scope['heading'], level=1)
+    doc.add_paragraph(scope['body'])
+    
+    # Process each document section
+    for doc_section in yaml_data['docs']:
+        doc.add_heading(doc_section['heading'], level=1)
+        
+        # Process address section separately if it exists
+        if 'questions' in doc_section:
+            for question in doc_section['questions']:
+                if 'address' in question:
+                    # Address section
+                    add_formatted_paragraph(doc, question['address'], style='Heading 2', bold=True)
+                    if 'extracted_text' in question and question['extracted_text']:
+                        try:
+                            message = question['message_template'].format(**question['extracted_text'])
+                            add_formatted_paragraph(doc, message, italic=True)
+                        except KeyError as e:
+                            add_formatted_paragraph(doc, f"Error in address template: missing key {e}", style='Intense Quote')
+                    else:
+                        add_formatted_paragraph(doc, "No address information found.", style='Intense Quote')
+                
+                # Process sections
+                if 'sections' in question:
+                    process_sections(doc, question['sections'])
+    
+    # Save the document
+    doc.save(output_path)
+
+def parse_and_generate(yaml_path, output_docx):
+    yaml_data = load_yaml(yaml_path)
+    generate_document(yaml_data, output_docx)
+
+# Deepseek above
 
 def timed_function(func):
     """Decorator to measure function execution time and log only if it exceeds 2 seconds."""
@@ -261,21 +340,8 @@ def process_zip(zip_path, output_docx, yaml_path):
             print("⚠️ No matching group found. Skipping this document.")
             continue  # Skip processing this file
 
-        doc.add_paragraph(title, style="Heading 1")
-        doc.add_paragraph(heading, style="Heading 2")
-        doc.add_paragraph(body, style="Normal")
-        doc.add_paragraph(group["heading"], style="Heading 1")
-        if not group:
-            print("⚠️ No matching group found. Skipping.")
-            continue  # Skip this file if no match
-
-        # 🔹 **Use the recursive function here**
-        process_questions(doc, extracted_text, group["questions"], group["message_if_identifier_found"], none_subsections, all_none_message, all_none_section, section_name="")
-        doc.add_page_break()
-
-    # Save Word document
-    os.makedirs(os.path.dirname(output_docx), exist_ok=True)
-    doc.save(output_docx)
+# use DeepSeek here
+        parse_and_generate(yaml_path, output_docx)
 
     # Create ZIP file including extracted text files
     final_zip_path = "output_files/processed_files.zip"
