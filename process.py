@@ -145,6 +145,7 @@ def extract_matching_text(text, pattern, message_template):
         return message_template.format(**extracted)
     return None
 
+@timed_function
 def generate_report(doc, yaml_data, extracted_text):
     """Generate report document with validation."""
     # Ensure extracted_text is never None
@@ -160,28 +161,43 @@ def generate_report(doc, yaml_data, extracted_text):
     for doc_section in yaml_data['docs']:
         doc.add_heading(doc_section['heading'], level=1)
         
-        # Check if identifier exists in text (now safe since extracted_text is str)
+        # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
             doc.add_paragraph(doc_section['message_if_identifier_found'])
         else:
             doc.add_paragraph(doc_section['message_if_identifier_not_found'])
+            continue  # Skip processing this file if identifier not found
         
         # Process questions
         for question in doc_section.get('questions', []):
+            # Handle address extraction specifically
             if 'address' in question:
-                print(f"⚠️ address in {question}")
-                # Process address
+                print(f"🔍 Processing address with pattern: {question['search_pattern']}")
                 add_formatted_paragraph(doc, question['address'], style='Heading 2')
+                
                 if question.get('search_pattern') and question.get('extract_text', False):
-                    address = extract_matching_text(extracted_text, 
-                                                  question['extract_pattern'], 
-                                                  question['message_template'])
-                    if address:
-                        add_formatted_paragraph(doc, address, italic=True)
+                    # Search for the address pattern
+                    if question['search_pattern'] in extracted_text:
+                        print(f"✅ Found address pattern in text")
+                        address = extract_matching_text(
+                            extracted_text, 
+                            question['extract_pattern'], 
+                            question['message_template']
+                        )
+                        if address:
+                            print(f"✅ Extracted address: {address}")
+                            add_formatted_paragraph(doc, address, italic=True)
+                        else:
+                            print("⚠️ Address pattern found but couldn't extract details")
+                            add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
+                    else:
+                        print(f"⚠️ Address pattern not found in text")
+                        add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
             
-            if 'sections' in sections:
-                print(f"⚠️ { question['sections']} in {question}")
+            # Process other sections
+            if 'sections' in question:
+                print(f"🔍 Processing {len(question['sections'])} sections")
                 process_sections(doc, question['sections'], extracted_text=extracted_text)
 
 @timed_function
