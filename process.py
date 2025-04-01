@@ -62,7 +62,11 @@ def extract_text_from_pdf(pdf_path):
         images = convert_from_path(pdf_path)
         text = "\n".join(pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6') 
                         for img in images)
-        return text.strip() or ""  # Ensure we never return None
+        if text:
+            text = text.strip()
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                f.write(text)
+            return text or ""  # Ensure we never return None
     
     except Exception as e:
         print(f"⚠️ Error extracting text from {pdf_path}: {str(e)}")
