@@ -229,6 +229,8 @@ def process_zip(zip_path, output_docx, yaml_path):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_folder)
         
+        # First collect all extracted text
+        all_extracted_text = []
         for file_name in os.listdir(output_folder):
             file_path = os.path.join(output_folder, file_name)
             
@@ -240,17 +242,18 @@ def process_zip(zip_path, output_docx, yaml_path):
                 else:
                     continue
                 
-                # Ensure we have text to process
-                if not extracted_text.strip():
-                    print(f"⚠️ Empty text extracted from {file_name}")
-                    continue
-                    
-                # Process document content without adding title/scope again
-                process_document_content(doc, yaml_data, extracted_text)
+                if extracted_text.strip():
+                    all_extracted_text.append(extracted_text)
                 
             except Exception as e:
                 print(f"⚠️ Error processing {file_name}: {str(e)}")
                 continue
+        
+        # Combine all text for processing
+        combined_text = "\n".join(all_extracted_text)
+        
+        # Process document content once with all combined text
+        process_document_content(doc, yaml_data, combined_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
@@ -263,11 +266,13 @@ def process_zip(zip_path, output_docx, yaml_path):
 def process_document_content(doc, yaml_data, extracted_text):
     """Process document content without adding title/scope."""
     extracted_text = extracted_text or ""
+    found_content = False
     
     for doc_section in yaml_data['docs']:
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
+            found_content = True
             doc.add_heading(doc_section['heading'], level=1)
             doc.add_paragraph(doc_section['message_if_identifier_found'])
             
@@ -295,7 +300,6 @@ def process_document_content(doc, yaml_data, extracted_text):
                 
                 # Process all other sections
                 if 'sections' in question:
-                    print(f"🔍 Processing {len(question['sections'])} sections")
                     for section in question['sections']:
                         doc.add_heading(section['section'], level=2)
                         
@@ -331,9 +335,12 @@ def process_document_content(doc, yaml_data, extracted_text):
                                         add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
                                 else:
                                     add_formatted_paragraph(doc, f"No {subsection['section']} information found", style='Intense Quote')
-        else:
+        
+        # Only show "not found" message if no content was found at all
+        elif not found_content:
             doc.add_heading(doc_section['heading'], level=1)
             doc.add_paragraph(doc_section['message_if_identifier_not_found'])
+            break  # Only show this once if nothing was found in any file
 
 # Main execution
 if __name__ == "__main__":
