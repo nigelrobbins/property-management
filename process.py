@@ -43,39 +43,60 @@ def clean_text(text):
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
-    """Extract text from PDF using multiple methods with fallbacks."""
-    try:
-        # Try pdftotext first
-        result = subprocess.run(['pdftotext', pdf_path, '-'], 
-                              capture_output=True, text=True)
-        text = result.stdout.strip()
-        if text:
-            return text
-            
-        # Fallback to pdfplumber
-        with pdfplumber.open(pdf_path) as pdf:
-            text = "\n".join(page.extract_text() or "" for page in pdf.pages)
-            if text.strip():
-                return text.strip()
-                
-        # Final fallback: OCR
-        images = convert_from_path(pdf_path)
-        text = "\n".join(pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6') 
-                        for img in images)
-
-
-        if text:
-            text = text.strip()
-            output_dir = "work_files"
-            os.makedirs(output_dir, exist_ok=True)
-            output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
-            with open(output_file_path, "w", encoding="utf-8") as f:
-                f.write(text)
-            return text or ""  # Ensure we never return None
+    """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
     
-    except Exception as e:
-        print(f"⚠️ Error extracting text from {pdf_path}: {str(e)}")
-        return ""  # Return empty string instead of None
+    # Ensure the work_files directory exists
+    output_dir = "work_files"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Construct the output file path
+    output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
+
+    # Try using pdftotext first
+    result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
+    text = result.stdout.strip()
+
+    if text:
+        print(f"✅ Extracted text using pdftotext: {text[:100]}...")
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return text  # If pdftotext works, return immediately
+
+    print("⚠️ pdftotext failed, trying pdfplumber...")
+
+    # Fallback to pdfplumber
+    text = ""
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+
+    if text:
+        print(f"✅ Extracted text using pdfplumber: {text[:100]}...")
+        text = text.strip()
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return text  # If pdfplumber works, return immediately
+
+    print("⚠️ pdfplumber failed, performing OCR...")
+
+    # Final fallback: Use OCR (slow)
+    text = ""
+    images = convert_from_path(pdf_path)
+    for img in images:
+        ocr_text = pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6')
+        cleaned_text = ocr_text.strip()
+        text += cleaned_text + "\n"
+
+    text = text.strip()
+    print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")
+
+    # Write the final extracted text to the file
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        f.write(text)
+
+    return text
 
 @timed_function
 def extract_text_from_docx(docx_path):
