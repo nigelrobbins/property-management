@@ -191,6 +191,7 @@ def generate_report(doc, yaml_data, extracted_text):
                         print(f"✅ Found address pattern in text")
                         address = extract_matching_text(
                             extracted_text, 
+                            question['search_pattern'],  # Added this line
                             question['extract_pattern'], 
                             question['message_template']
                         )
