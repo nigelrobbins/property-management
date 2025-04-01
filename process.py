@@ -210,6 +210,12 @@ def process_zip(zip_path, output_docx, yaml_path):
         yaml_data = load_yaml(yaml_path)
         doc = Document()
         
+        # Add title and scope ONLY ONCE at the beginning
+        doc.add_heading(yaml_data['general']['title'], level=0)
+        scope = yaml_data['general']['scope'][0]
+        doc.add_heading(scope['heading'], level=1)
+        doc.add_paragraph(scope['body'])
+        
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_folder)
         
@@ -229,7 +235,8 @@ def process_zip(zip_path, output_docx, yaml_path):
                     print(f"⚠️ Empty text extracted from {file_name}")
                     continue
                     
-                generate_report(doc, yaml_data, extracted_text)
+                # Process document content without adding title/scope again
+                process_document_content(doc, yaml_data, extracted_text)
                 doc.add_page_break()
                 
             except Exception as e:
@@ -242,6 +249,55 @@ def process_zip(zip_path, output_docx, yaml_path):
     except Exception as e:
         print(f"❌ Critical error processing ZIP: {str(e)}")
         raise
+
+@timed_function
+def process_document_content(doc, yaml_data, extracted_text):
+    """Process document content without adding title/scope."""
+    # Ensure extracted_text is never None
+    extracted_text = extracted_text or ""
+    
+    # Process each document section
+    for doc_section in yaml_data['docs']:
+        doc.add_heading(doc_section['heading'], level=1)
+        
+        # Check if identifier exists in text
+        identifier = doc_section.get('identifier', '')
+        if identifier and identifier in extracted_text:
+            doc.add_paragraph(doc_section['message_if_identifier_found'])
+        else:
+            continue  # Skip processing this file if identifier not found
+        
+        # Process questions
+        for question in doc_section.get('questions', []):
+            # Handle address extraction specifically
+            print(f"🔍 Processing question: {question}")
+            if 'address' in question:
+                print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                add_formatted_paragraph(doc, question['address'], style='Heading 2')
+                
+                if question.get('search_pattern') and question.get('extract_text', False):
+                    # Search for the address pattern
+                    if question['search_pattern'] in extracted_text:
+                        print(f"✅ Found address pattern in text")
+                        address = extract_matching_text(
+                            extracted_text, 
+                            question['extract_pattern'], 
+                            question['message_template']
+                        )
+                        if address:
+                            print(f"✅ Extracted address: {address}")
+                            add_formatted_paragraph(doc, address, italic=True)
+                        else:
+                            print("⚠️ Address pattern found but couldn't extract details")
+                            add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
+                    else:
+                        print(f"⚠️ Address pattern not found in text")
+                        add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
+            
+            # Process other sections
+            if 'sections' in question:
+                print(f"🔍 Processing {len(question['sections'])} sections")
+                process_sections(doc, question['sections'], extracted_text=extracted_text)
 
 # Main execution
 if __name__ == "__main__":
