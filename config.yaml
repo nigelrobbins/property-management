@@ -13,7 +13,7 @@ docs:
   - name: "Local_Authority_Search"
     heading: "Local Authority Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
-    message_if_identifier_found: "A search against the property in the local Land Charges Registers, maintained by the Local Authority was carried out. In the search, the Local Authority were asked numerous questions of a kind normally asked in relation to property transactions. The purpose was to establish whether there is anything registered against the Property that would adversely affect the Property’s value; or if any information held by Local Authority might limit the use to which you intend to put the property."
+    message_if_identifier_found: "A search against the property in the local Land Charges Registers, maintained by the Local Authority was carried out. In the search, the Local Authority were asked numerous questions of a kind normally asked in relation to property transactions. The purpose was to establish whether there is anything registered against the Property that would adversely affect the Property's value; or if any information held by Local Authority might limit the use to which you intend to put the property."
     message_if_identifier_not_found: "A local Authority search was not provided. We therefore cannot comment on any land charges, planning permissions or prohibitions that affect the property. This search is important as it reveals issues that affect the property which you may be liable for such as the lack of building regulations for work which has been done. Should you wish us to conduct a search for you, please do let us know and we will be able to advise further."
     questions:
       - address: "Address of the property"
@@ -21,40 +21,47 @@ docs:
         extract_text: true
         extract_pattern: "\\s*([\\d,]+ [^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([A-Z\\d ]+)"
         message_template: "{extracted_text_1}, {extracted_text_2}, {extracted_text_3}, {extracted_text_4}, {extracted_text_5}"
+      
       - sections:
           - section: "Planning Permission"
-            search_pattern: "A Planning Permission"
+            search_pattern: "Planning Permission[\\s\\S]*?1\\.1\\(a\\)"
             extract_text: true
-            extract_pattern: "(?<!\\d)1\\.1\\(a\\)\\s*(.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
+            extract_pattern: "1\\.1\\(a\\)\\s*(A Planning Permission [\\s\\S]*?)\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
-          - section: "Conversation Area"
-            search_pattern: "A Conservation Area consent"
+
+          - section: "Conservation Area"
+            search_pattern: "Conservation Area[\\s\\S]*?1\\.1\\(c\\)"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(c\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(c\\)\\s*([^\\n]+)"
+            extract_pattern: "1\\.1\\(c\\)\\s*(A Conservation Area [\\s\\S]*?)\\n\\s*\\(c\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
+
           - section: "Building Regulations"
-            search_pattern: "Building Regulation Approval"
+            search_pattern: "Building Regulation[\\s\\S]*?1\\.1\\(f\\)"
             extract_text: true
-            extract_pattern: "(?<!\\d)1.1\\(f\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"
+            extract_pattern: "1\\.1\\(f\\)\\s*(Building Regulation [\\s\\S]*?)\\n\\s*\\(f\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
+
           - section: "Highways"
-            search_pattern: "Highways maintainable"
+            search_pattern: "Highways[\\s\\S]*?2\\(a\\)"
             extract_text: true
-            extract_pattern: "(?<!\\d)2\\(a\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
-            message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense. A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
+            extract_pattern: "2\\(a\\)\\s*(Highways maintainable[\\s\\S]*?)\\n\\s*\\(a\\)\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}. The main road ({extracted_text_2}) is a highway maintainable at public expense."
+
           - section: "Direction restricting"
-            search_pattern: "A direction restricting"
+            search_pattern: "Direction restricting[\\s\\S]*?3\\.9\\(j\\)"
             extract_text: true
-            extract_pattern: "(?<!\\d)3.9\\(j\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(j\\)\\s*([^\\n]+)"
+            extract_pattern: "3\\.9\\(j\\)\\s*(A direction restricting[\\s\\S]*?)\\n\\s*\\(j\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
+            
             sections:
               - section: "Tree Preservation"
-                search_pattern: "A tree preservation order"
+                search_pattern: "Tree Preservation[\\s\\S]*?3\\.9\\(m\\)"
                 extract_text: true
-                extract_pattern: "(?<!\\d)3.9\\(m\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(m\\)\\s*([^\\n]+)"
+                extract_pattern: "3\\.9\\(m\\)\\s*(A tree preservation [\\s\\S]*?)\\n\\s*\\(m\\)\\s*([^\\n]+)"
                 message_template: "{extracted_text_2}"
+
           - section: "Radon Gas"
-            search_pattern: "Protection Agency?"
+            search_pattern: "Radon Gas|Protection Agency"
             extract_text: true
-            extract_pattern: "(?<!\\d).*\\s*(.*?)(?:[:\\n])?\\s*\\n\\s*([^\\n]+)"
+            extract_pattern: "(Radon Gas[\\s\\S]*?Protection Agency[\\s\\S]*?)\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"

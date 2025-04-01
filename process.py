@@ -263,6 +263,28 @@ def process_zip(zip_path, output_docx, yaml_path):
         raise
 
 @timed_function
+def extract_matching_text(text, search_pattern, extract_pattern, message_template):
+    """Extract and format text using combined search and extract patterns."""
+    try:
+        # First find the section using search_pattern
+        section_match = re.search(search_pattern, text, re.IGNORECASE | re.DOTALL)
+        if not section_match:
+            return None
+            
+        # Then extract the specific content using extract_pattern
+        content_match = re.search(extract_pattern, text[section_match.start():], re.IGNORECASE | re.DOTALL)
+        if not content_match:
+            return None
+            
+        # Format the extracted content
+        extracted = {f"extracted_text_{i+1}": content_match.group(i+1) 
+                    for i in range(content_match.lastindex)}
+        return message_template.format(**extracted)
+    except Exception as e:
+        print(f"⚠️ Error extracting text: {str(e)}")
+        return None
+
+@timed_function
 def process_document_content(doc, yaml_data, extracted_text):
     """Process document content without adding title/scope."""
     extracted_text = extracted_text or ""
@@ -284,17 +306,14 @@ def process_document_content(doc, yaml_data, extracted_text):
                     doc.add_heading(question['address'], level=2)
                     
                     if question.get('search_pattern') and question.get('extract_text', False):
-                        if question['search_pattern'] in extracted_text:
-                            address = extract_matching_text(
-                                extracted_text,
-                                question['search_pattern'],
-                                question['extract_pattern'],
-                                question['message_template']
-                            )
-                            if address:
-                                add_formatted_paragraph(doc, address, italic=True)
-                            else:
-                                add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
+                        address = extract_matching_text(
+                            extracted_text,
+                            question['search_pattern'],
+                            question['extract_pattern'],
+                            question['message_template']
+                        )
+                        if address:
+                            add_formatted_paragraph(doc, address, italic=True)
                         else:
                             add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
                 
@@ -303,44 +322,38 @@ def process_document_content(doc, yaml_data, extracted_text):
                     for section in question['sections']:
                         doc.add_heading(section['section'], level=2)
                         
-                        if section['search_pattern'] in extracted_text:
-                            content = extract_matching_text(
-                                extracted_text,
-                                section['search_pattern'],
-                                section['extract_pattern'],
-                                section['message_template']
-                            )
-                            if content:
-                                add_formatted_paragraph(doc, content, italic=True)
-                            else:
-                                add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
+                        content = extract_matching_text(
+                            extracted_text,
+                            section['search_pattern'],
+                            section['extract_pattern'],
+                            section['message_template']
+                        )
+                        if content:
+                            add_formatted_paragraph(doc, content, italic=True)
                         else:
-                            add_formatted_paragraph(doc, f"No {section['section']} information found", style='Intense Quote')
+                            add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
                             
                         # Process nested sections if they exist
                         if 'sections' in section:
                             for subsection in section['sections']:
                                 doc.add_heading(subsection['section'], level=3)
                                 
-                                if subsection['search_pattern'] in extracted_text:
-                                    subcontent = extract_matching_text(
-                                        extracted_text,
-                                        subsection['search_pattern'],
-                                        subsection['extract_pattern'],
-                                        subsection['message_template']
-                                    )
-                                    if subcontent:
-                                        add_formatted_paragraph(doc, subcontent, italic=True)
-                                    else:
-                                        add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
+                                subcontent = extract_matching_text(
+                                    extracted_text,
+                                    subsection['search_pattern'],
+                                    subsection['extract_pattern'],
+                                    subsection['message_template']
+                                )
+                                if subcontent:
+                                    add_formatted_paragraph(doc, subcontent, italic=True)
                                 else:
-                                    add_formatted_paragraph(doc, f"No {subsection['section']} information found", style='Intense Quote')
+                                    add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
         
         # Only show "not found" message if no content was found at all
         elif not found_content:
             doc.add_heading(doc_section['heading'], level=1)
             doc.add_paragraph(doc_section['message_if_identifier_not_found'])
-            break  # Only show this once if nothing was found in any file
+            break
 
 # Main execution
 if __name__ == "__main__":
