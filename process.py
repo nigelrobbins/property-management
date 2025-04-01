@@ -262,51 +262,78 @@ def process_zip(zip_path, output_docx, yaml_path):
 @timed_function
 def process_document_content(doc, yaml_data, extracted_text):
     """Process document content without adding title/scope."""
-    # Ensure extracted_text is never None
     extracted_text = extracted_text or ""
     
-    # Process each document section
     for doc_section in yaml_data['docs']:
-        
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
             doc.add_heading(doc_section['heading'], level=1)
             doc.add_paragraph(doc_section['message_if_identifier_found'])
-        else:
-            continue  # Skip processing this file if identifier not found
-        
-        # Process questions
-        for question in doc_section.get('questions', []):
-            # Handle address extraction specifically
-            print(f"🔍 Processing question: {question}")
-            if 'address' in question:
-                print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                add_formatted_paragraph(doc, question['address'], style='Heading 2')
-                
-                if question.get('search_pattern') and question.get('extract_text', False):
-                    # Search for the address pattern
-                    if question['search_pattern'] in extracted_text:
-                        print(f"✅ Found address pattern in text")
-                        address = extract_matching_text(
-                            extracted_text, 
-                            question['extract_pattern'], 
-                            question['message_template']
-                        )
-                        if address:
-                            print(f"✅ Extracted address: {address}")
-                            add_formatted_paragraph(doc, address, italic=True)
-                        else:
-                            print("⚠️ Address pattern found but couldn't extract details")
-                            add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
-                    else:
-                        print(f"⚠️ Address pattern not found in text")
-                        add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
             
-            # Process other sections
-            if 'sections' in question:
-                print(f"🔍 Processing {len(question['sections'])} sections")
-                process_sections(doc, question['sections'], extracted_text=extracted_text)
+            # Process all questions including address and sections
+            for question in doc_section.get('questions', []):
+                # Handle address specifically
+                if 'address' in question:
+                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                    doc.add_heading(question['address'], level=2)
+                    
+                    if question.get('search_pattern') and question.get('extract_text', False):
+                        if question['search_pattern'] in extracted_text:
+                            address = extract_matching_text(
+                                extracted_text,
+                                question['search_pattern'],
+                                question['extract_pattern'],
+                                question['message_template']
+                            )
+                            if address:
+                                add_formatted_paragraph(doc, address, italic=True)
+                            else:
+                                add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
+                        else:
+                            add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
+                
+                # Process all other sections
+                if 'sections' in question:
+                    print(f"🔍 Processing {len(question['sections'])} sections")
+                    for section in question['sections']:
+                        doc.add_heading(section['section'], level=2)
+                        
+                        if section['search_pattern'] in extracted_text:
+                            content = extract_matching_text(
+                                extracted_text,
+                                section['search_pattern'],
+                                section['extract_pattern'],
+                                section['message_template']
+                            )
+                            if content:
+                                add_formatted_paragraph(doc, content, italic=True)
+                            else:
+                                add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
+                        else:
+                            add_formatted_paragraph(doc, f"No {section['section']} information found", style='Intense Quote')
+                            
+                        # Process nested sections if they exist
+                        if 'sections' in section:
+                            for subsection in section['sections']:
+                                doc.add_heading(subsection['section'], level=3)
+                                
+                                if subsection['search_pattern'] in extracted_text:
+                                    subcontent = extract_matching_text(
+                                        extracted_text,
+                                        subsection['search_pattern'],
+                                        subsection['extract_pattern'],
+                                        subsection['message_template']
+                                    )
+                                    if subcontent:
+                                        add_formatted_paragraph(doc, subcontent, italic=True)
+                                    else:
+                                        add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
+                                else:
+                                    add_formatted_paragraph(doc, f"No {subsection['section']} information found", style='Intense Quote')
+        else:
+            doc.add_heading(doc_section['heading'], level=1)
+            doc.add_paragraph(doc_section['message_if_identifier_not_found'])
 
 # Main execution
 if __name__ == "__main__":
