@@ -170,6 +170,7 @@ def generate_report(doc, yaml_data, extracted_text):
         # Process questions
         for question in doc_section.get('questions', []):
             if 'address' in question:
+                print(f"⚠️ address in {question}")
                 # Process address
                 add_formatted_paragraph(doc, question['address'], style='Heading 2')
                 if question.get('search_pattern') and question.get('extract_text', False):
@@ -179,7 +180,8 @@ def generate_report(doc, yaml_data, extracted_text):
                     if address:
                         add_formatted_paragraph(doc, address, italic=True)
             
-            if 'sections' in question:
+            if 'sections' in sections:
+                print(f"⚠️ { question['sections']} in {question}")
                 process_sections(doc, question['sections'], extracted_text=extracted_text)
 
 @timed_function
