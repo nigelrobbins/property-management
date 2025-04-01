@@ -179,33 +179,8 @@ def generate_report(doc, yaml_data, extracted_text):
         
         # Process questions
         for question in doc_section.get('questions', []):
-            # Handle address extraction specifically
-            print(f"🔍 Processing question: {question}")
-            if 'address' in question:
-                print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                add_formatted_paragraph(doc, question['address'], style='Heading 2')
-                
-                if question.get('search_pattern') and question.get('extract_text', False):
-                    # Search for the address pattern
-                    if question['search_pattern'] in extracted_text:
-                        print(f"✅ Found address pattern in text")
-                        address = extract_matching_text(
-                            extracted_text, 
-                            question['search_pattern'],  # Added this line
-                            question['extract_pattern'], 
-                            question['message_template']
-                        )
-                        if address:
-                            print(f"✅ Extracted address: {address}")
-                            add_formatted_paragraph(doc, address, italic=True)
-                        else:
-                            print("⚠️ Address pattern found but couldn't extract details")
-                            add_formatted_paragraph(doc, "Address found but details couldn't be extracted", style='Intense Quote')
-                    else:
-                        print(f"⚠️ Address pattern not found in text")
-                        add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
-            
-            # Process other sections
+
+            # Process sections
             if 'sections' in question:
                 print(f"🔍 Processing {len(question['sections'])} sections")
                 process_sections(doc, question['sections'], extracted_text=extracted_text)
