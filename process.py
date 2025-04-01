@@ -62,8 +62,13 @@ def extract_text_from_pdf(pdf_path):
         images = convert_from_path(pdf_path)
         text = "\n".join(pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6') 
                         for img in images)
+
+
         if text:
             text = text.strip()
+            output_dir = "work_files"
+            os.makedirs(output_dir, exist_ok=True)
+            output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
             with open(output_file_path, "w", encoding="utf-8") as f:
                 f.write(text)
             return text or ""  # Ensure we never return None
