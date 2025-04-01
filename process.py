@@ -299,25 +299,8 @@ def process_document_content(doc, yaml_data, extracted_text):
             doc.add_paragraph(doc_section['message_if_identifier_found'])
             
             # Process all questions including address and sections
-            for question in doc_section.get('questions', []):
-                # Handle address specifically
-                if 'address' in question:
-                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                    doc.add_heading(question['address'], level=2)
-                    
-                    if question.get('search_pattern') and question.get('extract_text', False):
-                        address = extract_matching_text(
-                            extracted_text,
-                            question['search_pattern'],
-                            question['extract_pattern'],
-                            question['message_template']
-                        )
-                        if address:
-                            add_formatted_paragraph(doc, address, italic=True)
-                        else:
-                            add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
-                
-                # Process all other sections
+            for question in doc_section.get('questions', []):                
+                # Process sections
                 if 'sections' in question:
                     for section in question['sections']:
                         doc.add_heading(section['section'], level=2)

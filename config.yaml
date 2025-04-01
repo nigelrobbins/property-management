@@ -13,8 +13,8 @@ docs:
   - name: "Local_Authority_Search"
     heading: "Local Authority Search"
     identifier: "REPLIES TO STANDARD ENQUIRIES"
-    message_if_identifier_found: "[Previous message remains unchanged]"
-    message_if_identifier_not_found: "[Previous message remains unchanged]"
+    message_if_identifier_found: "A search against the property in the local Land Charges Registers, maintained by the Local Authority was carried out. In the search, the Local Authority were asked numerous questions of a kind normally asked in relation to property transactions.  The purpose was to establish whether there is anything registered against the Property that would adversely affect the Property’s value; or if any information held by Local Authority might limit the use to which you intend to put the property."
+    message_if_identifier_not_found: "A local Authority search was not provided. We therefore cannot comment on any land charges, planning permissions or prohibitions that affect the property. This search is important as it reveals issues that affect the property which you may be liable for such as the lack of building regulations for work which has been done. Should you wish us to conduct a search for you, please do let us know and we will be able to advise further."
     questions:
       - address: "Address of the property"
         search_pattern: "Property:"
