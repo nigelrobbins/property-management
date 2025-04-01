@@ -121,11 +121,16 @@ def add_formatted_paragraph(doc, text, style=None, bold=False, italic=False):
 def process_sections(doc, sections, level=2, extracted_text=""):
     """Recursively process document sections."""
     for section in sections:
-        if 'section' in section:  # Only process if it's a section
+        if 'section' in section:
             add_formatted_paragraph(doc, section['section'], style=f'Heading {level}', bold=True)
             
             if section['search_pattern'] in extracted_text and section['extract_text']:
-                match = extract_matching_text(extracted_text, section['extract_pattern'], section['message_template'])
+                match = extract_matching_text(
+                    extracted_text,
+                    section['search_pattern'],
+                    section['extract_pattern'],
+                    section['message_template']
+                )
                 if match:
                     add_formatted_paragraph(doc, match, italic=True)
                 else:
@@ -137,11 +142,15 @@ def process_sections(doc, sections, level=2, extracted_text=""):
                 process_sections(doc, section['sections'], level+1, extracted_text)
 
 @timed_function
-def extract_matching_text(text, pattern, message_template):
-    """Extract and format text using regex pattern."""
-    matches = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+def extract_matching_text(text, search_pattern, extract_pattern, message_template):
+    """Extract and format text using combined search and extract patterns."""
+    # Combine the search pattern with the extract pattern
+    full_pattern = search_pattern + extract_pattern
+    matches = re.search(full_pattern, text, re.IGNORECASE | re.DOTALL)
+    
     if matches:
-        extracted = {f"extracted_text_{i+1}": matches.group(i+1) for i in range(matches.lastindex)}
+        extracted = {f"extracted_text_{i+1}": matches.group(i+1) 
+                    for i in range(matches.lastindex)}
         return message_template.format(**extracted)
     return None
 
