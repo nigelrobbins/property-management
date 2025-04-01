@@ -172,6 +172,7 @@ def generate_report(doc, yaml_data, extracted_text):
         # Process questions
         for question in doc_section.get('questions', []):
             # Handle address extraction specifically
+            print(f"🔍 Processing question: {question}")
             if 'address' in question:
                 print(f"🔍 Processing address with pattern: {question['search_pattern']}")
                 add_formatted_paragraph(doc, question['address'], style='Heading 2')
