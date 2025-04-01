@@ -43,15 +43,40 @@ def clean_text(text):
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
-    """Extract text from PDF using multiple methods."""
-    # [Previous implementation remains the same]
-    # ...
+    """Extract text from PDF using multiple methods with fallbacks."""
+    try:
+        # Try pdftotext first
+        result = subprocess.run(['pdftotext', pdf_path, '-'], 
+                              capture_output=True, text=True)
+        text = result.stdout.strip()
+        if text:
+            return text
+            
+        # Fallback to pdfplumber
+        with pdfplumber.open(pdf_path) as pdf:
+            text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+            if text.strip():
+                return text.strip()
+                
+        # Final fallback: OCR
+        images = convert_from_path(pdf_path)
+        text = "\n".join(pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6') 
+                        for img in images)
+        return text.strip() or ""  # Ensure we never return None
+    
+    except Exception as e:
+        print(f"⚠️ Error extracting text from {pdf_path}: {str(e)}")
+        return ""  # Return empty string instead of None
 
 @timed_function
 def extract_text_from_docx(docx_path):
-    """Extract text from Word document."""
-    doc = Document(docx_path)
-    return "\n".join([para.text for para in doc.paragraphs])
+    """Extract text from Word document with error handling."""
+    try:
+        doc = Document(docx_path)
+        return "\n".join(para.text for para in doc.paragraphs) or ""
+    except Exception as e:
+        print(f"⚠️ Error extracting text from {docx_path}: {str(e)}")
+        return ""
 
 @timed_function
 def add_formatted_paragraph(doc, text, style=None, bold=False, italic=False):
@@ -90,9 +115,11 @@ def extract_matching_text(text, pattern, message_template):
         return message_template.format(**extracted)
     return None
 
-@timed_function
 def generate_report(doc, yaml_data, extracted_text):
-    """Generate report document from YAML structure."""
+    """Generate report document with validation."""
+    # Ensure extracted_text is never None
+    extracted_text = extracted_text or ""
+    
     # Add title and scope
     doc.add_heading(yaml_data['general']['title'], level=0)
     scope = yaml_data['general']['scope'][0]
@@ -103,19 +130,22 @@ def generate_report(doc, yaml_data, extracted_text):
     for doc_section in yaml_data['docs']:
         doc.add_heading(doc_section['heading'], level=1)
         
-        # Check if identifier exists in text
-        if doc_section['identifier'] in extracted_text:
+        # Check if identifier exists in text (now safe since extracted_text is str)
+        identifier = doc_section.get('identifier', '')
+        if identifier and identifier in extracted_text:
             doc.add_paragraph(doc_section['message_if_identifier_found'])
         else:
             doc.add_paragraph(doc_section['message_if_identifier_not_found'])
         
         # Process questions
-        for question in doc_section['questions']:
+        for question in doc_section.get('questions', []):
             if 'address' in question:
                 # Process address
                 add_formatted_paragraph(doc, question['address'], style='Heading 2')
-                if question['search_pattern'] in extracted_text and question['extract_text']:
-                    address = extract_matching_text(extracted_text, question['extract_pattern'], question['message_template'])
+                if question.get('search_pattern') and question.get('extract_text', False):
+                    address = extract_matching_text(extracted_text, 
+                                                  question['extract_pattern'], 
+                                                  question['message_template'])
                     if address:
                         add_formatted_paragraph(doc, address, italic=True)
             
@@ -124,36 +154,46 @@ def generate_report(doc, yaml_data, extracted_text):
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
-    """Process ZIP file containing documents."""
-    output_folder = "output_files/unzipped_files"
-    os.makedirs(output_folder, exist_ok=True)
-    
-    # Load YAML config
-    yaml_data = load_yaml(yaml_path)
-    doc = Document()
-    
-    # Extract ZIP
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(output_folder)
-    
-    # Process each file
-    for file_name in os.listdir(output_folder):
-        file_path = os.path.join(output_folder, file_name)
+    """Process ZIP file with improved error handling."""
+    try:
+        output_folder = "output_files/unzipped_files"
+        os.makedirs(output_folder, exist_ok=True)
         
-        if file_name.endswith(".pdf"):
-            extracted_text = extract_text_from_pdf(file_path)
-        elif file_name.endswith(".docx"):
-            extracted_text = extract_text_from_docx(file_path)
-        else:
-            continue
+        yaml_data = load_yaml(yaml_path)
+        doc = Document()
         
-        # Generate report
-        generate_report(doc, yaml_data, extracted_text)
-        doc.add_page_break()
-    
-    # Save final document
-    os.makedirs(os.path.dirname(output_docx), exist_ok=True)
-    doc.save(output_docx)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(output_folder)
+        
+        for file_name in os.listdir(output_folder):
+            file_path = os.path.join(output_folder, file_name)
+            
+            try:
+                if file_name.endswith(".pdf"):
+                    extracted_text = extract_text_from_pdf(file_path)
+                elif file_name.endswith(".docx"):
+                    extracted_text = extract_text_from_docx(file_path)
+                else:
+                    continue
+                
+                # Ensure we have text to process
+                if not extracted_text.strip():
+                    print(f"⚠️ Empty text extracted from {file_name}")
+                    continue
+                    
+                generate_report(doc, yaml_data, extracted_text)
+                doc.add_page_break()
+                
+            except Exception as e:
+                print(f"⚠️ Error processing {file_name}: {str(e)}")
+                continue
+        
+        os.makedirs(os.path.dirname(output_docx), exist_ok=True)
+        doc.save(output_docx)
+        
+    except Exception as e:
+        print(f"❌ Critical error processing ZIP: {str(e)}")
+        raise
 
 # Main execution
 if __name__ == "__main__":
