@@ -261,8 +261,8 @@ def process_document_content(doc, yaml_data, extracted_text):
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
-            doc.add_paragraph(doc_section['message_if_identifier_found'])
             doc.add_heading(doc_section['heading'], level=1)
+            doc.add_paragraph(doc_section['message_if_identifier_found'])
         else:
             continue  # Skip processing this file if identifier not found
         
