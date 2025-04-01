@@ -166,7 +166,6 @@ def generate_report(doc, yaml_data, extracted_text):
         if identifier and identifier in extracted_text:
             doc.add_paragraph(doc_section['message_if_identifier_found'])
         else:
-            doc.add_paragraph(doc_section['message_if_identifier_not_found'])
             continue  # Skip processing this file if identifier not found
         
         # Process questions
