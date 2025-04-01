@@ -237,7 +237,6 @@ def process_zip(zip_path, output_docx, yaml_path):
                     
                 # Process document content without adding title/scope again
                 process_document_content(doc, yaml_data, extracted_text)
-                doc.add_page_break()
                 
             except Exception as e:
                 print(f"⚠️ Error processing {file_name}: {str(e)}")
