@@ -359,13 +359,14 @@ if __name__ == "__main__":
             yaml_data = load_yaml(yaml_config)
             doc = Document()
             # Add title and scope
-            doc.add_heading(yaml_data['general']['title'], level=0)
-            scope = yaml_data['general']['scope'][0]
-            doc.add_heading(scope['heading'], level=1)
-            doc.add_paragraph(scope['body'])
+            heading = doc.add_heading(yaml_data['general']['title'], level=0)
+            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             address_heading, address = get_address(doc, yaml_data, combined_text)
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            scope = yaml_data['general']['scope'][0]
+            doc.add_heading(scope['heading'], level=1)
+            doc.add_paragraph(scope['body'])
            
             para = add_formatted_paragraph(doc, address, italic=True)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
