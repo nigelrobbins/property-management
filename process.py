@@ -248,7 +248,7 @@ def process_document_content(doc, yaml_data, extracted_text):
             break
 
 @timed_function
-def get_Address(doc, yaml_data, extracted_text):
+def get_address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     found_content = False
     address = "Address not found"
