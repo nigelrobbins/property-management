@@ -314,7 +314,7 @@ def process_zip(zip_path, output_docx, yaml_path):
         write_combined_text(combined_text)
         
         # Process document content
-        process_document_content(doc, yaml_data, combined_text)
+        #process_document_content(doc, yaml_data, combined_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
@@ -361,4 +361,3 @@ if __name__ == "__main__":
         process_zip(zip_file_path, output_file, yaml_config)
     else:
         print("❌ No ZIP file found in 'input_files' folder.")
-        
