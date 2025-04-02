@@ -346,19 +346,17 @@ if __name__ == "__main__":
     # Check if we should process from existing combined text
     if os.path.exists(os.path.join("work_files", "combined_text.txt")):
         print("📄 Found existing combined_text.txt")
-        response = input("Do you want to process from existing combined text? (y/n): ").lower()
-        if response == 'y':
-            combined_text = read_combined_text()
-            if combined_text:
-                yaml_data = load_yaml(yaml_config)
-                doc = Document()
-                # Add title and scope
-                doc.add_heading(yaml_data['general']['title'], level=0)
-                scope = yaml_data['general']['scope'][0]
-                doc.add_heading(scope['heading'], level=1)
-                doc.add_paragraph(scope['body'])
-                
-                process_document_content(doc, yaml_data, combined_text)
-                doc.save(output_file)
-                print(f"✅ Report generated from combined text: {output_file}")
-                exit()
+        combined_text = read_combined_text()
+        if combined_text:
+            yaml_data = load_yaml(yaml_config)
+            doc = Document()
+            # Add title and scope
+            doc.add_heading(yaml_data['general']['title'], level=0)
+            scope = yaml_data['general']['scope'][0]
+            doc.add_heading(scope['heading'], level=1)
+            doc.add_paragraph(scope['body'])
+            
+            process_document_content(doc, yaml_data, combined_text)
+            doc.save(output_file)
+            print(f"✅ Report generated from combined text: {output_file}")
+            exit()
