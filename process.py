@@ -248,24 +248,28 @@ def get_address(doc, yaml_data, extracted_text):
         return address_heading, address
 
 @timed_function
-def get_section(doc, yaml_data, extracted_text, section):
+def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
+    print(f"🔍 get_section, section: {section}")
     for doc_section in yaml_data['docs']:
+        print(f"🔍 get_section, yaml_data['docs']: {yaml_data['docs']}")
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
-                # Process all other sections
-                if 'sections' in question:
-                    for section in question['sections']:
-                        if section['section'] == section:
-                        
-                            content = extract_matching_text(
-                                extracted_text,
-                                section['search_pattern'],
-                                section['extract_pattern'],
-                                section['message_template']
-                            )
-                            return content
+            print(f"🔍 get_section, question: {question}")
+            # Process all other sections
+            if 'sections' in question:
+                print(f"🔍 get_section, 'sections': {'sections'}")
+                for section in question['sections']:
+                    print(f"🔍 get_section, section: {section}")
+                    if section['section'] == theSection:
+                        content = extract_matching_text(
+                            extracted_text,
+                            section['search_pattern'],
+                            section['extract_pattern'],
+                            section['message_template']
+                        )
+                        return content
     return content
 
 @timed_function
