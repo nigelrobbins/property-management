@@ -273,6 +273,7 @@ def write_combined_text(text):
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(text)
 
+
 @timed_function
 def extract_matching_text(text, search_pattern, extract_pattern, message_template):
     """Extract and format text using combined search and extract patterns."""
@@ -311,11 +312,11 @@ def process_document_content(doc, yaml_data, extracted_text):
             for question in doc_section.get('questions', []):
                 # Handle address specifically
                 if 'address' in question:
-                    heading = doc.add_heading(doc_section['heading'], level=1)
-                    heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    address_heading = doc.add_heading(question['address'], level=2)
-                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                    doc.add_heading(doc_section['heading'], level=1)
+                    doc.add_paragraph(doc_section['message_if_identifier_found'])
                     doc.add_heading(question['address'], level=2)
+                    
                     if question.get('search_pattern') and question.get('extract_text', False):
                         address = extract_matching_text(
                             extracted_text,
