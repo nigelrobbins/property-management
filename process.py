@@ -44,12 +44,8 @@ def clean_text(text):
 @timed_function
 def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
-    
-    # Ensure the work_files directory exists
     output_dir = "work_files"
     os.makedirs(output_dir, exist_ok=True)
-
-    # Construct the output file path
     output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
 
     # Try using pdftotext first
@@ -60,7 +56,7 @@ def extract_text_from_pdf(pdf_path):
         print(f"✅ Extracted text using pdftotext: {text[:100]}...")
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(text)
-        return text  # If pdftotext works, return immediately
+        return text
 
     print("⚠️ pdftotext failed, trying pdfplumber...")
 
@@ -77,7 +73,7 @@ def extract_text_from_pdf(pdf_path):
         text = text.strip()
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(text)
-        return text  # If pdfplumber works, return immediately
+        return text
 
     print("⚠️ pdfplumber failed, performing OCR...")
 
@@ -92,7 +88,6 @@ def extract_text_from_pdf(pdf_path):
     text = text.strip()
     print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")
 
-    # Write the final extracted text to the file
     with open(output_file_path, "w", encoding="utf-8") as f:
         f.write(text)
 
@@ -118,72 +113,139 @@ def add_formatted_paragraph(doc, text, style=None, bold=False, italic=False):
     return p
 
 @timed_function
-def process_sections(doc, sections, level=2, extracted_text=""):
-    """Recursively process document sections."""
-    for section in sections:
-        if 'section' in section:
-            add_formatted_paragraph(doc, section['section'], style=f'Heading {level}', bold=True)
-            
-            if section['search_pattern'] in extracted_text and section['extract_text']:
-                match = extract_matching_text(
-                    extracted_text,
-                    section['search_pattern'],
-                    section['extract_pattern'],
-                    section['message_template']
-                )
-                if match:
-                    add_formatted_paragraph(doc, match, italic=True)
-                else:
-                    add_formatted_paragraph(doc, "No matching content found.", style='Intense Quote')
-            else:
-                add_formatted_paragraph(doc, f"No {section['section']} information found.", style='Intense Quote')
-            
-            if 'sections' in section:
-                process_sections(doc, section['sections'], level+1, extracted_text)
+def write_combined_text(text, filename="combined_text.txt"):
+    """Write combined text to a file for later processing."""
+    output_dir = "work_files"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, filename)
+    
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"✅ Combined text saved to {output_path}")
+    return output_path
+
+@timed_function
+def read_combined_text(filename="combined_text.txt"):
+    """Read combined text from file."""
+    input_path = os.path.join("work_files", filename)
+    try:
+        with open(input_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"⚠️ Combined text file not found: {input_path}")
+        return None
 
 @timed_function
 def extract_matching_text(text, search_pattern, extract_pattern, message_template):
     """Extract and format text using combined search and extract patterns."""
-    # Combine the search pattern with the extract pattern
-    full_pattern = search_pattern + extract_pattern
-    matches = re.search(full_pattern, text, re.IGNORECASE | re.DOTALL)
-    
-    if matches:
-        extracted = {f"extracted_text_{i+1}": matches.group(i+1) 
-                    for i in range(matches.lastindex)}
+    try:
+        # First find the section using search_pattern
+        section_match = re.search(search_pattern, text, re.IGNORECASE | re.DOTALL)
+        if not section_match:
+            return None
+            
+        # Then extract the specific content using extract_pattern
+        content_match = re.search(extract_pattern, text[section_match.start():], re.IGNORECASE | re.DOTALL)
+        if not content_match:
+            return None
+            
+        # Format the extracted content
+        extracted = {f"extracted_text_{i+1}": content_match.group(i+1) 
+                    for i in range(content_match.lastindex)}
         return message_template.format(**extracted)
-    return None
+    except Exception as e:
+        print(f"⚠️ Error extracting text: {str(e)}")
+        return None
 
 @timed_function
-def generate_report(doc, yaml_data, extracted_text):
-    """Generate report document with validation."""
-    # Ensure extracted_text is never None
+def process_document_content(doc, yaml_data, extracted_text):
+    """Process document content without adding title/scope."""
     extracted_text = extracted_text or ""
+    found_content = False
     
-    # Add title and scope
-    doc.add_heading(yaml_data['general']['title'], level=0)
-    scope = yaml_data['general']['scope'][0]
-    doc.add_heading(scope['heading'], level=1)
-    doc.add_paragraph(scope['body'])
-    
-    # Process each document section
     for doc_section in yaml_data['docs']:
-        doc.add_heading(doc_section['heading'], level=1)
-        
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
-            doc.add_paragraph(doc_section['message_if_identifier_found'])
-        else:
-            continue  # Skip processing this file if identifier not found
+            found_content = True
+            
+            # Add centered heading
+            heading = doc.add_heading(doc_section['heading'], level=1)
+            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            
+            # Add centered paragraph
+            para = doc.add_paragraph(doc_section['message_if_identifier_found'])
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            
+            # Process all questions including address and sections
+            for question in doc_section.get('questions', []):
+                # Handle address specifically
+                if 'address' in question:
+                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                    
+                    # Add centered address heading
+                    address_heading = doc.add_heading(question['address'], level=2)
+                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    
+                    if question.get('search_pattern') and question.get('extract_text', False):
+                        address = extract_matching_text(
+                            extracted_text,
+                            question['search_pattern'],
+                            question['extract_pattern'],
+                            question['message_template']
+                        )
+                        if address:
+                            para = add_formatted_paragraph(doc, address, italic=True)
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                        else:
+                            para = add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                
+                # Process all other sections
+                if 'sections' in question:
+                    for section in question['sections']:
+                        section_heading = doc.add_heading(section['section'], level=2)
+                        section_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                        
+                        content = extract_matching_text(
+                            extracted_text,
+                            section['search_pattern'],
+                            section['extract_pattern'],
+                            section['message_template']
+                        )
+                        if content:
+                            para = add_formatted_paragraph(doc, content, italic=True)
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                        else:
+                            para = add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                            
+                        # Process nested sections if they exist
+                        if 'sections' in section:
+                            for subsection in section['sections']:
+                                subsection_heading = doc.add_heading(subsection['section'], level=3)
+                                subsection_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                                
+                                subcontent = extract_matching_text(
+                                    extracted_text,
+                                    subsection['search_pattern'],
+                                    subsection['extract_pattern'],
+                                    subsection['message_template']
+                                )
+                                if subcontent:
+                                    para = add_formatted_paragraph(doc, subcontent, italic=True)
+                                    para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                                else:
+                                    para = add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
+                                    para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
         
-        # Process questions
-        for question in doc_section.get('questions', []):
-
-            # Process sections
-            if 'sections' in question:
-                print(f"🔍 Processing {len(question['sections'])} sections")
-                process_sections(doc, question['sections'], extracted_text=extracted_text)
+        # Only show "not found" message if no content was found at all
+        elif not found_content:
+            heading = doc.add_heading(doc_section['heading'], level=1)
+            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            para = doc.add_paragraph(doc_section['message_if_identifier_not_found'])
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            break
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -248,124 +310,19 @@ def process_zip(zip_path, output_docx, yaml_path):
         # Combine all text for processing
         combined_text = "\n".join(all_extracted_text)
         
-        # Process document content once with all combined text
-        process_document_content(doc, yaml_data, combined_text)
-
+        # Save combined text for potential later use
         write_combined_text(combined_text)
+        
+        # Process document content
+        process_document_content(doc, yaml_data, combined_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
+        print(f"✅ Report generated: {output_docx}")
         
     except Exception as e:
         print(f"❌ Critical error processing ZIP: {str(e)}")
         raise
-
-def write_combined_text(text):
-    # Ensure the work_files directory exists
-    output_dir = "work_files"
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Construct the output file path
-    output_file_path = os.path.join(output_dir, "combined_text.txt")
-
-    if text:
-        print(f"✅ Extracted text using pdftotext: {text[:100]}...")
-        with open(output_file_path, "w", encoding="utf-8") as f:
-            f.write(text)
-
-
-@timed_function
-def extract_matching_text(text, search_pattern, extract_pattern, message_template):
-    """Extract and format text using combined search and extract patterns."""
-    try:
-        # First find the section using search_pattern
-        section_match = re.search(search_pattern, text, re.IGNORECASE | re.DOTALL)
-        if not section_match:
-            return None
-            
-        # Then extract the specific content using extract_pattern
-        content_match = re.search(extract_pattern, text[section_match.start():], re.IGNORECASE | re.DOTALL)
-        if not content_match:
-            return None
-            
-        # Format the extracted content
-        extracted = {f"extracted_text_{i+1}": content_match.group(i+1) 
-                    for i in range(content_match.lastindex)}
-        return message_template.format(**extracted)
-    except Exception as e:
-        print(f"⚠️ Error extracting text: {str(e)}")
-        return None
-
-@timed_function
-def process_document_content(doc, yaml_data, extracted_text):
-    """Process document content without adding title/scope."""
-    extracted_text = extracted_text or ""
-    found_content = False
-    
-    for doc_section in yaml_data['docs']:
-        # Check if identifier exists in text
-        identifier = doc_section.get('identifier', '')
-        if identifier and identifier in extracted_text:
-            found_content = True
-            
-            # Process all questions including address and sections
-            for question in doc_section.get('questions', []):
-                # Handle address specifically
-                if 'address' in question:
-                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                    doc.add_heading(doc_section['heading'], level=1)
-                    doc.add_paragraph(doc_section['message_if_identifier_found'])
-                    doc.add_heading(question['address'], level=2)
-                    
-                    if question.get('search_pattern') and question.get('extract_text', False):
-                        address = extract_matching_text(
-                            extracted_text,
-                            question['search_pattern'],
-                            question['extract_pattern'],
-                            question['message_template']
-                        )
-                        if address:
-                            add_formatted_paragraph(doc, address, italic=True)
-                        else:
-                            add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
-                
-                # Process all other sections
-                if 'sections' in question:
-                    for section in question['sections']:
-                        doc.add_heading(section['section'], level=2)
-                        
-                        content = extract_matching_text(
-                            extracted_text,
-                            section['search_pattern'],
-                            section['extract_pattern'],
-                            section['message_template']
-                        )
-                        if content:
-                            add_formatted_paragraph(doc, content, italic=True)
-                        else:
-                            add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
-                            
-                        # Process nested sections if they exist
-                        if 'sections' in section:
-                            for subsection in section['sections']:
-                                doc.add_heading(subsection['section'], level=3)
-                                
-                                subcontent = extract_matching_text(
-                                    extracted_text,
-                                    subsection['search_pattern'],
-                                    subsection['extract_pattern'],
-                                    subsection['message_template']
-                                )
-                                if subcontent:
-                                    add_formatted_paragraph(doc, subcontent, italic=True)
-                                else:
-                                    add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
-        
-        # Only show "not found" message if no content was found at all
-        elif not found_content:
-            doc.add_heading(doc_section['heading'], level=1)
-            doc.add_paragraph(doc_section['message_if_identifier_not_found'])
-            break
 
 # Main execution
 if __name__ == "__main__":
@@ -373,7 +330,27 @@ if __name__ == "__main__":
     yaml_config = "config.yaml"
     output_file = "output_files/processed_doc.docx"
     
-    # Find ZIP file
+    # Check if we should process from existing combined text
+    if os.path.exists(os.path.join("work_files", "combined_text.txt")):
+        print("📄 Found existing combined_text.txt")
+        response = input("Do you want to process from existing combined text? (y/n): ").lower()
+        if response == 'y':
+            combined_text = read_combined_text()
+            if combined_text:
+                yaml_data = load_yaml(yaml_config)
+                doc = Document()
+                # Add title and scope
+                doc.add_heading(yaml_data['general']['title'], level=0)
+                scope = yaml_data['general']['scope'][0]
+                doc.add_heading(scope['heading'], level=1)
+                doc.add_paragraph(scope['body'])
+                
+                process_document_content(doc, yaml_data, combined_text)
+                doc.save(output_file)
+                print(f"✅ Report generated from combined text: {output_file}")
+                exit()
+    
+    # Otherwise proceed with normal ZIP processing
     zip_file_path = next(
         (os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(".zip")),
         None
@@ -384,3 +361,4 @@ if __name__ == "__main__":
         process_zip(zip_file_path, output_file, yaml_config)
     else:
         print("❌ No ZIP file found in 'input_files' folder.")
+        
