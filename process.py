@@ -248,6 +248,53 @@ def process_document_content(doc, yaml_data, extracted_text):
             break
 
 @timed_function
+def get_Address(doc, yaml_data, extracted_text):
+    extracted_text = extracted_text or ""
+    found_content = False
+    address = "Address not fpund"
+    for doc_section in yaml_data['docs']:
+        # Check if identifier exists in text
+        identifier = doc_section.get('identifier', '')
+        if identifier and identifier in extracted_text:
+            found_content = True
+            
+            # Add centered heading
+            heading = doc.add_heading(doc_section['heading'], level=1)
+            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            
+            # Add centered paragraph
+            para = doc.add_paragraph(doc_section['message_if_identifier_found'])
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            
+            # Process all questions including address and sections
+            for question in doc_section.get('questions', []):
+                # Handle address specifically
+                if 'address' in question:
+                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                    
+                    # Add centered address heading
+                    address_heading = doc.add_heading(question['address'], level=2)
+                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    
+                    if question.get('search_pattern') and question.get('extract_text', False):
+                        address = extract_matching_text(
+                            extracted_text,
+                            question['search_pattern'],
+                            question['extract_pattern'],
+                            question['message_template']
+                        )
+                        return address
+                        if address:
+                            para = add_formatted_paragraph(doc, address, italic=True)
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                        else:
+                            para = add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
+                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                       
+        else:
+            return address
+
+@timed_function
 def process_zip(zip_path, output_docx, yaml_path):
     """Process ZIP file with improved error handling."""
     try:
@@ -313,9 +360,6 @@ def process_zip(zip_path, output_docx, yaml_path):
         # Save combined text for potential later use
         write_combined_text(combined_text)
         
-        # Process document content
-        #process_document_content(doc, yaml_data, combined_text)
-        
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
         print(f"✅ Report generated: {output_docx}")
@@ -355,7 +399,10 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            
+            address = get_Address(doc, yaml_data, combined_text)
+            para = add_formatted_paragraph(doc, address, italic=True)
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
             process_document_content(doc, yaml_data, combined_text)
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
