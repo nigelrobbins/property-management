@@ -248,7 +248,7 @@ def get_address(doc, yaml_data, extracted_text):
         return address_heading, address
 
 @timed_function
-def get_section(doc, yaml_data, section):
+def get_section(doc, yaml_data, extracted_text, section):
     extracted_text = extracted_text or ""
     content = "Section not found"
     for doc_section in yaml_data['docs']:
@@ -379,7 +379,8 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            content = get_section(doc, yaml_data, "Building Regulations")
+            address_heading, address = get_address(doc, yaml_data, combined_text)
+            content = get_section(doc, yaml_data, combined_text, "Building Regulations")
             para = add_formatted_paragraph(doc, content, italic=True)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
