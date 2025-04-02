@@ -251,6 +251,7 @@ def get_address(doc, yaml_data, extracted_text):
 def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
+    message_if_none = "N/A"
     print(f"🔍 get_section, section: {theSection}")
     for doc_section in yaml_data['docs']:
         print(f"🔍 get_section, yaml_data['docs']: {yaml_data['docs']}")
@@ -269,8 +270,8 @@ def get_section(doc, yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        return content
-    return content
+                        return content, section['message_if_none']
+    return content, message_if_none
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -384,8 +385,9 @@ if __name__ == "__main__":
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
             address_heading, address = get_address(doc, yaml_data, combined_text)
-            content = get_section(doc, yaml_data, combined_text, "Building Regulations")
-            para = add_formatted_paragraph(doc, content, italic=True)
+            content, message_if_none = get_section(doc, yaml_data, combined_text, "Building Regulations")
+            if content == "None":
+                para = add_formatted_paragraph(doc, message_if_none, italic=True)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
             process_document_content(doc, yaml_data, combined_text)
