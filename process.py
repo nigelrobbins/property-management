@@ -250,6 +250,8 @@ def process_zip(zip_path, output_docx, yaml_path):
         
         # Process document content once with all combined text
         process_document_content(doc, yaml_data, combined_text)
+
+        write_combined_text(combined_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
@@ -257,6 +259,19 @@ def process_zip(zip_path, output_docx, yaml_path):
     except Exception as e:
         print(f"❌ Critical error processing ZIP: {str(e)}")
         raise
+
+def write_combined_text(text):
+    # Ensure the work_files directory exists
+    output_dir = "work_files"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Construct the output file path
+    output_file_path = os.path.join(output_dir, "combined_text.txt")
+
+    if text:
+        print(f"✅ Extracted text using pdftotext: {text[:100]}...")
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(text)
 
 @timed_function
 def extract_matching_text(text, search_pattern, extract_pattern, message_template):
