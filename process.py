@@ -251,7 +251,7 @@ def get_address(doc, yaml_data, extracted_text):
 def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
-    print(f"🔍 get_section, section: {section}")
+    print(f"🔍 get_section, section: {theSection}")
     for doc_section in yaml_data['docs']:
         print(f"🔍 get_section, yaml_data['docs']: {yaml_data['docs']}")
         # Process all questions including address and sections
