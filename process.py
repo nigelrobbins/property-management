@@ -179,27 +179,6 @@ def process_document_content(doc, yaml_data, extracted_text):
             
             # Process all questions including address and sections
             for question in doc_section.get('questions', []):
-                # Handle address specifically
-                if 'address' in question:
-                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                    
-                    # Add centered address heading
-                    address_heading = doc.add_heading(question['address'], level=2)
-                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    
-                    if question.get('search_pattern') and question.get('extract_text', False):
-                        address = extract_matching_text(
-                            extracted_text,
-                            question['search_pattern'],
-                            question['extract_pattern'],
-                            question['message_template']
-                        )
-                        if address:
-                            para = add_formatted_paragraph(doc, address, italic=True)
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                        else:
-                            para = add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
                 
                 # Process all other sections
                 if 'sections' in question:
