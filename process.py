@@ -306,16 +306,16 @@ def process_document_content(doc, yaml_data, extracted_text):
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
             found_content = True
-            doc.add_heading(doc_section['heading'], level=1)
-            doc.add_paragraph(doc_section['message_if_identifier_found'])
             
             # Process all questions including address and sections
             for question in doc_section.get('questions', []):
                 # Handle address specifically
                 if 'address' in question:
-                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                    heading = doc.add_heading(doc_section['heading'], level=1)
+                    heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                    address_heading = doc.add_heading(question['address'], level=2)
+                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
                     doc.add_heading(question['address'], level=2)
-                    
                     if question.get('search_pattern') and question.get('extract_text', False):
                         address = extract_matching_text(
                             extracted_text,
