@@ -169,11 +169,9 @@ def process_document_content(doc, yaml_data, extracted_text):
         if identifier and identifier in extracted_text:
             found_content = True
             
-            # Add centered heading
             heading = doc.add_heading(doc_section['heading'], level=1)
-            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            heading.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
-            # Add centered paragraph
             para = doc.add_paragraph(doc_section['message_if_identifier_found'])
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
