@@ -224,11 +224,7 @@ def process_zip(zip_path, output_docx, yaml_path):
                 print(f"⚠️ Error processing {file_name}: {str(e)}")
                 continue
         
-        # Combine all text for processing
-        combined_text = "\n".join(all_extracted_text)
-        
-        # Process document content once with all combined text
-        process_document_content(doc, yaml_data, combined_text)
+            process_document_content(doc, yaml_data, all_extracted_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
