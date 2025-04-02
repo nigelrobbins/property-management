@@ -248,18 +248,13 @@ def get_address(doc, yaml_data, extracted_text):
 def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
-    message_if_none = "N/A"
-    print(f"🔍 get_section, section: {theSection}")
+    not_applic = "N/A"
     for doc_section in yaml_data['docs']:
-        print(f"🔍 get_section, yaml_data['docs']: {yaml_data['docs']}")
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
-            print(f"🔍 get_section, question: {question}")
             # Process all other sections
             if 'sections' in question:
-                print(f"🔍 get_section, 'sections': {'sections'}")
                 for section in question['sections']:
-                    print(f"🔍 get_section, section: {section}")
                     if section['section'] == theSection:
                         content = extract_matching_text(
                             extracted_text,
@@ -267,8 +262,8 @@ def get_section(doc, yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        return content, section['message_if_none']
-    return content, message_if_none
+                        return content, section['message_if_none'], section['message_if_identifier_found']
+    return content, not_applic, not_applic
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -382,8 +377,8 @@ if __name__ == "__main__":
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
             address_heading, address = get_address(doc, yaml_data, combined_text)
-            content, message_if_none = get_section(doc, yaml_data, combined_text, "Building Regulations")
-            para = doc.add_paragraph(doc_section['message_if_identifier_found'])
+            content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, "Building Regulations")
+            para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             if content == "None":
                 para = add_formatted_paragraph(doc, message_if_none, italic=True)
