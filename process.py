@@ -251,20 +251,13 @@ def process_document_content(doc, yaml_data, extracted_text):
 def get_Address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     found_content = False
-    address = "Address not fpund"
+    address = "Address not found"
+    address_heading = "Address Heading not found"
     for doc_section in yaml_data['docs']:
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:
             found_content = True
-            
-            # Add centered heading
-            heading = doc.add_heading(doc_section['heading'], level=1)
-            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            
-            # Add centered paragraph
-            para = doc.add_paragraph(doc_section['message_if_identifier_found'])
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             
             # Process all questions including address and sections
             for question in doc_section.get('questions', []):
@@ -273,9 +266,7 @@ def get_Address(doc, yaml_data, extracted_text):
                     print(f"🔍 Processing address with pattern: {question['search_pattern']}")
                     
                     # Add centered address heading
-                    address_heading = doc.add_heading(question['address'], level=2)
-                    address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    
+                    address_heading = question['address']                    
                     if question.get('search_pattern') and question.get('extract_text', False):
                         address = extract_matching_text(
                             extracted_text,
@@ -283,16 +274,10 @@ def get_Address(doc, yaml_data, extracted_text):
                             question['extract_pattern'],
                             question['message_template']
                         )
-                        return address
-                        if address:
-                            para = add_formatted_paragraph(doc, address, italic=True)
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                        else:
-                            para = add_formatted_paragraph(doc, "No address information found", style='Intense Quote')
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                        return address_heading, address
                        
         else:
-            return address
+            return address_heading, address
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -399,7 +384,10 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            address = get_Address(doc, yaml_data, combined_text)
+            address_heading, address = get_address(doc, yaml_data, combined_text)
+            address_heading = doc.add_heading(address_heading, level=2)
+            address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+           
             para = add_formatted_paragraph(doc, address, italic=True)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
