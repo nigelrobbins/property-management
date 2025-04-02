@@ -330,6 +330,19 @@ if __name__ == "__main__":
     yaml_config = "config.yaml"
     output_file = "output_files/processed_doc.docx"
     
+    
+    # Otherwise proceed with normal ZIP processing
+    zip_file_path = next(
+        (os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(".zip")),
+        None
+    )
+    
+    if zip_file_path:
+        print(f"📂 Found ZIP file: {zip_file_path}")
+        process_zip(zip_file_path, output_file, yaml_config)
+    else:
+        print("❌ No ZIP file found in 'input_files' folder.")
+
     # Check if we should process from existing combined text
     if os.path.exists(os.path.join("work_files", "combined_text.txt")):
         print("📄 Found existing combined_text.txt")
@@ -349,15 +362,3 @@ if __name__ == "__main__":
                 doc.save(output_file)
                 print(f"✅ Report generated from combined text: {output_file}")
                 exit()
-    
-    # Otherwise proceed with normal ZIP processing
-    zip_file_path = next(
-        (os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(".zip")),
-        None
-    )
-    
-    if zip_file_path:
-        print(f"📂 Found ZIP file: {zip_file_path}")
-        process_zip(zip_file_path, output_file, yaml_config)
-    else:
-        print("❌ No ZIP file found in 'input_files' folder.")
