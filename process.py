@@ -248,6 +248,27 @@ def get_address(doc, yaml_data, extracted_text):
         return address_heading, address
 
 @timed_function
+def get_section(doc, yaml_data, extracted_text, section):
+    extracted_text = extracted_text or ""
+    content = "Section not found"
+    for doc_section in yaml_data['docs']:
+        # Process all questions including address and sections
+        for question in doc_section.get('questions', []):
+                # Process all other sections
+                if 'sections' in question:
+                    for section in question['sections']:
+                        if section['section'] == get_section:
+                        
+                            content = extract_matching_text(
+                                extracted_text,
+                                section['search_pattern'],
+                                section['extract_pattern'],
+                                section['message_template']
+                            )
+                            return content
+    return content
+
+@timed_function
 def process_zip(zip_path, output_docx, yaml_path):
     """Process ZIP file with improved error handling."""
     try:
@@ -358,6 +379,9 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
+            content = get_section(doc, yaml_data, extracted_text, "Building Regulations")
+            para = add_formatted_paragraph(doc, content, italic=True)
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
             process_document_content(doc, yaml_data, combined_text)
             doc.save(output_file)
