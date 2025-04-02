@@ -227,34 +227,25 @@ def process_document_content(doc, yaml_data, extracted_text):
 @timed_function
 def get_address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
-    found_content = False
     address = "Address not found"
     address_heading = "Address Heading not found"
     for doc_section in yaml_data['docs']:
-        # Check if identifier exists in text
-        identifier = doc_section.get('identifier', '')
-        if identifier and identifier in extracted_text:
-            found_content = True
-            
-            # Process all questions including address and sections
-            for question in doc_section.get('questions', []):
-                # Handle address specifically
-                if 'address' in question:
-                    print(f"🔍 Processing address with pattern: {question['search_pattern']}")
-                    
-                    # Add centered address heading
-                    address_heading = question['address']                    
-                    if question.get('search_pattern') and question.get('extract_text', False):
-                        address = extract_matching_text(
-                            extracted_text,
-                            question['search_pattern'],
-                            question['extract_pattern'],
-                            question['message_template']
-                        )
-                        return address_heading, address
-                       
-        else:
-            return address_heading, address
+        # Process all questions including address and sections
+        for question in doc_section.get('questions', []):
+            # Handle address specifically
+            if 'address' in question:
+                print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                # Add centered address heading
+                address_heading = question['address']                    
+                if question.get('search_pattern') and question.get('extract_text', False):
+                    address = extract_matching_text(
+                        extracted_text,
+                        question['search_pattern'],
+                        question['extract_pattern'],
+                        question['message_template']
+                    )
+                    return address_heading, address
+        return address_heading, address
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
