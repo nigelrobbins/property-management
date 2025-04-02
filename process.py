@@ -204,8 +204,15 @@ def process_zip(zip_path, output_docx, yaml_path):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_folder)
         
-        # First collect all extracted text
+        # First collect all extracted text and check for identifiers
         all_extracted_text = []
+        doc_identifiers = {doc_section['identifier']: doc_section 
+                          for doc_section in yaml_data['docs'] 
+                          if 'identifier' in doc_section}
+        
+        # Track which identifiers we've found
+        found_identifiers = set()
+        
         for file_name in os.listdir(output_folder):
             file_path = os.path.join(output_folder, file_name)
             
@@ -217,14 +224,32 @@ def process_zip(zip_path, output_docx, yaml_path):
                 else:
                     continue
                 
-                if extracted_text.strip():
-                    all_extracted_text.append(extracted_text)
+                if not extracted_text.strip():
+                    continue
+                
+                # Check if this file contains any of our identifiers
+                for identifier, doc_section in doc_identifiers.items():
+                    if identifier in extracted_text:
+                        found_identifiers.add(identifier)
+                        all_extracted_text.append(extracted_text)
+                        print(f"✅ Found identifier '{identifier}' in {file_name}")
+                        break
                 
             except Exception as e:
                 print(f"⚠️ Error processing {file_name}: {str(e)}")
                 continue
         
-            process_document_content(doc, yaml_data, all_extracted_text)
+        if not all_extracted_text:
+            print("❌ No files with matching identifiers found")
+            doc.add_paragraph("No matching documents found with the required identifiers.")
+            doc.save(output_docx)
+            return
+        
+        # Combine all text for processing
+        combined_text = "\n".join(all_extracted_text)
+        
+        # Process document content once with all combined text
+        process_document_content(doc, yaml_data, combined_text)
         
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
