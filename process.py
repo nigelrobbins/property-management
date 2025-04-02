@@ -364,12 +364,11 @@ if __name__ == "__main__":
             address_heading, address = get_address(doc, yaml_data, combined_text)
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            para = add_formatted_paragraph(doc, address, italic=True)
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-           
-            para = add_formatted_paragraph(doc, address, italic=True)
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
             process_document_content(doc, yaml_data, combined_text)
             doc.save(output_file)
