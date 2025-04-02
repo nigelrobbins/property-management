@@ -175,7 +175,7 @@ def process_document_content(doc, yaml_data, extracted_text):
             
             # Add centered paragraph
             para = doc.add_paragraph(doc_section['message_if_identifier_found'])
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             
             # Process all questions including address and sections
             for question in doc_section.get('questions', []):
