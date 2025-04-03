@@ -384,7 +384,7 @@ if __name__ == "__main__":
             address_heading, address = get_address(doc, yaml_data, combined_text)
             section = "Building Regulations"
             content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, section)
-            doc.add_paragraph(section, style="Heading 2")
+            doc.add_paragraph("Local Authority Search", style="Heading 2")
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             if content == "None":
