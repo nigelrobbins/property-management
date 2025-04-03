@@ -46,6 +46,7 @@ def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
     output_dir = "work_files"
     os.makedirs(output_dir, exist_ok=True)
+    output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
 
     # Try using pdftotext first
     result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
