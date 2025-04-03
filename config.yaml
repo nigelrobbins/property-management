@@ -68,9 +68,9 @@ docs:
             message_if_none: "There are no roads that are subject to or proposed to be subject to an adoption agreement. This would mean other nearby roads will not be in the control of the local authority and are privately owned. You may not have access to privately owned roads, therefore you will need to confirm with the seller on which roads you have access to and who owns them and is responsible for their maintenance."
 
           - section: "Land required for Public Purposes"
-            search_pattern: "3\\.1\\. Land required for Public Purposes"
+            search_pattern: "3\\.1\\s*Land required for Public Purposes"
             extract_text: true
-            extract_pattern: "3\\.1\\. Land required for Public Purposes\\n\\s*([^\\n]+)"
+            extract_pattern: "3\\.1\\s*Land required for Public Purposes\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "The land is not required for public purposes or for road works"
 
@@ -80,3 +80,4 @@ docs:
             extract_pattern: "Protection Agency\\?\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There is no indication that the property is in a ‘Radon Affected Area’"
+            
