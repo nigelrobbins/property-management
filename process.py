@@ -386,11 +386,15 @@ if __name__ == "__main__":
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
 
-            # Loop here
-            section = "Building Regulations"
-            content, message_if_none = get_section(doc, yaml_data, combined_text, section)
-            if content == "None":
-                doc.add_paragraph(message_if_none, style="List Bullet")
+            sections_to_process = [
+                "Building Regulations",
+                "Planning Permission"
+                # Add more sections as needed
+            ]
+            for section in sections_to_process:
+                content, message_if_none = get_section(doc, yaml_data, combined_text, section)
+                if content == "None":
+                    doc.add_paragraph(message_if_none, style="List Bullet")
 
             process_document_content(doc, yaml_data, combined_text)
             doc.save(output_file)
