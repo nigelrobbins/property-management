@@ -54,7 +54,7 @@ docs:
             # Just an example of a subsection
             sections:
             - section: "Radon Gas"
-              search_pattern: "Protection Agency"
+              search_pattern: "1\\.13"
               extract_text: true
               extract_pattern: "Protection Agency\\?\\n\\s*([^\\n]+)"
               message_template: "{extracted_text_1}"
