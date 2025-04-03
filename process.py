@@ -46,7 +46,6 @@ def extract_text_from_pdf(pdf_path):
     """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
     output_dir = "work_files"
     os.makedirs(output_dir, exist_ok=True)
-    output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
 
     # Try using pdftotext first
     result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
@@ -158,7 +157,7 @@ def extract_matching_text(text, search_pattern, extract_pattern, message_templat
         return None
 
 @timed_function
-def get_address(doc, yaml_data, extracted_text):
+def get_address(yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     address = "Address not found"
     address_heading = "Address Heading not found"
@@ -187,9 +186,8 @@ def get_address(doc, yaml_data, extracted_text):
         return message_if_identifier_found, address_heading, address
 
 @timed_function
-def get_section(doc, yaml_data, extracted_text, theSection):
+def get_section(yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
-    none = "None"
     for doc_section in yaml_data['docs']:
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
@@ -227,12 +225,6 @@ def process_zip(zip_path, output_docx, yaml_path):
         
         # First collect all extracted text and check for identifiers
         all_extracted_text = []
-        doc_identifiers = {doc_section['identifier']: doc_section 
-                          for doc_section in yaml_data['docs'] 
-                          if 'identifier' in doc_section}
-        
-        # Track which identifiers we've found
-        found_identifiers = set()
         
         for file_name in os.listdir(output_folder):
             file_path = os.path.join(output_folder, file_name)
@@ -310,7 +302,7 @@ if __name__ == "__main__":
             # Headings
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
+            message_if_identifier_found, address_heading, address = get_address(yaml_data, combined_text)
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             para = add_formatted_paragraph(doc, address, italic=True)
@@ -332,7 +324,7 @@ if __name__ == "__main__":
                 # Add more sections as needed
             ]
             for section in sections_to_process:
-                content, message_if_none = get_section(doc, yaml_data, combined_text, section)
+                content, message_if_none = get_section(yaml_data, combined_text, section)
                 if content == "None":
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
