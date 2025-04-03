@@ -391,14 +391,16 @@ if __name__ == "__main__":
             sections_to_process = [
                 "Building Regulations",
                 "Conservation Area",
-                "Planning Permission"
+                "Planning Permission",
+                "Highways"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
                 content, message_if_none = get_section(doc, yaml_data, combined_text, section)
                 if content == "None":
                     doc.add_paragraph(message_if_none, style="List Bullet")
-
+                else:
+                    doc.add_paragraph(content, style="List Bullet")
             process_document_content(doc, yaml_data, combined_text)
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
