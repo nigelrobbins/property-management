@@ -51,11 +51,11 @@ docs:
             message_template: "{extracted_text_2} and classified as: {extracted_text_1}"
             message_if_none: "No highways information has been provided"
 
-              # Just an example of a subsection
-              sections:
-              - section: "Radon Gas"
-                search_pattern: "Protection Agency"
-                extract_text: true
-                extract_pattern: "Protection Agency\\?\\n\\s*([^\\n]+)"
-                message_template: "{extracted_text_1}"
-                message_if_none: "There is no indication that the property is in a ‘Radon Affected Area’"
+            # Just an example of a subsection
+            sections:
+            - section: "Radon Gas"
+              search_pattern: "Protection Agency"
+              extract_text: true
+              extract_pattern: "Protection Agency\\?\\n\\s*([^\\n]+)"
+              message_template: "{extracted_text_1}"
+              message_if_none: "There is no indication that the property is in a ‘Radon Affected Area’"
