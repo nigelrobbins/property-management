@@ -158,70 +158,6 @@ def extract_matching_text(text, search_pattern, extract_pattern, message_templat
         return None
 
 @timed_function
-def process_document_content(doc, yaml_data, extracted_text):
-    """Process document content without adding title/scope."""
-    extracted_text = extracted_text or ""
-    found_content = False
-    
-    for doc_section in yaml_data['docs']:
-        # Check if identifier exists in text
-        identifier = doc_section.get('identifier', '')
-        if identifier and identifier in extracted_text:
-            found_content = True
-            
-            heading = doc.add_heading(doc_section['heading'], level=1)
-            heading.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-                        
-            # Process all questions including address and sections
-            for question in doc_section.get('questions', []):
-                
-                # Process all other sections
-                if 'sections' in question:
-                    for section in question['sections']:
-                        section_heading = doc.add_heading(section['section'], level=2)
-                        section_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                        
-                        content = extract_matching_text(
-                            extracted_text,
-                            section['search_pattern'],
-                            section['extract_pattern'],
-                            section['message_template']
-                        )
-                        if content:
-                            para = add_formatted_paragraph(doc, content, italic=True)
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                        else:
-                            para = add_formatted_paragraph(doc, f"No {section['section']} details found", style='Intense Quote')
-                            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                            
-                        # Process nested sections if they exist
-                        if 'sections' in section:
-                            for subsection in section['sections']:
-                                subsection_heading = doc.add_heading(subsection['section'], level=3)
-                                subsection_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                                
-                                subcontent = extract_matching_text(
-                                    extracted_text,
-                                    subsection['search_pattern'],
-                                    subsection['extract_pattern'],
-                                    subsection['message_template']
-                                )
-                                if subcontent:
-                                    para = add_formatted_paragraph(doc, subcontent, italic=True)
-                                    para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                                else:
-                                    para = add_formatted_paragraph(doc, f"No {subsection['section']} details found", style='Intense Quote')
-                                    para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-        
-        # Only show "not found" message if no content was found at all
-        elif not found_content:
-            heading = doc.add_heading(doc_section['heading'], level=1)
-            heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            para = doc.add_paragraph(doc_section['message_if_identifier_not_found'])
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            break
-
-@timed_function
 def get_address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     address = "Address not found"
@@ -401,7 +337,7 @@ if __name__ == "__main__":
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
                     doc.add_paragraph(content, style="List Bullet")
-            process_document_content(doc, yaml_data, combined_text)
+
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
             exit()
