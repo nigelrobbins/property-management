@@ -390,6 +390,7 @@ if __name__ == "__main__":
             # Loop through sections
             sections_to_process = [
                 "Building Regulations",
+                "Conservation Area",
                 "Planning Permission"
                 # Add more sections as needed
             ]
