@@ -28,7 +28,8 @@ def timed_function(func):
 def load_yaml(yaml_path):
     """Load YAML configuration and return structured data."""
     with open(yaml_path, "r", encoding="utf-8") as file:
-        return yaml.safe_load(file)
+        yaml_data = yaml.safe_load(file)
+    return yaml_data
 
 @timed_function
 def clean_text(text):
@@ -42,12 +43,12 @@ def clean_text(text):
 
 @timed_function
 def extract_text_from_pdf(pdf_path):
-    """Extract text from a PDF using multiple methods with fallbacks."""
+    """Extract text from a PDF, using pdftotext first, then pdfplumber, then OCR if needed."""
     output_dir = "work_files"
     os.makedirs(output_dir, exist_ok=True)
     output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".txt")
 
-    # Try pdftotext first
+    # Try using pdftotext first
     result = subprocess.run(['pdftotext', pdf_path, '-'], capture_output=True, text=True)
     text = result.stdout.strip()
 
@@ -69,20 +70,24 @@ def extract_text_from_pdf(pdf_path):
 
     if text:
         print(f"✅ Extracted text using pdfplumber: {text[:100]}...")
+        text = text.strip()
         with open(output_file_path, "w", encoding="utf-8") as f:
-            f.write(text.strip())
-        return text.strip()
+            f.write(text)
+        return text
 
     print("⚠️ pdfplumber failed, performing OCR...")
 
-    # Final fallback: OCR
+    # Final fallback: Use OCR (slow)
     text = ""
     images = convert_from_path(pdf_path)
     for img in images:
-        text += pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6') + "\n"
+        ocr_text = pytesseract.image_to_string(img, lang='eng', config='--oem 3 --psm 6')
+        cleaned_text = ocr_text.strip()
+        text += cleaned_text + "\n"
 
     text = text.strip()
-    print(f"✅ Extracted text using OCR: {text[:100]}...")
+    print(f"✅ Extracted text using OCR (cleaned): {text[:100]}...")
+
     with open(output_file_path, "w", encoding="utf-8") as f:
         f.write(text)
 
@@ -117,6 +122,7 @@ def write_combined_text(text, filename="combined_text.txt"):
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(text)
     print(f"✅ Combined text saved to {output_path}")
+    return output_path
 
 @timed_function
 def read_combined_text(filename="combined_text.txt"):
@@ -133,14 +139,17 @@ def read_combined_text(filename="combined_text.txt"):
 def extract_matching_text(text, search_pattern, extract_pattern, message_template):
     """Extract and format text using combined search and extract patterns."""
     try:
+        # First find the section using search_pattern
         section_match = re.search(search_pattern, text, re.IGNORECASE | re.DOTALL)
         if not section_match:
             return None
             
+        # Then extract the specific content using extract_pattern
         content_match = re.search(extract_pattern, text[section_match.start():], re.IGNORECASE | re.DOTALL)
         if not content_match:
             return None
             
+        # Format the extracted content
         extracted = {f"extracted_text_{i+1}": content_match.group(i+1) 
                     for i in range(content_match.lastindex)}
         return message_template.format(**extracted)
@@ -149,17 +158,23 @@ def extract_matching_text(text, search_pattern, extract_pattern, message_templat
         return None
 
 @timed_function
-def get_address(yaml_data, extracted_text):
-    """Extract address information from text."""
+def get_address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     address = "Address not found"
     address_heading = "Address Heading not found"
     message_if_identifier_found = "None"
-    
     for doc_section in yaml_data['docs']:
+        # Process all questions including address and sections
         for question in doc_section.get('questions', []):
+            # Check if identifier exists in text
+            identifier = doc_section.get('identifier', '')
+            if identifier and identifier in extracted_text:          
+                message_if_identifier_found = doc_section['message_if_identifier_found']
+
+            # Handle address specifically
             if 'address' in question:
                 print(f"🔍 Processing address with pattern: {question['search_pattern']}")
+                # Add centered address heading
                 address_heading = question['address']                    
                 if question.get('search_pattern') and question.get('extract_text', False):
                     address = extract_matching_text(
@@ -169,15 +184,16 @@ def get_address(yaml_data, extracted_text):
                         question['message_template']
                     )
                     return message_if_identifier_found, address_heading, address
-    return message_if_identifier_found, address_heading, address
+        return message_if_identifier_found, address_heading, address
 
 @timed_function
-def get_section(yaml_data, extracted_text, theSection):
-    """Extract specific section content from text."""
+def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
-    
+    none = "None"
     for doc_section in yaml_data['docs']:
+        # Process all questions including address and sections
         for question in doc_section.get('questions', []):
+            # Process all other sections
             if 'sections' in question:
                 for section in question['sections']:
                     if section['section'] == theSection:
@@ -192,7 +208,7 @@ def get_section(yaml_data, extracted_text, theSection):
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
-    """Process ZIP file containing documents to generate report."""
+    """Process ZIP file with improved error handling."""
     try:
         output_folder = "output_files/unzipped_files"
         os.makedirs(output_folder, exist_ok=True)
@@ -200,7 +216,7 @@ def process_zip(zip_path, output_docx, yaml_path):
         yaml_data = load_yaml(yaml_path)
         doc = Document()
         
-        # Add title and scope
+        # Add title and scope ONLY ONCE at the beginning
         doc.add_heading(yaml_data['general']['title'], level=0)
         scope = yaml_data['general']['scope'][0]
         doc.add_heading(scope['heading'], level=1)
@@ -209,11 +225,14 @@ def process_zip(zip_path, output_docx, yaml_path):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_folder)
         
-        # Process all files in the zip
+        # First collect all extracted text and check for identifiers
         all_extracted_text = []
         doc_identifiers = {doc_section['identifier']: doc_section 
-                         for doc_section in yaml_data['docs'] 
-                         if 'identifier' in doc_section}
+                          for doc_section in yaml_data['docs'] 
+                          if 'identifier' in doc_section}
+        
+        # Track which identifiers we've found
+        found_identifiers = set()
         
         for file_name in os.listdir(output_folder):
             file_path = os.path.join(output_folder, file_name)
@@ -229,9 +248,10 @@ def process_zip(zip_path, output_docx, yaml_path):
                 if not extracted_text.strip():
                     continue
                 
-                # Check for identifiers
-                for identifier in doc_identifiers:
+                # Check if this file contains any of our identifiers
+                for identifier, doc_section in doc_identifiers.items():
                     if identifier in extracted_text:
+                        found_identifiers.add(identifier)
                         all_extracted_text.append(extracted_text)
                         print(f"✅ Found identifier '{identifier}' in {file_name}")
                         break
@@ -248,38 +268,10 @@ def process_zip(zip_path, output_docx, yaml_path):
         
         # Combine all text for processing
         combined_text = "\n".join(all_extracted_text)
+        
+        # Save combined text for potential later use
         write_combined_text(combined_text)
         
-        # Process address and sections
-        message_if_identifier_found, address_heading, address = get_address(yaml_data, combined_text)
-        
-        # Add address section
-        heading = doc.add_heading(address_heading, level=2)
-        heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-        para = add_formatted_paragraph(doc, address, italic=True)
-        para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-        
-        # Add search results
-        doc.add_paragraph("Local Authority Search", style="Heading 2")
-        doc.add_paragraph(message_if_identifier_found)
-        
-        # Process all sections
-        sections_to_process = [
-            "Building Regulations",
-            "Conservation Area",
-            "Planning Permission",
-            "Highways",
-            "Radon Gas"
-        ]
-        
-        for section in sections_to_process:
-            content, message_if_none = get_section(yaml_data, combined_text, section)
-            if content == "None":
-                doc.add_paragraph(message_if_none, style="List Bullet")
-            else:
-                doc.add_paragraph(content, style="List Bullet")
-        
-        # Save final document
         os.makedirs(os.path.dirname(output_docx), exist_ok=True)
         doc.save(output_docx)
         print(f"✅ Report generated: {output_docx}")
@@ -288,11 +280,14 @@ def process_zip(zip_path, output_docx, yaml_path):
         print(f"❌ Critical error processing ZIP: {str(e)}")
         raise
 
+# Main execution
 if __name__ == "__main__":
     input_folder = "input_files"
     yaml_config = "config.yaml"
     output_file = "output_files/processed_doc.docx"
     
+    
+    # Otherwise proceed with normal ZIP processing
     zip_file_path = next(
         (os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(".zip")),
         None
@@ -304,7 +299,7 @@ if __name__ == "__main__":
     else:
         print("❌ No ZIP file found in 'input_files' folder.")
 
-    # Process from existing combined text if available
+    # Check if we should process from existing combined text
     if os.path.exists(os.path.join("work_files", "combined_text.txt")):
         print("📄 Found existing combined_text.txt")
         combined_text = read_combined_text()
@@ -312,37 +307,32 @@ if __name__ == "__main__":
             yaml_data = load_yaml(yaml_config)
             doc = Document()
 
-            # Add document headings
+            # Headings
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            
-            # Process address
-            message_if_identifier_found, address_heading, address = get_address(yaml_data, combined_text)
+            message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             para = add_formatted_paragraph(doc, address, italic=True)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            
-            # Add scope
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            
-            # Add search results
             doc.add_paragraph("Local Authority Search", style="Heading 2")
-            doc.add_paragraph(message_if_identifier_found)
-            
-            # Process sections
+            para = doc.add_paragraph(message_if_identifier_found)
+            para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+
+            # Loop through sections
             sections_to_process = [
                 "Building Regulations",
                 "Conservation Area",
                 "Planning Permission",
                 "Highways",
                 "Radon Gas"
+                # Add more sections as needed
             ]
-            
             for section in sections_to_process:
-                content, message_if_none = get_section(yaml_data, combined_text, section)
+                content, message_if_none = get_section(doc, yaml_data, combined_text, section)
                 if content == "None":
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
@@ -350,4 +340,4 @@ if __name__ == "__main__":
 
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
-            
+            exit()
