@@ -325,6 +325,7 @@ if __name__ == "__main__":
             sections_to_process = [
                 "Building Regulations",
                 "Conservation Area",
+                "Certificate of Lawfulness",
                 "Planning Permission",
                 "Highways",
                 "Radon Gas"
