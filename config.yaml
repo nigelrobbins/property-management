@@ -26,9 +26,9 @@ docs:
           - section: "Planning Permission"
             search_pattern: "1\\.1\\(a\\)"
             extract_text: true
-            extract_pattern: "\\s*(.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
-            message_template: "{extracted_text_2}"
-            message_if_none: "•	There are no planning permissions"
+            extract_pattern: "\\s*.*?[:;\\n]\\s*\\n\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "There are no planning permissions"
  
           - section: "Conservation Area"
             search_pattern: "1\\.1\\(c\\)"
