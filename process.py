@@ -226,9 +226,15 @@ def get_address(doc, yaml_data, extracted_text):
     extracted_text = extracted_text or ""
     address = "Address not found"
     address_heading = "Address Heading not found"
+    message_if_identifier_found = "None"
     for doc_section in yaml_data['docs']:
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
+            # Check if identifier exists in text
+            identifier = doc_section.get('identifier', '')
+            if identifier and identifier in extracted_text:          
+                message_if_identifier_found = doc_section['message_if_identifier_found']
+
             # Handle address specifically
             if 'address' in question:
                 print(f"🔍 Processing address with pattern: {question['search_pattern']}")
@@ -241,8 +247,8 @@ def get_address(doc, yaml_data, extracted_text):
                         question['extract_pattern'],
                         question['message_template']
                     )
-                    return address_heading, address
-        return address_heading, address
+                    return message_if_identifier_found, address_heading, address
+        return message_if_identifier_found, address_heading, address
 
 @timed_function
 def get_section(doc, yaml_data, extracted_text, theSection):
@@ -370,7 +376,7 @@ if __name__ == "__main__":
         if combined_text:
             yaml_data = load_yaml(yaml_config)
             doc = Document()
-            # Add title and scope
+
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             address_heading, address = get_address(doc, yaml_data, combined_text)
@@ -381,12 +387,13 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            address_heading, address = get_address(doc, yaml_data, combined_text)
-            section = "Building Regulations"
-            content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, section)
+            message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
             doc.add_paragraph("Local Authority Search", style="Heading 2")
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+
+            section = "Building Regulations"
+            content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, section)
             if content == "None":
                 doc.add_paragraph(message_if_none, style="List Bullet")
 
