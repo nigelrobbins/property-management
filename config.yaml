@@ -31,7 +31,14 @@ docs:
             extract_pattern: "\\s*.*?[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There are no planning permissions"
- 
+
+          - section: "Listed Building"
+            search_pattern: "1\\.1\\(b\\)"
+            extract_text: true
+            extract_pattern: "1\\.1\\(b\\)[^\\n]*\\n\\(b\\)\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "No listed building"
+
           - section: "Conservation Area"
             search_pattern: "1\\.1\\(c\\)"
             extract_text: true
@@ -79,7 +86,7 @@ docs:
             extract_text: true
             extract_pattern: "Building Regulations\\?\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No building regulation information available"
+            message_if_none: "No infringement of building regulations"
 
           - section: "Contaminated Land"
             search_pattern: "3\\.12\\(a\\)"
