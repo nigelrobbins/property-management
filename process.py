@@ -328,12 +328,13 @@ if __name__ == "__main__":
                 "Certificate of Lawfulness",
                 "Planning Permission",
                 "Highways",
+                "Adoption Agreement",
                 "Radon Gas"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
                 content, message_if_none = get_section(yaml_data, combined_text, section)
-                if content == "None":
+                if content is None or str(content).strip().upper() in ["NONE", "NOT APPLICABLE"]:
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
                     doc.add_paragraph(content, style="List Bullet")

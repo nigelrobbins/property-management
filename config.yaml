@@ -43,7 +43,7 @@ docs:
             search_pattern: "1\\.1\\(d\\)"
             extract_text: true
             extract_pattern: "1\\.1\\(d\\)[^\\n]*\\n\\(d\\)[^\\n]*\\n([\\s\\S]*?)(?=\\n1\\.1\\(e\\)|$)"
-            message_template: "There is a Certificate of Lawfulness of existing use or development as follows: {extracted_text_1}"
+            message_template: "There is a certificate of lawfulness of existing use or development as follows: {extracted_text_1}"
             message_if_none: "No Certificate of Lawfulness has been provided"
 
           - section: "Building Regulations"
@@ -59,6 +59,13 @@ docs:
             extract_pattern: "\\s*2\\(a\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_2} and classified as: {extracted_text_1} A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
             message_if_none: "No highways information has been provided"
+
+          - section: "Adoption Agreement"
+            search_pattern: "2\\(b\\)"
+            extract_text: true
+            extract_pattern: "2\\(b\\)[^\\n]*\\n\\(b\\)\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "There are no roads that are subject to or proposed to be subject to an adoption agreement. This would mean other nearby roads will not be in the control of the local authority and are privately owned. You may not have access to privately owned roads, therefore you will need to confirm with the seller on which roads you have access to and who owns them and is responsible for their maintenance"
 
           - section: "Radon Gas"
             search_pattern: "3\\.13\\. Radon Gas"
