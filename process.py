@@ -255,12 +255,7 @@ def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
     none = "None"
-    message_if_identifier_found = "None"
     for doc_section in yaml_data['docs']:
-        # Check if identifier exists in text
-        identifier = doc_section.get('identifier', '')
-        if identifier and identifier in extracted_text:          
-            message_if_identifier_found = doc_section['message_if_identifier_found']
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
             # Process all other sections
@@ -273,8 +268,8 @@ def get_section(doc, yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        return content, section['message_if_none'], message_if_identifier_found
-    return content, none, none
+                        return content, section['message_if_none']
+    return content, none
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
@@ -391,8 +386,9 @@ if __name__ == "__main__":
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
 
+            # Loop here
             section = "Building Regulations"
-            content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, section)
+            content, message_if_none = get_section(doc, yaml_data, combined_text, section)
             if content == "None":
                 doc.add_paragraph(message_if_none, style="List Bullet")
 
