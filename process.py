@@ -254,7 +254,7 @@ def get_section(doc, yaml_data, extracted_text, theSection):
         # Check if identifier exists in text
         identifier = doc_section.get('identifier', '')
         if identifier and identifier in extracted_text:          
-            message_if_identifier_found = doc_section['message_if_identifier_found'])
+            message_if_identifier_found = doc_section['message_if_identifier_found']
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
             # Process all other sections
@@ -383,8 +383,7 @@ if __name__ == "__main__":
             doc.add_paragraph(scope['body'])
             address_heading, address = get_address(doc, yaml_data, combined_text)
             content, message_if_none, message_if_identifier_found = get_section(doc, yaml_data, combined_text, "Building Regulations")
-            para = doc.add_paragraph(message_if_identifier_found)
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+            doc.add_paragraph(message_if_identifier_found, style="List Bullet")
             if content == "None":
                 para = add_formatted_paragraph(doc, message_if_none, italic=True)
                 para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
