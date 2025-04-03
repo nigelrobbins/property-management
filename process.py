@@ -329,6 +329,7 @@ if __name__ == "__main__":
                 "Planning Permission",
                 "Highways",
                 "Adoption Agreement",
+                "Land required for Public Purposes",
                 "Radon Gas"
                 # Add more sections as needed
             ]
