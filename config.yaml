@@ -42,8 +42,8 @@ docs:
           - section: "Certificate of Lawfulness"
             search_pattern: "1\\.1\\(d\\)"
             extract_text: true
-            extract_pattern: "1\\.1\\(d\\)[^\\n]*\\n\\(d\\)[^\\n]*\\n([^\\n]+)\\n"
-            message_template: "{extracted_text_1}"
+            extract_pattern: "1\\.1\\(d\\)[^\\n]*\\n\\(d\\)[^\\n]*\\n([\\s\\S]*?)(?=\\n1\\.1\\(e\\)|$)"
+            message_template: "There is a Certificate of Lawfulness of existing use or development as follows: {extracted_text_1}"
             message_if_none: "No Certificate of Lawfulness has been provided"
 
           - section: "Building Regulations"
