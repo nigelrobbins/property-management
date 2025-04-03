@@ -226,6 +226,9 @@ def process_zip(zip_path, output_docx, yaml_path):
         
         # First collect all extracted text and check for identifiers
         all_extracted_text = []
+        doc_identifiers = {doc_section['identifier']: doc_section 
+                          for doc_section in yaml_data['docs'] 
+                          if 'identifier' in doc_section}
         
         for file_name in os.listdir(output_folder):
             file_path = os.path.join(output_folder, file_name)
