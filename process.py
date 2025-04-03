@@ -392,7 +392,8 @@ if __name__ == "__main__":
                 "Building Regulations",
                 "Conservation Area",
                 "Planning Permission",
-                "Highways"
+                "Highways",
+                "Radon Gas"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
