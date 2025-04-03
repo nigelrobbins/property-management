@@ -37,7 +37,7 @@ docs:
             extract_text: true
             extract_pattern: "1\\.1\\(b\\)[^\\n]*\\n\\(b\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No listed building"
+            message_if_none: "There are no listed building"
 
           - section: "Conservation Area"
             search_pattern: "1\\.1\\(c\\)"
@@ -51,7 +51,7 @@ docs:
             extract_text: true
             extract_pattern: "1\\.1\\(d\\)[^\\n]*\\n\\(d\\)[^\\n]*\\n([\\s\\S]*?)(?=\\n1\\.1\\(e\\)|$)"
             message_template: "There is a certificate of lawfulness of existing use or development as follows: {extracted_text_1}"
-            message_if_none: "No Certificate of Lawfulness has been provided"
+            message_if_none: "No certificate of Lawfulness has been provided"
 
           - section: "Building Regulations"
             search_pattern: "1\\.1\\(f\\)"
@@ -86,14 +86,14 @@ docs:
             extract_text: true
             extract_pattern: "Building Regulations\\?\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No infringement of building regulations"
+            message_if_none: "There are no infringements of building regulations registered"
 
           - section: "Contaminated Land"
             search_pattern: "3\\.12\\(a\\)"
             extract_text: true
             extract_pattern: "3\\.12\\(a\\)[^\\n]*\\n\\(a\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No contaminated land notices found"
+            message_if_none: "No contaminated land notices were found"
 
           - section: "Radon Gas"
             search_pattern: "3\\.13\\. Radon Gas"
