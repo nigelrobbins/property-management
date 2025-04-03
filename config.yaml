@@ -74,6 +74,13 @@ docs:
             message_template: "{extracted_text_1}"
             message_if_none: "The land is not required for public purposes or for road works"
 
+          - section: "Infringement of Building Regulations"
+            search_pattern: "3\\.8 Infringement of Building Regulations"
+            extract_text: true
+            extract_pattern: "Building Regulations\\?\\n\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "No building regulation information available"
+
           - section: "Contaminated Land"
             search_pattern: "3\\.12\\(a\\)"
             extract_text: true
