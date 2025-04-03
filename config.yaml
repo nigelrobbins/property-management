@@ -48,9 +48,8 @@ docs:
             search_pattern: "2\\(a\\)"
             extract_text: true
             extract_pattern: "\\s*2\\(a\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
-            message_template: "{extracted_text_1}. {extracted_text_2}"
+            message_template: "{extracted_text_2} and classified as: {extracted_text_1}"
             message_if_none: "No highways information has been provided"
-
           - section: "Direction restricting"
             search_pattern: "3\\.9\\(j\\)"
             extract_text: true
