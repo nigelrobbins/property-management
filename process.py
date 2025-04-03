@@ -248,8 +248,13 @@ def get_address(doc, yaml_data, extracted_text):
 def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     content = "Section not found"
-    not_applic = "N/A"
+    none = "None"
+    message_if_identifier_found = "None"
     for doc_section in yaml_data['docs']:
+        # Check if identifier exists in text
+        identifier = doc_section.get('identifier', '')
+        if identifier and identifier in extracted_text:          
+            message_if_identifier_found = doc_section['message_if_identifier_found'])
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
             # Process all other sections
@@ -262,8 +267,8 @@ def get_section(doc, yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        return content, section['message_if_none'], section['message_if_identifier_found']
-    return content, not_applic, not_applic
+                        return content, section['message_if_none'], message_if_identifier_found
+    return content, none, none
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
