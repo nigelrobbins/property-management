@@ -53,7 +53,7 @@ docs:
 
               # Just an example of a subsection
               sections:
-                - section: "Radon Gas"
+              - section: "Radon Gas"
                 search_pattern: "Protection Agency"
                 extract_text: true
                 extract_pattern: "Protection Agency\\?\\n\\s*([^\\n]+)"
