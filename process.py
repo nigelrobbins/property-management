@@ -253,7 +253,6 @@ def get_address(doc, yaml_data, extracted_text):
 @timed_function
 def get_section(doc, yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
-    content = "Section {theSection} not found"
     none = "None"
     for doc_section in yaml_data['docs']:
         # Process all questions including address and sections
@@ -269,7 +268,7 @@ def get_section(doc, yaml_data, extracted_text, theSection):
                             section['message_template']
                         )
                         return content, section['message_if_none']
-    return content, none
+    return "None", f"Section {theSection} not found"
 
 @timed_function
 def process_zip(zip_path, output_docx, yaml_path):
