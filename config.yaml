@@ -48,7 +48,7 @@ docs:
             search_pattern: "2\\(a\\)"
             extract_text: true
             extract_pattern: "\\s*2\\(a\\)\\s*(.*?)(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
-            message_template: "{extracted_text_2} and classified as: {extracted_text_1}"
+            message_template: "{extracted_text_2} and classified as: {extracted_text_1} A highway maintainable at public expense is a local highway. The local authority is responsible for maintaining the road, including repairs, resurfacing, and other works. It will be maintained according to the standards of the local authority and you will have access to it."
             message_if_none: "No highways information has been provided"
 
           - section: "Radon Gas"
