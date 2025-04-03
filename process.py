@@ -372,6 +372,7 @@ if __name__ == "__main__":
             yaml_data = load_yaml(yaml_config)
             doc = Document()
 
+            # Headings
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
@@ -386,6 +387,7 @@ if __name__ == "__main__":
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
 
+            # Loop through sections
             sections_to_process = [
                 "Building Regulations",
                 "Planning Permission"

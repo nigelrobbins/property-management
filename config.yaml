@@ -28,6 +28,7 @@ docs:
             extract_text: true
             extract_pattern: "\\s*(.*?)[:;\\n]\\s*\\n\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
+            message_if_none: "•	There are no planning permissions"
  
           - section: "Conservation Area"
             search_pattern: "1\\.1\\(c\\)"
@@ -40,7 +41,7 @@ docs:
             extract_text: true
             extract_pattern: "\\s*(.*?)(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_2}"
-            message_if_none: "No Building regulations certificates have been given on this property."
+            message_if_none: "No Building regulations certificates have been given on this property"
 
           - section: "Highways"
             search_pattern: "2\\(a\\)"
