@@ -379,7 +379,7 @@ if __name__ == "__main__":
 
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            address_heading, address = get_address(doc, yaml_data, combined_text)
+            message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             para = add_formatted_paragraph(doc, address, italic=True)
@@ -387,7 +387,6 @@ if __name__ == "__main__":
             scope = yaml_data['general']['scope'][0]
             doc.add_heading(scope['heading'], level=1)
             doc.add_paragraph(scope['body'])
-            message_if_identifier_found, address_heading, address = get_address(doc, yaml_data, combined_text)
             doc.add_paragraph("Local Authority Search", style="Heading 2")
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
