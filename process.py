@@ -305,6 +305,10 @@ def process_zip(zip_path, output_docx, yaml_path):
 def process_section_groups(yaml_data, combined_text, doc):
     section_groups = [
         {
+            "sections": ["Planning Permission", "Listed Building", "Conservation Area"],
+            "all_none_message": "There are no planning permissions and no listed building or conservation consents."
+        },
+        {
             "sections": ["Contaminated Land", "Radon Gas"],
             "all_none_message": "The search shows a clear result with regards to contaminated land and radon gas in the area."
         },
@@ -397,9 +401,6 @@ if __name__ == "__main__":
 
             # Loop through sections
             sections_to_process = [
-                "Building Regulations",
-                "Listed Building",
-                "Conservation Area",
                 "Certificate of Lawfulness",
                 "Planning Permission",
                 "Highways",
