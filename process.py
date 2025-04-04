@@ -312,7 +312,7 @@ def process_section_group(sections, yaml_data, text, doc, message):
             
         if content and content.upper() not in ["NONE", "NOT APPLICABLE", ""]:
             all_none = False
-    if all_none
+    if all_none:
         doc.add_paragraph(message, style="List Bullet")
     return all_none
 
