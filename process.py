@@ -302,6 +302,21 @@ def process_zip(zip_path, output_docx, yaml_path):
         raise
 
 @timed_function
+def process_section_group(sections, yaml_data, text, doc, message):
+    all_none = True
+    for section in sections:
+        content, message_if_none = get_section(yaml_data, text, section)
+        
+        if content is not None:
+            content = str(content).strip().rstrip(';:,.')  # Clean punctuation
+            
+        if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
+            all_none = False
+    if all_none:
+        doc.add_paragraph(message, style="List Bullet")
+    return all_none
+
+
 def process_section_groups(yaml_data, combined_text, doc):
     section_groups = [
         {
@@ -322,7 +337,7 @@ def process_section_groups(yaml_data, combined_text, doc):
     ]
 
     for group in section_groups:
-        all_none = process_section_group(
+        all_none = process_section_groupX(
             group["sections"], 
             yaml_data, 
             combined_text, 
@@ -332,8 +347,7 @@ def process_section_groups(yaml_data, combined_text, doc):
             doc.add_paragraph(group["all_none_message"], style="List Bullet")
         doc.add_paragraph()  # Add space between groups
 
-@timed_function
-def process_section_group(sections, yaml_data, text, doc):
+def process_section_groupX(sections, yaml_data, text, doc):
     all_none = True
     for section in sections:
         content, message_if_none = get_section(yaml_data, text, section)
@@ -348,6 +362,7 @@ def process_section_group(sections, yaml_data, text, doc):
             doc.add_paragraph(message_if_none, style="List Bullet")
     
     return all_none
+
 
 # Main execution
 if __name__ == "__main__":
@@ -438,14 +453,9 @@ if __name__ == "__main__":
             ]
             all_none_message = "There are no drainage agreements or consents existing in relation to the property. It would be prudent for you to acquire a drainage and water search to verify how the drainage system of the property is managed. If the drains and sewers are maintained privately, you may be required to maintain them."
             all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
-            
+
             process_section_groups(yaml_data, combined_text, doc)
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
-
-
-
-
-            
             print(f"✅ Report generated from combined text: {output_file}")
             exit()
