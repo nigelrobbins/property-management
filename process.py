@@ -301,6 +301,20 @@ def process_zip(zip_path, output_docx, yaml_path):
         print(f"❌ Critical error processing ZIP: {str(e)}")
         raise
 
+@timed_function
+def process_section_group(sections, yaml_data, text, doc):
+    all_none = True
+    for section in sections:
+        content, message_if_none = get_section(yaml_data, text, section)
+        
+        if content is not None:
+            content = str(content).strip().rstrip(';:,.')  # Clean punctuation
+            
+        if content and content.upper() not in ["NONE", "NOT APPLICABLE", ""]:
+            all_none = False
+    
+    return all_none
+
 # Main execution
 if __name__ == "__main__":
     input_folder = "input_files"
@@ -358,9 +372,7 @@ if __name__ == "__main__":
                 "Land required for Public Purposes",
                 "Infringement of Building Regulations",
                 "Contaminated Land",
-                "Radon Gas",
-                "Enforcement Notice",
-                "Stop Notice"
+                "Radon Gas"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
@@ -372,20 +384,17 @@ if __name__ == "__main__":
                         message = ". However, at the date of the search a decision had not yet been made. It is imperative that you contact the local council to ensure that the existing use of the property is lawful as you may be held liable if the property’s use or development is unlawful"
                         content = content + message
                     doc.add_paragraph(content, style="List Bullet")
-            sections_to_process = [
-                "Enforcement Notice",
-                "Stop Notice"
-                # Add more sections as needed
-            ]
-            all_none = True
-            for section in sections_to_process:
-                content, message_if_none = get_section(yaml_data, combined_text, section)
-                if content is not None and str(content).strip().upper() not in ["NONE", "NOT APPLICABLE"]:
-                    all_none = False
-            if all_none:
-                doc.add_paragraph("No Enforcement Notices or Stop Notices were found.", style="List Bullet")
 
             # TODO - grouping of any of the above
+            # Check if grouping is all none
+            enforcement_sections = [
+                "Enforcement Notice",
+                "Stop Notice"
+            ]
+            enforcement_all_none = process_section_group(enforcement_sections, yaml_data, combined_text, doc)
+            if enforcement_all_none:
+                doc.add_paragraph("There are no notices, orders, directions and proceedings under planning acts registered.", style="List Bullet")
+
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
