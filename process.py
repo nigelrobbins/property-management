@@ -387,14 +387,18 @@ if __name__ == "__main__":
                     doc.add_paragraph(content, style="List Bullet")
 
             # TODO - grouping of any of the above
-            # Check if grouping is all none
-            enforcement_sections = [
+            sections = [
                 "Enforcement Notice",
                 "Stop Notice"
             ]
-            enforcement_all_none_message = "There are no notices, orders, directions and proceedings under planning acts registered."
-            enforcement_all_none = process_section_group(enforcement_sections, yaml_data, combined_text, doc, enforcement_all_none_message)
-
+            all_none_message = "There are no notices, orders, directions and proceedings under planning acts registered."
+            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
+            sections = [
+                "Permanent stopping",
+                "Waiting or loading restrictionse"
+            ]
+            all_none_message = "There are no traffic, road or railway schemes registered"
+            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
