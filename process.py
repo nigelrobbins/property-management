@@ -401,8 +401,8 @@ if __name__ == "__main__":
 
             # Loop through sections
             sections_to_process = [
+                "Building Regulations",
                 "Certificate of Lawfulness",
-                "Planning Permission",
                 "Highways",
                 "Adoption Agreement",
                 "Land required for Public Purposes",
