@@ -329,7 +329,7 @@ def process_section_groups(yaml_data, combined_text, doc):
         },
         {
             "sections": ["Drainage Agreement", "Drainage Consents"],
-            "all_none_message": ("• There are no drainage agreements or consents existing in relation to the property. "
+            "all_none_message": ("There are no drainage agreements or consents existing in relation to the property. "
                                 "It would be prudent for you to acquire a drainage and water search to verify how the "
                                 "drainage system of the property is managed. If the drains and sewers are maintained "
                                 "privately, you may be required to maintain them.")
@@ -345,7 +345,6 @@ def process_section_groups(yaml_data, combined_text, doc):
         )
         if all_none:
             doc.add_paragraph(group["all_none_message"], style="List Bullet")
-        doc.add_paragraph()  # Add space between groups
 
 def process_section_groupX(sections, yaml_data, text, doc):
     all_none = True
