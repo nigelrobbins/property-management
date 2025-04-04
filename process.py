@@ -358,7 +358,9 @@ if __name__ == "__main__":
                 "Land required for Public Purposes",
                 "Infringement of Building Regulations",
                 "Contaminated Land",
-                "Radon Gas"
+                "Radon Gas",
+                "Enforcement Notice",
+                "Stop Notice"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
