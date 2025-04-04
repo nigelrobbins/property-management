@@ -355,7 +355,7 @@ def process_section_groupX(sections, yaml_data, text, doc):
         if content is not None:
             content = str(content).strip().rstrip(';:,.')
             
-        if content and content.upper() not in ["NONE", "NOT APPLICABLE", ""]:
+        if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
             all_none = False
             doc.add_paragraph(content, style="List Bullet")
         else:
