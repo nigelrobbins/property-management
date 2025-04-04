@@ -97,16 +97,16 @@ docs:
             message_if_none: "There are no infringements of building regulations registered"
 
           - section: "Enforcement Notice"
-            search_pattern: "3\\.9\\(a\\) An enforcement notice"
+            search_pattern: "3\\.9\\(a\\)"
             extract_text: true
-            extract_pattern: "3\\.9\\(a\\)\\s+([^;:\\n]+)"
+            extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There is no enforcement notice"
 
           - section: "Stop Notice"
-            search_pattern: "3\\.9\\(b\\) A stop notice"
+            search_pattern: "3\\.9\\(b\\)"
             extract_text: true
-            extract_pattern: "3\\.9\\(b\\)\\s+([^;:\\n]+)"
+            extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(f\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There is no stop notice"
 
