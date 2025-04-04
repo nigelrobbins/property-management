@@ -395,9 +395,15 @@ if __name__ == "__main__":
             all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
             sections = [
                 "Permanent stopping",
-                "Waiting or loading restrictionse"
+                "Waiting or loading restrictions"
             ]
             all_none_message = "There are no traffic, road or railway schemes registered"
+            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
+            sections = [
+                "Drainage Agreement",
+                "Drainage Consents"
+            ]
+            all_none_message = "•	There are no drainage agreements or consents existing in relation to the property. It would be prudent for you to acquire a drainage and water search to verify how the drainage system of the property is managed. If the drains and sewers are maintained privately, you may be required to maintain them."
             all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)

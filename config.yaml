@@ -89,19 +89,33 @@ docs:
             message_template: "{extracted_text_1}"
             message_if_none: "The land is not required for public purposes or for road works"
 
+          - section: "Drainage Agreement"
+            search_pattern: "3\\.3\\(a\\)"
+            extract_text: true
+            extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "No drainage agreement"
+
+          - section: "Drainage Consents"
+            search_pattern: "3\\.3\\(b\\)"
+            extract_text: true
+            extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(b\\)\\s*([^\\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "No drainage consents"
+
           - section: "Permanent stopping"
             search_pattern: "3\\.6\\(a\\)"
             extract_text: true
             extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(a\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No Permanent stopping"
+            message_if_none: "No permanent stopping"
 
           - section: "Waiting or loading restrictions"
             search_pattern: "3\\.6\\(b\\)"
             extract_text: true
             extract_pattern: "\\s*.*?(?:[:\\n])?\\s*\\n\\(b\\)\\s*([^\\n]+)"
             message_template: "{extracted_text_1}"
-            message_if_none: "No Waiting or loading restrictions"
+            message_if_none: "No waiting or loading restrictions"
 
           - section: "Infringement of Building Regulations"
             search_pattern: "3\\.8 Infringement of Building Regulations"
