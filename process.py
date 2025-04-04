@@ -302,21 +302,6 @@ def process_zip(zip_path, output_docx, yaml_path):
         raise
 
 @timed_function
-def process_section_group(sections, yaml_data, text, doc, message):
-    all_none = True
-    for section in sections:
-        content, message_if_none = get_section(yaml_data, text, section)
-        
-        if content is not None:
-            content = str(content).strip().rstrip(';:,.')  # Clean punctuation
-            
-        if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
-            all_none = False
-    if all_none:
-        doc.add_paragraph(message, style="List Bullet")
-    return all_none
-
-
 def process_section_groups(yaml_data, combined_text, doc):
     section_groups = [
         {
@@ -337,7 +322,7 @@ def process_section_groups(yaml_data, combined_text, doc):
     ]
 
     for group in section_groups:
-        all_none = process_section_groupX(
+        all_none = process_section_group(
             group["sections"], 
             yaml_data, 
             combined_text, 
@@ -346,7 +331,8 @@ def process_section_groups(yaml_data, combined_text, doc):
         if all_none:
             doc.add_paragraph(group["all_none_message"], style="List Bullet")
 
-def process_section_groupX(sections, yaml_data, text, doc):
+@timed_function
+def process_section_group(sections, yaml_data, text, doc):
     all_none = True
     for section in sections:
         content, message_if_none = get_section(yaml_data, text, section)
