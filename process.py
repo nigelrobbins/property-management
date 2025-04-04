@@ -356,9 +356,7 @@ def process_section_groupX(sections, yaml_data, text, doc):
             
         if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
             all_none = False
-        else:
-            doc.add_paragraph(message_if_none, style="List Bullet")
-    
+
     return all_none
 
 
