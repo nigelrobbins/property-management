@@ -99,14 +99,14 @@ docs:
           - section: "Enforcement Notice"
             search_pattern: "3\\.9\\(a\\) An enforcement notice"
             extract_text: true
-            extract_pattern: "3\\.9\\(a\\)\\s+([^\n]+)"
+            extract_pattern: "3\\.9\\(a\\)\\s+([^;:\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There is no enforcement notice"
 
           - section: "Stop Notice"
             search_pattern: "3\\.9\\(b\\) A stop notice"
             extract_text: true
-            extract_pattern: "3\\.9\\(b\\)\\s+([^\n]+)"
+           extract_pattern: "3\\.9\\(b\\)\\s+([^;:\\n]+)"
             message_template: "{extracted_text_1}"
             message_if_none: "There is no stop notice"
 
