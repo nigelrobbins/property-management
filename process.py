@@ -195,7 +195,7 @@ def get_address(yaml_data, extracted_text, theSection):
                                 section['message_template']
                             )
 
-    return message_if_identifier_found, address_heading, address, content
+    return message_if_identifier_found, address_heading, address, section_content
 
 @timed_function
 def get_section(yaml_data, extracted_text, theSection):
