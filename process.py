@@ -343,7 +343,7 @@ if __name__ == "__main__":
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             if is_date_one_year_older(date_of_search):
-                message = f"The Search result date is {formatted_date}. This is not an up-to-date search result therefore any policies or permissions that may have been registered after that date will not be reflected on the said local authority search. We would advise you to acquire a new local search to acquire information that is up to date."
+                message = f"The Search result date is {date_of_search}. This is not an up-to-date search result therefore any policies or permissions that may have been registered after that date will not be reflected on the said local authority search. We would advise you to acquire a new local search to acquire information that is up to date."
                 doc.add_paragraph(message, style="List Bullet")
 
             # Loop through sections
