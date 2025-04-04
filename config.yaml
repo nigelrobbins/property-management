@@ -96,6 +96,20 @@ docs:
             message_template: "{extracted_text_1}"
             message_if_none: "There are no infringements of building regulations registered"
 
+          - section: "Enforcement Notice"
+            search_pattern: "3\\.9\\(a\\) An enforcement notice"
+            extract_text: true
+            extract_pattern: "3\\.9\\(a\\)\\s+([^\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "There is no enforcement notice"
+
+          - section: "Stop Notice"
+            search_pattern: "3\\.9\\(b\\) A stop notice"
+            extract_text: true
+            extract_pattern: "3\\.9\\(b\\)\\s+([^\n]+)"
+            message_template: "{extracted_text_1}"
+            message_if_none: "There is no stop notice"
+
           - section: "Contaminated Land"
             search_pattern: "3\\.12\\(a\\)"
             extract_text: true

@@ -358,8 +358,7 @@ if __name__ == "__main__":
                 "Land required for Public Purposes",
                 "Infringement of Building Regulations",
                 "Contaminated Land",
-                "Radon Gas",
-                "Search Date"
+                "Radon Gas"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
@@ -371,6 +370,18 @@ if __name__ == "__main__":
                         message = ". However, at the date of the search a decision had not yet been made. It is imperative that you contact the local council to ensure that the existing use of the property is lawful as you may be held liable if the property’s use or development is unlawful"
                         content = content + message
                     doc.add_paragraph(content, style="List Bullet")
+            sections_to_process = [
+                "Enforcement Notice",
+                "Stop Notice"
+                # Add more sections as needed
+            ]
+            all_none = True
+            for section in sections_to_process:
+                content, message_if_none = get_section(yaml_data, combined_text, section)
+                if content is not None and str(content).strip().upper() not in ["NONE", "NOT APPLICABLE"]:
+                    all_none = False
+            if all_none:
+                doc.add_paragraph("No Enforcement Notices or Stop Notices were found.", style="List Bullet")
 
             # TODO - grouping of any of the above
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
