@@ -336,7 +336,7 @@ def process_section_groups(yaml_data, combined_text, doc):
             combined_text, 
             doc
         )
-        if not all_none:
+        if all_none:
             doc.add_paragraph(group["all_none_message"], style="List Bullet")
         else:
             process_sections(yaml_data, combined_text, doc, group["sections"])
