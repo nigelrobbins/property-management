@@ -318,7 +318,7 @@ def process_section_groups(yaml_data, combined_text, doc):
         },
         {
             "sections": ["Permanent stopping", "Waiting or loading restrictions"],
-            "all_none_message": "There are no traffic, road or railway schemes registered"
+            "all_none_message": "There are no traffic, road or railway schemes registered."
         },
         {
             "sections": ["Drainage Agreement", "Drainage Consents"],
