@@ -353,6 +353,22 @@ def process_section_group(sections, yaml_data, text, doc):
 
     return all_none
 
+@timed_function
+def process_sections(yaml_data, combined_text, doc, sections_to_process):
+    for section in sections_to_process:
+        content, message_if_none = get_section(yaml_data, combined_text, section)
+        
+        if content is None or str(content).strip().upper() in ["NO", "NONE", "NOT APPLICABLE"]:
+            doc.add_paragraph(message_if_none, style="List Bullet")
+        else:
+            # Special handling for Certificate of Lawfulness
+            if section == "Certificate of Lawfulness" and "No Decision to date" in content:
+                message = ". However, at the date of the search a decision had not yet been made. " \
+                          "It is imperative that you contact the local council to ensure that " \
+                          "the existing use of the property is lawful as you may be held " \
+                          "liable if the property's use or development is unlawful"
+                content = content + message
+            doc.add_paragraph(content, style="List Bullet")
 
 # Main execution
 if __name__ == "__main__":
@@ -399,7 +415,7 @@ if __name__ == "__main__":
                 message = f"The Search result date is {date_of_search}. This is not an up-to-date search result therefore any policies or permissions that may have been registered after that date will not be reflected on the said local authority search. We would advise you to acquire a new local search to acquire information that is up to date."
                 doc.add_paragraph(message, style="List Bullet")
 
-            # Loop through sections
+            # Process sections
             sections_to_process = [
                 "Building Regulations",
                 "Certificate of Lawfulness",
@@ -407,17 +423,8 @@ if __name__ == "__main__":
                 "Adoption Agreement",
                 "Land required for Public Purposes",
                 "Infringement of Building Regulations"
-                # Add more sections as needed
             ]
-            for section in sections_to_process:
-                content, message_if_none = get_section(yaml_data, combined_text, section)
-                if content is None or str(content).strip().upper() in ["NO", "NONE", "NOT APPLICABLE"]:
-                    doc.add_paragraph(message_if_none, style="List Bullet")
-                else:
-                    if section == "Certificate of Lawfulness" and "No Decision to date" in content:
-                        message = ". However, at the date of the search a decision had not yet been made. It is imperative that you contact the local council to ensure that the existing use of the property is lawful as you may be held liable if the property’s use or development is unlawful"
-                        content = content + message
-                    doc.add_paragraph(content, style="List Bullet")
+            process_sections(yaml_data, combined_text, doc, sections_to_process)
 
             # Process groups to check if all sections are None
             process_section_groups(yaml_data, combined_text, doc)
