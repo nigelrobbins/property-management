@@ -368,7 +368,7 @@ if __name__ == "__main__":
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
                     if section == "Certificate of Lawfulness" and "No Decision to date" in content:
-                        message = "However, at the date of the search a decision had not yet been made. It is imperative that you contact the local council to ensure that the existing use of the property is lawful as you may be held liable if the property’s use or development is unlawful"
+                        message = ". However, at the date of the search a decision had not yet been made. It is imperative that you contact the local council to ensure that the existing use of the property is lawful as you may be held liable if the property’s use or development is unlawful"
                         content = content + message
                     doc.add_paragraph(content, style="List Bullet")
 
