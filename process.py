@@ -158,11 +158,12 @@ def extract_matching_text(text, search_pattern, extract_pattern, message_templat
         return None
 
 @timed_function
-def get_address(yaml_data, extracted_text):
+def get_address(yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
     address = "Address not found"
     address_heading = "Address Heading not found"
     message_if_identifier_found = "None"
+    section_content = "None"
     for doc_section in yaml_data['docs']:
         # Process all questions including address and sections
         for question in doc_section.get('questions', []):
@@ -183,8 +184,18 @@ def get_address(yaml_data, extracted_text):
                         question['extract_pattern'],
                         question['message_template']
                     )
-                    return message_if_identifier_found, address_heading, address
-        return message_if_identifier_found, address_heading, address
+                # Process all other sections
+                if 'sections' in question:
+                    for section in question['sections']:
+                        if section['section'] == theSection:
+                            section_content = extract_matching_text(
+                                extracted_text,
+                                section['search_pattern'],
+                                section['extract_pattern'],
+                                section['message_template']
+                            )
+
+    return message_if_identifier_found, address_heading, address, content
 
 @timed_function
 def get_section(yaml_data, extracted_text, theSection):
@@ -309,7 +320,7 @@ if __name__ == "__main__":
             # Headings
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            message_if_identifier_found, address_heading, address = get_address(yaml_data, combined_text)
+            message_if_identifier_found, address_heading, address, section_content = get_address(yaml_data, combined_text, "Search Date")
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             para = add_formatted_paragraph(doc, address, italic=True)
@@ -320,6 +331,9 @@ if __name__ == "__main__":
             doc.add_paragraph("Local Authority Search", style="Heading 2")
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+            doc.add_paragraph(section_content, style="List Bullet")
+
+            # TODO - Check date of search
 
             # Loop through sections
             sections_to_process = [
@@ -340,10 +354,13 @@ if __name__ == "__main__":
             for section in sections_to_process:
                 content, message_if_none = get_section(yaml_data, combined_text, section)
                 if content is None or str(content).strip().upper() in ["NONE", "NOT APPLICABLE"]:
+                    # TODO -If section is "Certificate of Lawfulness", if content contains "No Decision to date"
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
                     doc.add_paragraph(content, style="List Bullet")
 
+            # TODO - grouping of any of the above
+            # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
             exit()
