@@ -310,7 +310,7 @@ def process_section_group(sections, yaml_data, text, doc, message):
         if content is not None:
             content = str(content).strip().rstrip(';:,.')  # Clean punctuation
             
-        if content and content.upper() not in ["NONE", "NOT APPLICABLE", ""]:
+        if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
             all_none = False
     if all_none:
         doc.add_paragraph(message, style="List Bullet")
@@ -378,7 +378,7 @@ if __name__ == "__main__":
             ]
             for section in sections_to_process:
                 content, message_if_none = get_section(yaml_data, combined_text, section)
-                if content is None or str(content).strip().upper() in ["NONE", "NOT APPLICABLE"]:
+                if content is None or str(content).strip().upper() in ["NO", "NONE", "NOT APPLICABLE"]:
                     doc.add_paragraph(message_if_none, style="List Bullet")
                 else:
                     if section == "Certificate of Lawfulness" and "No Decision to date" in content:
