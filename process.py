@@ -184,16 +184,16 @@ def get_address(yaml_data, extracted_text, theSection):
                         question['extract_pattern'],
                         question['message_template']
                     )
-                # Process all other sections
-                if 'sections' in question:
-                    for section in question['sections']:
-                        if section['section'] == theSection:
-                            section_content = extract_matching_text(
-                                extracted_text,
-                                section['search_pattern'],
-                                section['extract_pattern'],
-                                section['message_template']
-                            )
+            # Process all other sections
+            if 'sections' in question:
+                for section in question['sections']:
+                    if section['section'] == theSection:
+                        section_content = extract_matching_text(
+                            extracted_text,
+                            section['search_pattern'],
+                            section['extract_pattern'],
+                            section['message_template']
+                        )
 
     return message_if_identifier_found, address_heading, address, section_content
 
