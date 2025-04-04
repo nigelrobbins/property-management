@@ -305,6 +305,10 @@ def process_zip(zip_path, output_docx, yaml_path):
 def process_section_groups(yaml_data, combined_text, doc):
     section_groups = [
         {
+            "sections": ["Contaminated Land", "Radon Gas"],
+            "all_none_message": "The search shows a clear result with regards to contaminated land and radon gas in the area."
+        },
+        {
             "sections": ["Enforcement Notice", "Stop Notice"],
             "all_none_message": "There are no notices, orders, directions and proceedings under planning acts registered."
         },
@@ -401,9 +405,7 @@ if __name__ == "__main__":
                 "Highways",
                 "Adoption Agreement",
                 "Land required for Public Purposes",
-                "Infringement of Building Regulations",
-                "Contaminated Land",
-                "Radon Gas"
+                "Infringement of Building Regulations"
                 # Add more sections as needed
             ]
             for section in sections_to_process:
