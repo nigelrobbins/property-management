@@ -356,7 +356,6 @@ def process_section_groupX(sections, yaml_data, text, doc):
             
         if content and content.upper() not in ["NO", "NONE", "NOT APPLICABLE", ""]:
             all_none = False
-            doc.add_paragraph(content, style="List Bullet")
         else:
             doc.add_paragraph(message_if_none, style="List Bullet")
     
@@ -434,24 +433,6 @@ if __name__ == "__main__":
                     doc.add_paragraph(content, style="List Bullet")
 
             # TODO - grouping of any of the above
-            sections = [
-                "Enforcement Notice",
-                "Stop Notice"
-            ]
-            all_none_message = "There are no notices, orders, directions and proceedings under planning acts registered."
-            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
-            sections = [
-                "Permanent stopping",
-                "Waiting or loading restrictions"
-            ]
-            all_none_message = "There are no traffic, road or railway schemes registered"
-            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
-            sections = [
-                "Drainage Agreement",
-                "Drainage Consents"
-            ]
-            all_none_message = "There are no drainage agreements or consents existing in relation to the property. It would be prudent for you to acquire a drainage and water search to verify how the drainage system of the property is managed. If the drains and sewers are maintained privately, you may be required to maintain them."
-            all_none = process_section_group(sections, yaml_data, combined_text, doc, all_none_message)
 
             process_section_groups(yaml_data, combined_text, doc)
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
