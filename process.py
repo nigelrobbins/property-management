@@ -302,7 +302,7 @@ def process_zip(zip_path, output_docx, yaml_path):
         raise
 
 @timed_function
-def process_section_group(sections, yaml_data, text, doc):
+def process_section_group(sections, yaml_data, text, doc, message):
     all_none = True
     for section in sections:
         content, message_if_none = get_section(yaml_data, text, section)
@@ -312,7 +312,8 @@ def process_section_group(sections, yaml_data, text, doc):
             
         if content and content.upper() not in ["NONE", "NOT APPLICABLE", ""]:
             all_none = False
-    
+    if all_none
+        doc.add_paragraph(message, style="List Bullet")
     return all_none
 
 # Main execution
@@ -391,9 +392,8 @@ if __name__ == "__main__":
                 "Enforcement Notice",
                 "Stop Notice"
             ]
-            enforcement_all_none = process_section_group(enforcement_sections, yaml_data, combined_text, doc)
-            if enforcement_all_none:
-                doc.add_paragraph("There are no notices, orders, directions and proceedings under planning acts registered.", style="List Bullet")
+            enforcement_all_none_message = "There are no notices, orders, directions and proceedings under planning acts registered."
+            enforcement_all_none = process_section_group(enforcement_sections, yaml_data, combined_text, doc, enforcement_all_none_message)
 
             # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
