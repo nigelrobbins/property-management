@@ -11,6 +11,8 @@ import subprocess
 import yaml
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 def timed_function(func):
     """Decorator to measure function execution time."""
@@ -197,6 +199,15 @@ def get_address(yaml_data, extracted_text, theSection):
 
     return message_if_identifier_found, address_heading, address, section_content
 
+def is_date_one_year_older(date_str):
+    try:
+        input_date = datetime.strptime(date_str, "%d-%b-%Y").date()
+        today = datetime.now().date()
+        one_year_ago = today - relativedelta(years=1)
+        return input_date <= one_year_ago
+    except ValueError:
+        return False
+
 @timed_function
 def get_section(yaml_data, extracted_text, theSection):
     extracted_text = extracted_text or ""
@@ -320,7 +331,7 @@ if __name__ == "__main__":
             # Headings
             heading = doc.add_heading(yaml_data['general']['title'], level=0)
             heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            message_if_identifier_found, address_heading, address, section_content = get_address(yaml_data, combined_text, "Search Date")
+            message_if_identifier_found, address_heading, address, date_of_search = get_address(yaml_data, combined_text, "Search Date")
             address_heading = doc.add_heading(address_heading, level=2)
             address_heading.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             para = add_formatted_paragraph(doc, address, italic=True)
@@ -331,9 +342,9 @@ if __name__ == "__main__":
             doc.add_paragraph("Local Authority Search", style="Heading 2")
             para = doc.add_paragraph(message_if_identifier_found)
             para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-            doc.add_paragraph(section_content, style="List Bullet")
-
-            # TODO - Check date of search
+            if is_date_one_year_older(date_of_search):
+                message = f"The Search result date is {formatted_date}. This is not an up-to-date search result therefore any policies or permissions that may have been registered after that date will not be reflected on the said local authority search. We would advise you to acquire a new local search to acquire information that is up to date."
+                doc.add_paragraph(message, style="List Bullet")
 
             # Loop through sections
             sections_to_process = [
