@@ -419,10 +419,8 @@ if __name__ == "__main__":
                         content = content + message
                     doc.add_paragraph(content, style="List Bullet")
 
-            # TODO - grouping of any of the above
-
+            # Process groups to check if all sections are None
             process_section_groups(yaml_data, combined_text, doc)
-            # TODO - grouping of "planning acts registered" and "drainage agreements or consents existing in relation to the property"
             doc.save(output_file)
             print(f"✅ Report generated from combined text: {output_file}")
             exit()
