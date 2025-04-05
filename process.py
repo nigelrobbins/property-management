@@ -196,7 +196,7 @@ def get_address(yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        section_content = convert_date_format(section_content)
+                        #section_content = convert_date_format(section_content)
 
     return message_if_identifier_found, address_heading, address, section_content
 
