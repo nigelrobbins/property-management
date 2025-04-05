@@ -27,9 +27,9 @@ docs:
       - sections:
 
           - section: "Search Date"
-            search_pattern: "Date:"
+            search_pattern: "NLIS Reference:"
             extract_text: true
-            extract_pattern: "Date:\\s*(.*)"
+            extract_pattern: "NLIS Reference:\\s*\\nDate:\\s*([0-9]{2}-[A-Za-z]{3}-[0-9]{4})"
             message_template: "{extracted_text_1}"
             message_if_none: "No search date found."
 
