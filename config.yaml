@@ -19,11 +19,11 @@ docs:
     questions:
 
       - address: "Address of the property"
-        search_pattern: "Property:"
+        search_pattern: "Properties:"
         extract_text: true
-        extract_pattern: "\\s*([\\d,]+ [^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([^\\n]+)\\s*\\n\\s*([A-Z\\d ]+)"
-        message_template: "{extracted_text_1}, {extracted_text_2}, {extracted_text_3}, {extracted_text_4}, {extracted_text_5}"
-      
+        extract_pattern: "Properties:\\s*([^\\n]+)"
+        message_template: "{extracted_text_1}"
+
       - sections:
 
           - section: "Search Date"
