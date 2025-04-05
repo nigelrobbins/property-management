@@ -196,19 +196,8 @@ def get_address(yaml_data, extracted_text, theSection):
                             section['extract_pattern'],
                             section['message_template']
                         )
-                        #section_content = convert_date_format(section_content)
 
     return message_if_identifier_found, address_heading, address, section_content
-
-def convert_date_format(date_str):
-    try:
-        # Parse the input date (assuming DD/MM/YYYY format)
-        date_obj = datetime.strptime(date_str, "%d/%m/%Y")
-        # Format into DD-MMM-YYYY (e.g., 25-Mar-2025)
-        formatted_date = date_obj.strftime("%d-%b-%Y")
-        return formatted_date
-    except ValueError:
-        return None  # Invalid format
 
 def is_date_one_year_older(date_str):
     try:
@@ -350,7 +339,7 @@ def process_section_groups(yaml_data, combined_text, doc):
         if all_none:
             doc.add_paragraph(group["all_none_message"], style="List Bullet")
         else:
-            process_sections(yaml_data, combined_text, doc, group["sections"])
+            process_sections(yaml_data, combined_text, doc, sections_to_process)
 
 @timed_function
 def process_section_group(sections, yaml_data, text, doc):
