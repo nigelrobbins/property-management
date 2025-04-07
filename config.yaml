@@ -16,6 +16,33 @@ docs:
     message_if_identifier_found: "A Local Authority search has been provided. In the search, the Local Authority were asked numerous questions of a kind normally asked in relation to property transactions.  The purpose was to establish whether there is anything registered against the Property that would adversely affect the Property’s value; or if any information held by Local Authority might limit the use to which you intend to put the property. Having gone through the said search, we can confirm that the search has revealed the issues summarised below."
     message_if_identifier_not_found: "A local Authority search was not provided. We therefore cannot comment on any land charges, planning permissions or prohibitions that affect the property. This search is important as it reveals issues that affect the property which you may be liable for such as the lack of building regulations for work which has been done. Should you wish us to conduct a search for you, please do let us know and we will be able to advise further."
 
+
+    sections:
+      - section: "Planning Permission"
+        search_pattern: |
+          (?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
+          (None|not\s+provided|not\s+available|no\s+planning|where\s+applicable)
+        extract_pattern: |
+          (?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
+          (None|not\s+provided|not\s+available|no\s+planning|where\s+applicable)
+        message_template: "{extracted_text_2}"
+        message_if_none: "There are no planning permissions."
+        detection_rules:
+          negative_indicators: 
+            - "None"
+            - "not provided" 
+            - "not available"
+            - "no planning"
+            - "where applicable"
+          positive_indicators:
+            - "granted"
+            - "approved"
+            - "exists"
+        ambiguous_handling:
+          default_message: "Planning permission status could not be determined"
+          require_human_review: true
+
+
     questions:
 
       - address: "Address of the property"

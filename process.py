@@ -372,6 +372,60 @@ def process_sections(yaml_data, combined_text, doc, sections_to_process):
                 content = content + message
             doc.add_paragraph(content, style="List Bullet")
 
+def test_section_config(section_config):
+    test_cases = [
+        ("1.1(a) A Planning Permission;\nNone", "There are no planning permissions."),
+        ("Planning permission\n1.01(a)Where applicable", "There are no planning permissions."),
+        ("1.1(a) Granted planning permission", "Granted")
+    ]
+    
+    for text, expected in test_cases:
+        assert process_section(text, section_config) == expected
+
+def process_section(text, section_config):
+    """
+    Generic section processor that uses only YAML configuration
+    """
+    # First try the configured search pattern
+    if match := re.search(
+        section_config['search_pattern'], 
+        text, 
+        re.IGNORECASE | re.MULTILINE | re.DOTALL
+    ):
+        extracted = {f"extracted_text_{i+1}": match.group(i+1) 
+                   for i in range(match.lastindex)}
+        test_section_config(section_config)
+        if (section_config.get('ambiguous_handling') and 
+            not any(re.search(p, text) for p in section_config['detection_rules']['positive_indicators']) and
+            not any(re.search(n, text) for n in section_config['detection_rules']['negative_indicators'])):
+            
+            if section_config['ambiguous_handling']['require_human_review']:
+                flag_for_review(text)
+            return section_config['ambiguous_handling']['default_message']
+
+        # Check for negative indicators if they exist
+        if 'detection_rules' in section_config:
+            if any(
+                re.search(indicator, match.group(0), re.IGNORECASE)
+                for indicator in section_config['detection_rules']['negative_indicators']
+            ):
+                return section_config['message_if_none']
+        
+        return section_config['message_template'].format(**extracted)
+    
+    return section_config['message_if_none']
+
+# Usage example:
+yaml_data = load_yaml("config.yaml")
+planning_config = next(
+    s for s in yaml_data['docs'][0]['sections'] 
+    if s['section'] == "Planning Permission"
+)
+
+text = "1.1(a) A Planning Permission;\nNone"
+result = process_section(text, planning_config)
+print(result)  # "There are no planning permissions."
+
 # Main execution
 if __name__ == "__main__":
     input_folder = "input_files"
