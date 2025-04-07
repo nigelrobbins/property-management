@@ -374,8 +374,8 @@ def process_sections(yaml_data, combined_text, doc, sections_to_process):
 
 def test_section_config(section_config):
     test_cases = [
-        ("1.1(a) A Planning Permission;\nNone", "There are no planning permissions."),
-        ("Planning permission\n1.01(a)Where applicable", "There are no planning permissions."),
+        ("1.1(a) A Planning Permission;\nNone", "There are no planning permissions1."),
+        ("Planning permission\n1.01(a)Where applicable", "There are no planning permissions2."),
         ("1.1(a) Granted planning permission", "Granted")
     ]
     
