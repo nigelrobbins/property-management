@@ -409,11 +409,11 @@ def process_section(text, section_config):
                 re.search(indicator, match.group(0), re.IGNORECASE)
                 for indicator in section_config['detection_rules']['negative_indicators']
             ):
-                return 'abc'
+                return 'section_config['message_if_none']'
         
-        return 'de'
+        return section_config['message_template'].format(**extracted)
     
-    return 'ghi'
+    return section_config['message_if_none']
 
 # Usage example:
 yaml_data = load_yaml("config.yaml")
@@ -422,7 +422,9 @@ planning_config = next(
     if s['section'] == "Planning Permission"
 )
 
+text = "1.1(a) Planning Permission;\nNone"
 text = "1.1(a) A Planning Permission;\nNone"
+#(?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
 result = process_section(text, planning_config)
 print(result)  # "There are no planning permissions."
 
