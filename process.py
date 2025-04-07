@@ -424,6 +424,7 @@ planning_config = next(
 
 text = "1.1(a) Planning Permission;\nNone"
 text = "1.1(a) Planning permission\nNone"
+text = "1.1(a) Planning permission was reviewed\nThe response..."
 #(?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
 result = process_section(text, planning_config)
 print(result)  # "There are no planning permissions."
