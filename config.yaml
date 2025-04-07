@@ -26,7 +26,7 @@ docs:
           (?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
           (None|not\s+provided|not\s+available|no\s+planning|where\s+applicable)
         message_template: "{extracted_text_2}"
-        message_if_none: "There are no planning permissions."
+        message_if_none: "There are no planning permissions0."
         detection_rules:
           negative_indicators: 
             - "None"

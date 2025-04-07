@@ -424,7 +424,7 @@ planning_config = next(
 
 text = "1.1(a) A Planning Permission;\nNone"
 result = process_section(text, planning_config)
-print(result)  # "There are no planning permissions0."
+print(result)  # "There are no planning permissions."
 
 # Main execution
 if __name__ == "__main__":
