@@ -409,7 +409,7 @@ def process_section(text, section_config):
                 re.search(indicator, match.group(0), re.IGNORECASE)
                 for indicator in section_config['detection_rules']['negative_indicators']
             ):
-            return section_config['message_if_none']
+                return section_config['message_if_none']
         
         return section_config['message_template'].format(**extracted)
     
