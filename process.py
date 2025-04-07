@@ -409,8 +409,7 @@ def process_section(text, section_config):
                 re.search(indicator, match.group(0), re.IGNORECASE)
                 for indicator in section_config['detection_rules']['negative_indicators']
             ):
-                #return section_config['message_if_none']
-                return 'abc'
+                return 'section_config['message_if_none']'
         
         return section_config['message_template'].format(**extracted)
     
@@ -424,7 +423,7 @@ planning_config = next(
 )
 
 text = "1.1(a) Planning Permission;\nNone"
-text = "1.1(a) A Planning Permission;\nNone"
+text = "1.1(a) Planning permission\nNone"
 #(?:(1\.1\(a\)|Planning\s*permission)[\s\S]*?)
 result = process_section(text, planning_config)
 print(result)  # "There are no planning permissions."
