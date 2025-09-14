@@ -38,7 +38,7 @@ There is a `Client Intake` Form.
 
 # Infrastructure
 
-AWS is used for the infrastructure and is automated using Terraform.
+AWS is used for the infrastructure and is automated using Terraform and CI/CD pipelines.
 
 The following AWS services are used:
 - CloudFront, S3, Lambda for the web page (with Next.js and Node.js)
