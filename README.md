@@ -33,3 +33,13 @@ The following reports are provided:
 ## Data input
 
 There is a `Client Intake` Form.
+
+# Implementation
+
+# Infrastructure
+
+AWS is used for the infrastructure and is automated using Terraform.
+
+The following AWS services will be used:
+- CloudFront, S3, Lambda for the web page (with Next.js and Node.js)
+- MySQL for the managed database
