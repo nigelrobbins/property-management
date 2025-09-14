@@ -10,7 +10,6 @@ The provider agrees and gets paid a nightly rate for each client supplied by the
 
 Each booking includes the client name, phone number, and nightly rate.
 
-
 # Architecture
 
 A web page is used for entering data and to generate reports.
@@ -32,9 +31,7 @@ The following reports are provided:
 
 ## Data input
 
-There is a `Client Intake` Form.
-
-# Implementation
+There is a `Client Intake` Form for booking purposes.
 
 # Infrastructure
 
