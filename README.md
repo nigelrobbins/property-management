@@ -2,10 +2,35 @@
 
 First Class Property Management is a provider of Temporary Accommodation to a number of London Councils.
 
-First Class Property Management leases properties from landlords.
+The provider leases properties from landlords.
 
 Landlords are paid monthly by First Class Property Management.
 
-First Class Property Management agrees and gets paid a nightly rate for each TA client supplied by the London Councils.
+The provider agrees and gets paid a nightly rate for each TA client supplied by the London Councils.
 
 Each booking includes TA client name, phone number and nightly rate.
+
+
+# Architecture
+
+A web page is used for entering data and to generate reports.
+
+## Data
+
+A database is used for storing and querying property management data.
+
+### Reports
+
+The following reports are created:
+
+- Landlord Monthly Payment Report (showing how much each landlord should be paid for the month based on bookings)
+- Council Billing Report (what each council owes, based on clients placed)
+- Current Occupancy Report (which clients are currently in which properties)
+- Property Utilization Report (percentage of days each property was booked in the last 30 days)
+- Landlord Payment History (showing all payments recorded)
+- Council Client Nights Report (number of nights each council’s clients occupied properties in a period)
+
+## Data input
+
+There is a 'Client Intake' Form.
+
