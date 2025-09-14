@@ -40,6 +40,6 @@ There is a `Client Intake` Form.
 
 AWS is used for the infrastructure and is automated using Terraform.
 
-The following AWS services will be used:
+The following AWS services are used:
 - CloudFront, S3, Lambda for the web page (with Next.js and Node.js)
 - MySQL for the managed database
